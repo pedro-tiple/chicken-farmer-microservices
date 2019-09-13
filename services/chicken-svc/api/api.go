@@ -1,40 +1,43 @@
 package api
 
 import (
-	"context"
+	"github.com/go-redis/redis"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"ptiple/chicken-svc/mongodatabase"
+	"ptiple/util"
 )
 
 type Api struct {
-	DB *mongodatabase.MongoDatabase
+	DB    *mongodatabase.MongoDatabase
+	Redis *redis.Client
 }
 
-func Start() {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+func Start(_mongodb *mongodatabase.MongoDatabase, _redisClient *redis.Client) {
+	var api = Api{_mongodb, _redisClient}
 
-	mongodb, err := mongodatabase.New(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
+	router := api.setupHandlers()
 
-	var api = Api{&mongodb}
-
-	api.setupHandlers()
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Authorization", "Content-Type"})
+	// TODO remove unsafe cors origins when building for containers that will run in the same domain
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{http.MethodGet, http.MethodPost, http.MethodOptions})
+	log.Fatal(http.ListenAndServe(":8082", handlers.CORS(originsOk, headersOk, methodsOk)(router)))
 }
 
-func (api Api) setupHandlers() {
+func (api Api) setupHandlers() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/chickens/barn/{barnId}", api.getChickensOfBarnHandler).Methods("GET")
+	r.Use(util.JwtAuthentication)
+
+	r.HandleFunc("/chickens", api.getChickensOfUserHandler).Methods("GET")
 	r.HandleFunc("/chickens/buy/{barnId}", api.buyChickenHandler).Methods("GET")
-	r.HandleFunc("/chickens/{chickenId}", api.getChickenHandler).Methods("GET")
 	r.HandleFunc("/chickens/{chickenId}/feed", api.feedChickenHandler).Methods("GET")
+	r.HandleFunc("/chickens/bulkFeed", api.bulkFeedChickenHandler).Methods("POST")
 	r.HandleFunc("/chickens/{chickenId}/sell", api.sellChickenHandler).Methods("GET")
 
 	http.Handle("/", r)
+
+	return r
 }

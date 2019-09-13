@@ -9,7 +9,7 @@ metadata:
       apiVersion: ambassador/v1
       kind: Mapping
       name: chicken-svc_mapping
-      prefix: /chicken/
+      prefix: /chickens/
       service: chicken-svc:8080
       labels:
         ambassador:
