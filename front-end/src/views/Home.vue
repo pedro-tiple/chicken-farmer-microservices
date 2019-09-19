@@ -51,7 +51,8 @@ export default {
     this.sessionId = MicroServicesAPI.randomUserId();
     this.loadSession();
 
-    let ws = new WebSocket("ws://localhost:8083/users/ws");
+    // TODO have this come from a .env
+    let ws = new WebSocket("ws://192.168.99.100:31479/users/ws");
     ws.onclose = () => {
       ws = null;
     };

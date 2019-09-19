@@ -9,8 +9,8 @@ metadata:
       apiVersion: ambassador/v1
       kind: Mapping
       name: frontend-svc_mapping
-      prefix: /app
-      service: frontend-svc:8080
+      prefix: /app/
+      service: frontend-svc:80
       labels:
         ambassador:
           - request_label:
@@ -18,8 +18,8 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 80
+      targetPort: 80
   selector:
     app: frontend-svc
 ---
@@ -43,11 +43,11 @@ spec:
     spec:
       containers:
         - name: frontend-svc
-          image: ptiple/frontend-svc:latest
+          image: ptiple/chicken-farmer-microservices-frontend:latest
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 80
           resources:
             limits:
-              cpu: "0.1"
-              memory: 100Mi
+              cpu: 50m
+              memory: 256Mi

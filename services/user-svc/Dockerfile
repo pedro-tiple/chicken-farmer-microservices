@@ -8,7 +8,7 @@
 
 #COPY go.mod go.mod
 #COPY main main
-#RUN CGO_ENABLED=0 go build -o user-svc main/user.go
+#RUN CGO_ENABLED=0 go build -o user-svc main/main.go
 
 FROM alpine
 

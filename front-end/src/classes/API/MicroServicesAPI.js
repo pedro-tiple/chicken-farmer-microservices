@@ -1,9 +1,10 @@
 import axios from "axios";
 
 export default class MicroServicesAPI {
-  BARN_MS_URL = "http://localhost:8081/barns";
-  CHICKEN_MS_URL = "http://localhost:8082/chickens";
-  USER_MS_URL = "http://localhost:8083/users";
+  BASE_URL =        "http://192.168.99.100:31479";
+  BARN_MS_URL =     `${this.BASE_URL}/barns`;
+  CHICKEN_MS_URL =  `${this.BASE_URL}/chickens`;
+  USER_MS_URL =     `${this.BASE_URL}/users`;
 
   constructor (_userId) {
     this.userId = _userId;
@@ -39,7 +40,7 @@ export default class MicroServicesAPI {
   }
 
   async getBarns() {
-    return await axios.get(`${this.BARN_MS_URL}`, await this.getJwtTokenConfig());
+    return await axios.get(`${this.BARN_MS_URL}/`, await this.getJwtTokenConfig());
   }
 
   async buyAutoFeeder(barndId) {
@@ -51,7 +52,7 @@ export default class MicroServicesAPI {
   }
 
   async getChickens() {
-    return await axios.get(`${this.CHICKEN_MS_URL}`, await this.getJwtTokenConfig());
+    return await axios.get(`${this.CHICKEN_MS_URL}/`, await this.getJwtTokenConfig());
   }
 
   async feedChicken(chickenId) {

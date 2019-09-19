@@ -13,8 +13,8 @@ import (
 	"ptiple/util"
 )
 
-const barnServiceURL = "http://localhost:8081/barns"
-const userServiceURL = "http://localhost:8083/users"
+const barnServiceURL = "http://192.168.99.100:31479/barns"
+const userServiceURL = "http://192.168.99.100:31479/users"
 const chickenCostInGoldEggs = 1
 const chickenFeedConsumption = 1
 

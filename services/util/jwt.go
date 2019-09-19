@@ -26,8 +26,8 @@ func JwtAuthentication(_next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// ignore login and ws and OPTIONS requests
-		if (len(r.URL.Path) >= 12 && r.URL.Path[0:12] == "/users/login") ||
-			r.URL.Path == "/users/ws" ||
+		if (len(r.URL.Path) >= 6 && r.URL.Path[0:6] == "/login") ||
+			r.URL.Path == "/ws" ||
 			r.Method == http.MethodOptions {
 			_next.ServeHTTP(w, r)
 			return

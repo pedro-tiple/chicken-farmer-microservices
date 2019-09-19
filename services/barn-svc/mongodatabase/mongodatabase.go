@@ -9,25 +9,32 @@ import (
 	barnsvc "ptiple/barn-svc"
 )
 
+type IMongoDatabase interface {
+	InsertBarn(_barn *barnsvc.Barn) (*barnsvc.Barn, error)
+	RemoveBarn(_id primitive.ObjectID) error
+	UpdateBarn(_barn barnsvc.Barn) error
+	GetBarn(_id primitive.ObjectID) (*barnsvc.Barn, error)
+	GetBarnsOfUser(_userId primitive.ObjectID) ([]*barnsvc.Barn, error)
+}
+
 type MongoDatabase struct {
 	client *mongo.Client
 	db     *mongo.Database
 	ctx    context.Context
 }
 
-func New(_ctx context.Context) (MongoDatabase, error) {
-	var mongodb MongoDatabase
+func New(_ctx context.Context) (IMongoDatabase, error) {
+	var mongodb IMongoDatabase
 
-	// TODO set this back when building, or use env files
+	// TODO use env files
 	// TODO remove hardcoded authentication
-	// clientOptions := options.Client().ApplyURI("mongodb://admin:password@barn-svc-mongodb:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://admin:password@192.168.99.100:30552")
+	clientOptions := options.Client().ApplyURI("mongodb://admin:password@barn-svc-mongodb:27017")
 	client, err := mongo.Connect(_ctx, clientOptions)
 	if err != nil {
 		return mongodb, err
 	}
 
-	mongodb = MongoDatabase{
+	mongodb = &MongoDatabase{
 		client,
 		client.Database("barn-svc"),
 		_ctx,
@@ -36,7 +43,7 @@ func New(_ctx context.Context) (MongoDatabase, error) {
 	return mongodb, nil
 }
 
-func (mongodb MongoDatabase) InsertBarn(_barn *barnsvc.Barn) (*barnsvc.Barn, error) {
+func (mongodb *MongoDatabase) InsertBarn(_barn *barnsvc.Barn) (*barnsvc.Barn, error) {
 	id, err := mongodb.db.Collection("barns").InsertOne(mongodb.ctx, _barn)
 	if err != nil {
 		return _barn, err
@@ -47,14 +54,14 @@ func (mongodb MongoDatabase) InsertBarn(_barn *barnsvc.Barn) (*barnsvc.Barn, err
 	return _barn, nil
 }
 
-func (mongodb MongoDatabase) RemoveBarn(_id primitive.ObjectID) error {
+func (mongodb *MongoDatabase) RemoveBarn(_id primitive.ObjectID) error {
 	filter := bson.M{"_id": _id}
 	_, err := mongodb.db.Collection("barns").DeleteOne(mongodb.ctx, filter)
 
 	return err
 }
 
-func (mongodb MongoDatabase) UpdateBarn(_barn barnsvc.Barn) error {
+func (mongodb *MongoDatabase) UpdateBarn(_barn barnsvc.Barn) error {
 	filter := bson.M{"_id": _barn.Id}
 	update := bson.D{{"$set", _barn}}
 	_, err := mongodb.db.Collection("barns").UpdateOne(mongodb.ctx, filter, update)
@@ -62,7 +69,7 @@ func (mongodb MongoDatabase) UpdateBarn(_barn barnsvc.Barn) error {
 	return err
 }
 
-func (mongodb MongoDatabase) GetBarn(_id primitive.ObjectID) (*barnsvc.Barn, error) {
+func (mongodb *MongoDatabase) GetBarn(_id primitive.ObjectID) (*barnsvc.Barn, error) {
 	var barn *barnsvc.Barn
 
 	filter := bson.M{"_id": _id}
@@ -71,7 +78,7 @@ func (mongodb MongoDatabase) GetBarn(_id primitive.ObjectID) (*barnsvc.Barn, err
 	return barn, err
 }
 
-func (mongodb MongoDatabase) GetBarnsOfUser(_userId primitive.ObjectID) ([]*barnsvc.Barn, error) {
+func (mongodb *MongoDatabase) GetBarnsOfUser(_userId primitive.ObjectID) ([]*barnsvc.Barn, error) {
 	// must be this way so it returns [] instead of nil
 	var barns = []*barnsvc.Barn{}
 

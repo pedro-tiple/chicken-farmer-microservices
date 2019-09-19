@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -12,8 +11,6 @@ import (
 	"ptiple/util"
 )
 
-const userServiceURL = "http://localhost:8083/users"
-const chickenServiceURL = "http://localhost:8082/chickens"
 const feedCost = 1
 const barnCost = 10
 const autoFeederCost = 100
@@ -51,7 +48,7 @@ func (api Api) buyBarnHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(barns) > 0 {
-		err = spendGoldEggs(jwtToken.UserId, barnCost)
+		err = api.ServiceCalls.SpendGoldEggs(jwtToken.UserId, barnCost)
 		if err != nil {
 			w.WriteHeader(http.StatusPreconditionFailed)
 			return
@@ -64,7 +61,7 @@ func (api Api) buyBarnHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = addFreeChicken(*barn)
+	err = api.ServiceCalls.AddFreeChicken(barn.Id, barn.BelongsToUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadGateway)
 		return
@@ -84,7 +81,7 @@ func (api Api) buyFeedHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	barn.DB = api.DB
 
-	err := spendGoldEggs(jwtToken.UserId, feedCost)
+	err := api.ServiceCalls.SpendGoldEggs(jwtToken.UserId, feedCost)
 	if err != nil {
 		w.WriteHeader(http.StatusPreconditionFailed)
 		return
@@ -100,7 +97,7 @@ func (api Api) buyFeedHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api Api) spendFeedHandler(w http.ResponseWriter, r *http.Request) {
-	barnId, amount, err := api.initializeApiRequest(r)
+	barnId, amount, err := initializeApiRequest(r)
 	if err != nil {
 		w.WriteHeader(http.StatusPreconditionFailed)
 		return
@@ -139,7 +136,7 @@ func (api Api) buyAutoFeederHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := spendGoldEggs(jwtToken.UserId, autoFeederCost)
+	err := api.ServiceCalls.SpendGoldEggs(jwtToken.UserId, autoFeederCost)
 	if err != nil {
 		w.WriteHeader(http.StatusPreconditionFailed)
 		return
@@ -156,7 +153,7 @@ func (api Api) buyAutoFeederHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func getBarnFromRequest(_db *mongodatabase.MongoDatabase, _r *http.Request) (*barnsvc.Barn, int) {
+func getBarnFromRequest(_db mongodatabase.IMongoDatabase, _r *http.Request) (*barnsvc.Barn, int) {
 	jwtToken := _r.Context().Value("jwtToken").(*util.JwtToken)
 
 	vars := mux.Vars(_r)
@@ -177,7 +174,7 @@ func getBarnFromRequest(_db *mongodatabase.MongoDatabase, _r *http.Request) (*ba
 	return barn, -1
 }
 
-func (api Api) initializeApiRequest(r *http.Request) (primitive.ObjectID, uint, error) {
+func initializeApiRequest(r *http.Request) (primitive.ObjectID, uint, error) {
 	var barnId primitive.ObjectID
 
 	jwtToken := r.Context().Value("jwtToken").(*util.JwtToken)
@@ -186,7 +183,7 @@ func (api Api) initializeApiRequest(r *http.Request) (primitive.ObjectID, uint, 
 	}
 
 	requestBody := &struct {
-		BarnId string `json:"BarnId"`
+		BarnId string `json:"barnId"`
 		Amount uint   `json:"amount"`
 	}{}
 	err := json.NewDecoder(r.Body).Decode(requestBody)
@@ -200,58 +197,4 @@ func (api Api) initializeApiRequest(r *http.Request) (primitive.ObjectID, uint, 
 	}
 
 	return barnId, requestBody.Amount, nil
-}
-
-func spendGoldEggs(_userId primitive.ObjectID, _amount uint) error {
-	request, err := util.BuildRequest(
-		"POST",
-		fmt.Sprintf("%s%s", userServiceURL, "/spendGoldEggs"),
-		struct {
-			UserId string `json:"userId"`
-			Amount uint   `json:"amount"`
-		}{
-			UserId: _userId.Hex(),
-			Amount: _amount,
-		},
-		_userId,
-	)
-	if err != nil {
-		return err
-	}
-
-	client := http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		return err
-	}
-
-	if response.StatusCode != http.StatusOK {
-		return errors.New("couldn't spend the requested amount")
-	}
-
-	return nil
-}
-
-func addFreeChicken(_barn barnsvc.Barn) error {
-	request, err := util.BuildRequest(
-		"GET",
-		fmt.Sprintf("%s/buy/%s", chickenServiceURL, _barn.Id.Hex()),
-		nil,
-		_barn.BelongsToUser,
-	)
-	if err != nil {
-		return err
-	}
-
-	client := http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		return err
-	}
-
-	if response.StatusCode != http.StatusOK {
-		return errors.New("couldn't add free chicken")
-	}
-
-	return nil
 }

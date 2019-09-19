@@ -40,11 +40,10 @@ func (barn *Barn) AddFeed(_amount uint) error {
 }
 
 func (barn *Barn) RemoveFeed(_amount uint) error {
-	result := barn.Feed - _amount
-	if result < 0 {
+	if _amount > barn.Feed {
 		return errors.New("cant remove that much feed")
 	}
 
-	barn.Feed = result
+	barn.Feed = barn.Feed - _amount
 	return barn.DB.UpdateBarn(*barn)
 }

@@ -18,10 +18,9 @@ type MongoDatabase struct {
 func New(_ctx context.Context) (MongoDatabase, error) {
 	var mongodb MongoDatabase
 
-	// TODO set this back when building, or use env files
+	// TODO use env files
 	// TODO remove hardcoded authentication
-	// clientOptions := options.Client().ApplyURI("mongodb://admin:password@user-svc-mongodb:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://admin:password@192.168.99.100:31412")
+	clientOptions := options.Client().ApplyURI("mongodb://admin:password@user-svc-mongodb:27017")
 	client, err := mongo.Connect(_ctx, clientOptions)
 	if err != nil {
 		return mongodb, err

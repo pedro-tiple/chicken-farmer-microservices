@@ -11,6 +11,7 @@ metadata:
       name: user-svc_mapping
       prefix: /users/
       service: user-svc:8080
+      use_websocket: true
       labels:
         ambassador:
           - request_label:

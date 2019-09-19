@@ -21,7 +21,7 @@ func main() {
 	}
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "192.168.99.100:30444",
+		Addr:     "redis-svc:6379",
 		Password: "password",
 		DB:       0,
 	})
