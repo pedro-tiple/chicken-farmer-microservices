@@ -1,0 +1,112 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: farmer-svc
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind: Mapping
+      name: farmer-svc_mapping
+      prefix: /farmers/
+      service: farmer-svc:8080
+      use_websocket: true
+      labels:
+        ambassador:
+          - request_label:
+            - http
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: farmer-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: farmer-svc
+  labels:
+    app: farmer-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: farmer-svc
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: farmer-svc
+    spec:
+      containers:
+        - name: farmer-svc
+          image: ptiple/farmer-svc:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: 100Mi
+---
+# MongoDB
+apiVersion: v1
+kind: Service
+metadata:
+  name: farmer-svc-mongodb
+spec:
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: 27017
+  selector:
+    app: farmer-svc-mongodb
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: farmer-svc-mongodata-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: farmer-svc-mongodb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: farmer-svc-mongodb
+    spec:
+      containers:
+        - image: mongo
+          name: farmer-svc-mongodb
+          ports:
+            - containerPort: 27017
+          env:
+            # TODO get these from a kubernetes secret
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "admin"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: "password"
+          resources: {}
+          volumeMounts:
+            - mountPath: /data/db
+              name: farmer-svc-mongodata
+      restartPolicy: Always
+      volumes:
+        - name: farmer-svc-mongodata
+          persistentVolumeClaim:
+            claimName: farmer-svc-mongodata-pvc

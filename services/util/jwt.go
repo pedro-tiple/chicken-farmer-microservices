@@ -12,7 +12,7 @@ import (
 )
 
 type JwtToken struct {
-	UserId    primitive.ObjectID
+	FarmerId  primitive.ObjectID
 	IsService bool
 	Token     string
 	jwt.StandardClaims
@@ -67,9 +67,9 @@ func JwtAuthentication(_next http.Handler) http.Handler {
 	})
 }
 
-func GenerateJwtToken(_userId primitive.ObjectID, _isService bool) (string, error) {
+func GenerateJwtToken(_farmerId primitive.ObjectID, _isService bool) (string, error) {
 	tk := &JwtToken{
-		UserId:    _userId,
+		FarmerId:  _farmerId,
 		IsService: _isService,
 	}
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)

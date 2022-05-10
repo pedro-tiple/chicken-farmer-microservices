@@ -48,11 +48,11 @@ export default {
     };
   },
   async created() {
-    this.sessionId = MicroServicesAPI.randomUserId();
+    this.sessionId = MicroServicesAPI.randomFarmerId();
     this.loadSession();
 
     // TODO have this come from a .env
-    let ws = new WebSocket("ws://192.168.99.100:31479/users/ws");
+    let ws = new WebSocket("ws://192.168.99.100:31479/farmers/ws");
     ws.onclose = () => {
       ws = null;
     };

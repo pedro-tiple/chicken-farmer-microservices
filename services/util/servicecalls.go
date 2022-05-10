@@ -7,21 +7,21 @@ import (
 	"net/http"
 )
 
-const userServiceURL = "http://192.168.99.100:31479/users"
+const farmerServiceURL = "http://192.168.99.100:31479/farmers"
 const chickenServiceURL = "http://192.168.99.100:31479/chickens"
 
-func SpendGoldEggs(_userId primitive.ObjectID, _amount uint) error {
+func SpendGoldEggs(_farmerId primitive.ObjectID, _amount uint) error {
 	request, err := BuildRequest(
 		"POST",
-		fmt.Sprintf("%s%s", userServiceURL, "/spendGoldEggs"),
+		fmt.Sprintf("%s%s", farmerServiceURL, "/spendGoldEggs"),
 		struct {
-			UserId string `json:"userId"`
-			Amount uint   `json:"amount"`
+			FarmerId string `json:"farmerId"`
+			Amount   uint   `json:"amount"`
 		}{
-			UserId: _userId.Hex(),
-			Amount: _amount,
+			FarmerId: _farmerId.Hex(),
+			Amount:   _amount,
 		},
-		_userId,
+		_farmerId,
 	)
 	if err != nil {
 		return err

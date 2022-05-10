@@ -4,13 +4,13 @@ export default class MicroServicesAPI {
   BASE_URL =        "http://192.168.99.100:31479";
   BARN_MS_URL =     `${this.BASE_URL}/barns`;
   CHICKEN_MS_URL =  `${this.BASE_URL}/chickens`;
-  USER_MS_URL =     `${this.BASE_URL}/users`;
+  USER_MS_URL =     `${this.BASE_URL}/farmers`;
 
-  constructor (_userId) {
-    this.userId = _userId;
+  constructor (_farmerId) {
+    this.farmerId = _farmerId;
   }
 
-  static randomUserId() {
+  static randomFarmerId() {
     // got this from https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript
     let p = "ABCDEFabcdef0123456789";
     return [...Array(24)].reduce(a=>a+p[~~(Math.random()*p.length)],'');
@@ -25,7 +25,7 @@ export default class MicroServicesAPI {
   
   async getJwtToken() {
     if (!this.jwtToken) {
-      this.jwtToken = (await axios.get(`${this.USER_MS_URL}/login/${this.userId}`)).data
+      this.jwtToken = (await axios.get(`${this.USER_MS_URL}/login/${this.farmerId}`)).data
     }
 
     return this.jwtToken;
