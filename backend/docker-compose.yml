@@ -1,0 +1,91 @@
+version: '3.7'
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.26.0.0/16
+
+services:
+  ### Redis #################################################
+  redis:
+    image: redis:6.0.1-alpine3.11
+    container_name: cfm_redis
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - ./.data/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+
+  ### RedisInsight ##########################################
+  redis-insight:
+    image: redislabs/redisinsight:1.5.0
+    container_name: cfm_redis_insight
+    volumes:
+      - ./.data/redis-insight:/db
+    ports:
+      - "6380:8001"
+    networks:
+      - backend
+    depends_on:
+      - redis
+
+  ### MongoDB ###############################################
+  mongo:
+    image: mongo:3.6.18-xenial
+    container_name: cfm_mongodb
+    restart: always
+    volumes:
+      - ./.data/mongodb:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+
+  ### Mongo Express #########################################
+  mongo-express:
+    image: mongo-express
+    container_name: cfm_mongodb_express
+    ports:
+      - "27018:8081"
+    networks:
+      - backend
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ROOT_PASSWORD}
+    depends_on:
+      - mongo
+
+  ### Postgres ##############################################
+  postgres:
+    image: postgres
+    container_name: cfm_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  ### Adminer ###############################################
+  adminer:
+    image: adminer
+    container_name: cfm_adminer
+    restart: always
+    ports:
+      - "5433:8080"
+    networks:
+      - backend
+    depends_on:
+      - postgres

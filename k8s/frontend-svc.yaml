@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
         - name: frontend-svc
-          image: ptiple/chicken-farmer-microservices-frontend:latest
+          image: ptiple/farm-old-farmer-microservices-frontend:latest
           ports:
             - name: http
               containerPort: 80

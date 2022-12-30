@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package grpc;
+
+option go_package = "github.com/pedro-tiple/farm-farmer-ethereum/backend/farm/proto";
+
+service FarmService {
+  rpc GetFarm(GetFarmRequest) returns(GetFarmResponse) {};
+  rpc BuyBarn(BuyBarnRequest) returns(BuyBarnResponse) {};
+  rpc BuyFeed(BuyFeedRequest) returns(BuyFeedResponse) {};
+  rpc BuyChicken(BuyChickenRequest) returns(BuyChickenResponse) {};
+  rpc FeedChicken(FeedChickenRequest) returns(FeedChickenResponse) {};
+  rpc FeedChickensOfBarn(FeedChickensOfBarnRequest) returns(FeedChickensOfBarnResponse) {};
+}
+
+message Farm {
+  string name = 1;
+  uint32 day = 2;
+  uint32 golden_eggs = 3;
+  repeated Barn barns = 4;
+}
+
+message Barn {
+  string id = 1;
+  uint32 feed = 2;
+  bool has_auto_feeder = 3;
+  repeated Chicken chickens = 4;
+}
+
+message Chicken {
+  string id = 1;
+  uint32 date_of_birth = 2;
+  uint32 resting_until = 5;
+  uint32 normal_eggs_laid = 3;
+  uint32 gold_eggs_laid = 4;
+}
+
+message GetFarmRequest {}
+message GetFarmResponse {
+  Farm farm = 1;
+}
+
+message BuyBarnRequest {}
+message BuyBarnResponse {}
+
+message BuyFeedRequest {
+  string barnID = 1;
+  uint32 amount = 2;
+}
+message BuyFeedResponse {}
+
+message BuyChickenRequest {
+  string barnID = 1;
+}
+message BuyChickenResponse {
+  string id = 1;
+}
+
+message FeedChickenRequest {
+  string chickenID = 1;
+}
+message FeedChickenResponse {}
+
+message FeedChickensOfBarnRequest {
+  string barnID = 1;
+}
+message FeedChickensOfBarnResponse {}

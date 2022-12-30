@@ -1,0 +1,17 @@
+linters:
+  enable-all: true
+  disable:
+    - nosnakecase
+    - interfacer
+    - scopelint
+    - deadcode
+    - exhaustivestruct
+    - golint
+    - maligned
+    - ifshort
+    - structcheck
+    - varcheck
+    - rowserrcheck
+    - sqlclosecheck
+    - wastedassign
+    - wrapcheck
