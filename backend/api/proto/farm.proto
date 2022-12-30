@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package grpc;
 
-option go_package = "github.com/pedro-tiple/farm-farmer-ethereum/backend/farm/proto";
+option go_package = "github.com/pedro-tiple/proto-farmer-ethereum/backend/internal/farm/grpc";
 
 service FarmService {
   rpc GetFarm(GetFarmRequest) returns(GetFarmResponse) {};

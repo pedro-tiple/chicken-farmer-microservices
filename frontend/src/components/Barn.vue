@@ -59,7 +59,7 @@ export default {
         this.barn.chickens.push(chicken);
         this.$emit('gold-egg-spent', CHICKEN_COST);
       } catch (error) {
-        this.$emit('error', "Couldn't buy a farm, make sure you have enough gold eggs!");
+        this.$emit('error', "Couldn't buy a proto, make sure you have enough gold eggs!");
       }
     },
     async buyFeed() {

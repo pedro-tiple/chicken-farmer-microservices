@@ -16,8 +16,8 @@ INSERT INTO farms (
     id, owner_id, name
 )
 values (
-    '65e4d8ff-8766-48a7-bfcd-7160d149a319',
     '93020a42-c32a-4b2c-a4b9-779f82841b11',
+    '65e4d8ff-8766-48a7-bfcd-7160d149a319',
     'Default Farm'
 );
 

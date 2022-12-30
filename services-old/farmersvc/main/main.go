@@ -34,7 +34,7 @@ func main() {
 }
 
 func listenToChickenUpdates(_redisClient *redis.Client, _db mongodatabase.MongoDatabase) {
-	sub := _redisClient.Subscribe("farm-old-updates")
+	sub := _redisClient.Subscribe("proto-old-updates")
 	defer sub.Close()
 
 	subChannel := sub.Channel()

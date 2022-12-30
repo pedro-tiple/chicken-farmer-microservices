@@ -98,14 +98,14 @@ export default {
           this.$emit('gold-egg-laid');
         }
       } catch(error) {
-        this.$emit('error', "Couldn't feed farm, make sure there is feed available!");
+        this.$emit('error', "Couldn't feed proto, make sure there is feed available!");
       }
     },
 
     async sellChicken() {
       await this.api.sellChicken(this.chicken.id);
 
-      this.$emit('farm-sold', this.chicken.id);
+      this.$emit('proto-sold', this.chicken.id);
     }
   }
 };

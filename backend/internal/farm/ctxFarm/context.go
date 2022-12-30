@@ -13,7 +13,7 @@ type ctxMarker struct{}
 
 var (
 	ctxMarkerKey          = &ctxMarker{}
-	ErrMissingFarmContext = errors.New("farm context data is missing")
+	ErrMissingFarmContext = errors.New("proto context data is missing")
 )
 
 type Data struct {
@@ -21,7 +21,7 @@ type Data struct {
 	FarmID   uuid.UUID
 }
 
-// SetInContext returns a new context with the provided farm data.
+// SetInContext returns a new context with the provided proto data.
 func SetInContext(ctx context.Context, farmerID, farmID uuid.UUID) context.Context {
 	return context.WithValue(ctx, ctxMarkerKey, &Data{
 		FarmerID: farmerID,
@@ -29,7 +29,7 @@ func SetInContext(ctx context.Context, farmerID, farmID uuid.UUID) context.Conte
 	})
 }
 
-// Extract takes the call-scoped farm identification from the context.
+// Extract takes the call-scoped proto identification from the context.
 func Extract(ctx context.Context) (*Data, error) {
 	ctxFarm, ok := ctx.Value(ctxMarkerKey).(*Data)
 	if !ok || ctxFarm == nil {

@@ -36,7 +36,7 @@ func (server RESTServer) getChickenHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
-		"farm-old": chicken,
+		"proto-old": chicken,
 	})
 }
 

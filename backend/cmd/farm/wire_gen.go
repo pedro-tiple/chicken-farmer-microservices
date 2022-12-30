@@ -7,7 +7,7 @@
 package main
 
 import (
-	"chicken-farmer/backend/farm"
+	farm2 "chicken-farmer/backend/internal/farm"
 	"database/sql"
 
 	"go.uber.org/zap"
@@ -19,13 +19,13 @@ import (
 
 // Injectors from wire.go:
 
-func initializeService(address string, logger *zap.SugaredLogger, dbConnection *sql.DB) (farm.Service, error) {
-	sqlDatabase, err := farm.ProvideSQLDatabase(dbConnection)
+func initializeService(address string, logger *zap.SugaredLogger, dbConnection *sql.DB) (farm2.Service, error) {
+	sqlDatabase, err := farm2.ProvideSQLDatabase(dbConnection)
 	if err != nil {
-		return farm.Service{}, err
+		return farm2.Service{}, err
 	}
-	farmerService := farm.ProvideFarmerService()
-	controller := farm.ProvideController(sqlDatabase, farmerService)
-	service := farm.ProvideService(address, logger, controller)
+	farmerService := farm2.ProvideFarmerService()
+	controller := farm2.ProvideController(sqlDatabase, farmerService)
+	service := farm2.ProvideService(address, logger, controller)
 	return service, nil
 }

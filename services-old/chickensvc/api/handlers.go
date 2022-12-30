@@ -84,7 +84,7 @@ func (api Api) bulkFeedChickenHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var results = []BulkFeedChickenResult{}
-	// TODO instead of handling each farm-old individually, also do it in bulk
+	// TODO instead of handling each proto-old individually, also do it in bulk
 	for _, chickenIdStr := range requestBody.ChickenIds {
 		chickenId, err := primitive.ObjectIDFromHex(chickenIdStr)
 		if err != nil {
@@ -127,7 +127,7 @@ func (api Api) feedChicken(chicken *chickensvc.Chicken) (bool, error) {
 	}
 
 	if currentDay <= chicken.RestingUntil {
-		return false, errors.New("farm-old still resting")
+		return false, errors.New("proto-old still resting")
 	}
 
 	if err = spendFeed(chicken.BelongsToFarmer, chicken.BelongsToBarn, chickenFeedConsumption); err != nil {
@@ -143,7 +143,7 @@ func (api Api) feedChicken(chicken *chickensvc.Chicken) (bool, error) {
 
 	if laidGoldEgg {
 		err := api.Redis.Publish(
-			"farm-old-updates",
+			"proto-old-updates",
 			fmt.Sprintf(`{"farmerId": "%s","chickenId": "%s","event": "laidGoldEgg"}`, chicken.BelongsToFarmer.Hex(), chicken.Id.Hex()),
 		).Err()
 		if err != nil {

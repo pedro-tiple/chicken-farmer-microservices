@@ -4,7 +4,7 @@
 package main
 
 import (
-	"chicken-farmer/backend/farm"
+	farm2 "chicken-farmer/backend/internal/farm"
 	"database/sql"
 
 	"github.com/google/wire"
@@ -15,17 +15,17 @@ func initializeService(
 	address string,
 	logger *zap.SugaredLogger,
 	dbConnection *sql.DB,
-) (farm.Service, error) {
+) (farm2.Service, error) {
 	panic(wire.Build(
-		farm.ProvideService,
+		farm2.ProvideService,
 
-		farm.ProvideController,
-		wire.Bind(new(farm.IController), new(*farm.Controller)),
+		farm2.ProvideController,
+		wire.Bind(new(farm2.IController), new(*farm2.Controller)),
 
-		farm.ProvideSQLDatabase,
-		wire.Bind(new(farm.IDatabase), new(*farm.SQLDatabase)),
+		farm2.ProvideSQLDatabase,
+		wire.Bind(new(farm2.IDatabase), new(*farm2.SQLDatabase)),
 
-		farm.ProvideFarmerService,
-		wire.Bind(new(farm.IFarmer), new(*farm.FarmerService)),
+		farm2.ProvideFarmerService,
+		wire.Bind(new(farm2.IFarmer), new(*farm2.FarmerService)),
 	))
 }

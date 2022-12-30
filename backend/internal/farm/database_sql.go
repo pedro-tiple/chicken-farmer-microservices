@@ -1,9 +1,8 @@
 package farm
 
 import (
-	farmSQL "chicken-farmer/backend/farm/sql"
-	"chicken-farmer/backend/internal"
-	internalDB "chicken-farmer/backend/internal/database"
+	sql2 "chicken-farmer/backend/internal/farm/sql"
+	internalDB "chicken-farmer/backend/internal/pkg/database"
 	"context"
 	"database/sql"
 	"fmt"
@@ -12,7 +11,7 @@ import (
 )
 
 type SQLDatabase struct {
-	database *farmSQL.Queries
+	database *sql2.Queries
 }
 
 var _ IDatabase = &SQLDatabase{}
@@ -21,7 +20,7 @@ func ProvideSQLDatabase(dbConnection *sql.DB) (*SQLDatabase, error) {
 	// TODO use multiple connections
 
 	return &SQLDatabase{
-		database: farmSQL.New(dbConnection),
+		database: sql2.New(dbConnection),
 	}, nil
 }
 
@@ -111,39 +110,51 @@ func (d *SQLDatabase) GetChicken(
 func (d *SQLDatabase) InsertChicken(
 	ctx context.Context, chicken Chicken,
 ) (chickenID uuid.UUID, err error) {
-	lastID, err := d.database.InsertChicken(ctx, farmSQL.InsertChickenParams{
-		DateOfBirth:    int64(chicken.DateOfBirth),
-		RestingUntil:   int64(chicken.RestingUntil),
-		NormalEggsLaid: int64(chicken.NormalEggsLaid),
-		GoldEggsLaid:   int64(chicken.GoldEggsLaid),
-		GoldEggChance:  int64(chicken.GoldEggChance),
-	})
+	fmt.Println(chicken.BarnID, chicken.OwnerID)
+	insertedChicken, err := d.database.InsertChicken(
+		ctx, sql2.InsertChickenParams{
+			DateOfBirth:    int64(chicken.DateOfBirth),
+			RestingUntil:   int64(chicken.RestingUntil),
+			NormalEggsLaid: int64(chicken.NormalEggsLaid),
+			GoldEggsLaid:   int64(chicken.GoldEggsLaid),
+			GoldEggChance:  int64(chicken.GoldEggChance),
+		},
+	)
 	if err != nil {
-		return uuid.UUID{}, nil
+		return uuid.UUID{}, err
 	}
 
-	return internal.UUIDFromInt64(lastID)
+	return insertedChicken.ID, nil
 }
 
 func (d *SQLDatabase) InsertBarn(
 	ctx context.Context, barn Barn,
-) (barnID uuid.UUID, err error) {
-	lastID, err := d.database.InsertBarn(ctx, farmSQL.InsertBarnParams{
+) (uuid.UUID, error) {
+	insertedBarn, err := d.database.InsertBarn(ctx, sql2.InsertBarnParams{
 		FarmID:        barn.FarmID,
 		Feed:          int64(barn.Feed),
 		HasAutoFeeder: barn.HasAutoFeeder,
 	})
 	if err != nil {
-		return uuid.UUID{}, nil
+		return uuid.UUID{}, err
 	}
 
-	return internal.UUIDFromInt64(lastID)
+	return insertedBarn.ID, nil
+}
+
+func (d *SQLDatabase) UpdateChickenRestingUntil(
+	ctx context.Context, chickenID uuid.UUID, day uint,
+) error {
+	return d.database.UpdateChickenRestingUntil(ctx, sql2.UpdateChickenRestingUntilParams{
+		ID:           chickenID,
+		RestingUntil: int64(day),
+	})
 }
 
 func (d *SQLDatabase) IncrementBarnFeed(
 	ctx context.Context, barnID uuid.UUID, amount uint,
 ) error {
-	return d.database.IncrementBarnFeed(ctx, farmSQL.IncrementBarnFeedParams{
+	return d.database.IncrementBarnFeed(ctx, sql2.IncrementBarnFeedParams{
 		ID:   barnID,
 		Feed: int64(amount),
 	})
@@ -152,7 +163,7 @@ func (d *SQLDatabase) IncrementBarnFeed(
 func (d *SQLDatabase) DecrementBarnFeed(
 	ctx context.Context, barnID uuid.UUID, amount uint,
 ) error {
-	return d.database.DecrementBarnFeed(ctx, farmSQL.DecrementBarnFeedParams{
+	return d.database.DecrementBarnFeed(ctx, sql2.DecrementBarnFeedParams{
 		ID:   barnID,
 		Feed: int64(amount),
 	})

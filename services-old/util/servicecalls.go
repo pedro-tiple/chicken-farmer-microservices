@@ -59,7 +59,7 @@ func AddFreeChicken(_barnId primitive.ObjectID, _barnOwnerId primitive.ObjectID)
 	}
 
 	if response.StatusCode != http.StatusOK {
-		return errors.New("couldn't add free farm-old")
+		return errors.New("couldn't add free proto-old")
 	}
 
 	return nil

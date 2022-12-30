@@ -237,13 +237,14 @@ func (q *Queries) IncrementChickenNormalEggLayCount(ctx context.Context, id uuid
 	return err
 }
 
-const insertBarn = `-- name: InsertBarn :execlastid
+const insertBarn = `-- name: InsertBarn :one
 INSERT INTO barns (
     farm_id, feed, has_auto_feeder
 )
 VALUES (
     $1, $2, $3
 )
+RETURNING id, farm_id, feed, has_auto_feeder, created_at, updated_at
 `
 
 type InsertBarnParams struct {
@@ -252,15 +253,21 @@ type InsertBarnParams struct {
 	HasAutoFeeder bool
 }
 
-func (q *Queries) InsertBarn(ctx context.Context, arg InsertBarnParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, insertBarn, arg.FarmID, arg.Feed, arg.HasAutoFeeder)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+func (q *Queries) InsertBarn(ctx context.Context, arg InsertBarnParams) (Barn, error) {
+	row := q.db.QueryRowContext(ctx, insertBarn, arg.FarmID, arg.Feed, arg.HasAutoFeeder)
+	var i Barn
+	err := row.Scan(
+		&i.ID,
+		&i.FarmID,
+		&i.Feed,
+		&i.HasAutoFeeder,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
-const insertChicken = `-- name: InsertChicken :execlastid
+const insertChicken = `-- name: InsertChicken :one
 INSERT INTO chickens (
     id, date_of_birth, resting_until, normal_eggs_laid, gold_eggs_laid,
     gold_egg_chance, barn_id
@@ -268,6 +275,7 @@ INSERT INTO chickens (
 VALUES (
     $1, $2, $3, $4, $5, $6, $7
 )
+RETURNING id, barn_id, date_of_birth, resting_until, normal_eggs_laid, gold_eggs_laid, gold_egg_chance, created_at, updated_at
 `
 
 type InsertChickenParams struct {
@@ -280,8 +288,8 @@ type InsertChickenParams struct {
 	BarnID         uuid.UUID
 }
 
-func (q *Queries) InsertChicken(ctx context.Context, arg InsertChickenParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, insertChicken,
+func (q *Queries) InsertChicken(ctx context.Context, arg InsertChickenParams) (Chicken, error) {
+	row := q.db.QueryRowContext(ctx, insertChicken,
 		arg.ID,
 		arg.DateOfBirth,
 		arg.RestingUntil,
@@ -290,8 +298,33 @@ func (q *Queries) InsertChicken(ctx context.Context, arg InsertChickenParams) (i
 		arg.GoldEggChance,
 		arg.BarnID,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+	var i Chicken
+	err := row.Scan(
+		&i.ID,
+		&i.BarnID,
+		&i.DateOfBirth,
+		&i.RestingUntil,
+		&i.NormalEggsLaid,
+		&i.GoldEggsLaid,
+		&i.GoldEggChance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateChickenRestingUntil = `-- name: UpdateChickenRestingUntil :exec
+UPDATE chickens
+SET resting_until = $2
+WHERE id = $1
+`
+
+type UpdateChickenRestingUntilParams struct {
+	ID           uuid.UUID
+	RestingUntil int64
+}
+
+func (q *Queries) UpdateChickenRestingUntil(ctx context.Context, arg UpdateChickenRestingUntilParams) error {
+	_, err := q.db.ExecContext(ctx, updateChickenRestingUntil, arg.ID, arg.RestingUntil)
+	return err
 }

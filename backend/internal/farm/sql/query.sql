@@ -46,22 +46,29 @@ FROM chickens
          INNER JOIN farms ON farm_id = farms.id
 WHERE chickens.id = $1;
 
--- name: InsertChicken :execlastid
+-- name: InsertChicken :one
 INSERT INTO chickens (
     id, date_of_birth, resting_until, normal_eggs_laid, gold_eggs_laid,
     gold_egg_chance, barn_id
 )
 VALUES (
     $1, $2, $3, $4, $5, $6, $7
-);
+)
+RETURNING *;
 
--- name: InsertBarn :execlastid
+-- name: InsertBarn :one
 INSERT INTO barns (
     farm_id, feed, has_auto_feeder
 )
 VALUES (
     $1, $2, $3
-);
+)
+RETURNING *;
+
+-- name: UpdateChickenRestingUntil :exec
+UPDATE chickens
+SET resting_until = $2
+WHERE id = $1;
 
 -- name: IncrementBarnFeed :exec
 UPDATE barns

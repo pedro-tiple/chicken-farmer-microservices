@@ -1,7 +1,7 @@
 package farm
 
 import (
-	"chicken-farmer/backend/farm/ctxFarm"
+	"chicken-farmer/backend/internal/farm/ctxFarm"
 	"context"
 	"errors"
 	"math/rand"
@@ -18,12 +18,15 @@ const (
 
 	FeedChickenCost = 1
 
+	MaxChickenRestingDays = 5
+
 	EggTypeNormal = iota
 	EggTypeGolden
 )
 
 var (
 	ErrChickenNotYours = errors.New("chicken doesn't belong to you")
+	ErrChickenResting  = errors.New("chicken is resting")
 	ErrInvalidEggType  = errors.New("invalid egg type")
 )
 
@@ -35,6 +38,8 @@ type IDatabase interface {
 
 	InsertChicken(ctx context.Context, chicken Chicken) (chickenID uuid.UUID, err error)
 	InsertBarn(ctx context.Context, barn Barn) (barnID uuid.UUID, err error)
+
+	UpdateChickenRestingUntil(ctx context.Context, chickenID uuid.UUID, day uint) error
 
 	IncrementBarnFeed(ctx context.Context, barnID uuid.UUID, amount uint) error
 	DecrementBarnFeed(ctx context.Context, barnID uuid.UUID, amount uint) error
@@ -76,7 +81,7 @@ func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
 	}
 
 	if farm.OwnerID != ctxData.FarmerID {
-		return GetFarmResult{}, errors.New("farm doesn't belong to farmer")
+		return GetFarmResult{}, errors.New("proto doesn't belong to farmer")
 	}
 
 	barns, err := c.database.GetBarnsOfFarm(ctx, farm.ID)
@@ -196,6 +201,10 @@ func (c *Controller) FeedChicken(ctx context.Context, chickenID uuid.UUID) error
 		return ErrChickenNotYours
 	}
 
+	if chicken.RestingUntil >= c.currentDay {
+		return ErrChickenResting
+	}
+
 	if err := c.database.DecrementBarnFeed(
 		ctx, chickenID, FeedChickenCost,
 	); err != nil {
@@ -214,19 +223,28 @@ func (c *Controller) FeedChicken(ctx context.Context, chickenID uuid.UUID) error
 		return err
 	}
 
-	// TODO set chicken resting
+	// Must rest at least one day, can rest up to 1 + MaxChickenRestingDays.
+	if err := c.database.UpdateChickenRestingUntil(
+		ctx, chickenID, c.currentDay+1+uint(rand.Intn(MaxChickenRestingDays)),
+	); err != nil {
+		return err
+	}
 
 	// TODO send egg event
 
 	return nil
 }
 
-func (c *Controller) FeedChickensOfBarn(ctx context.Context, barnID uuid.UUID) error {
+func (c *Controller) FeedChickensOfBarn(
+	ctx context.Context, barnID uuid.UUID,
+) error {
 	// TODO
 	return nil
 }
 
-func (c *Controller) SetDay(ctx context.Context, day uint) error {
+func (c *Controller) SetDay(
+	ctx context.Context, day uint,
+) error {
 	c.currentDay = day
 	return nil
 }

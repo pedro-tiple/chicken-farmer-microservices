@@ -1,8 +1,8 @@
 package main
 
 import (
-	"chicken-farmer/backend/farm"
-	internalDB "chicken-farmer/backend/internal/database"
+	"chicken-farmer/backend/internal/farm"
+	internalDB "chicken-farmer/backend/internal/pkg/database"
 	"context"
 	"errors"
 	"flag"
