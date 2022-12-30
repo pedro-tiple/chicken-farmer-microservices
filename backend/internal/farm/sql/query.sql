@@ -14,7 +14,7 @@ SELECT barns.id    as id,
     farms.owner_id as owner_id
 FROM barns
          INNER JOIN farms ON farm_id = farms.id
-WHERE barns.id = $1
+WHERE barns.farm_id = $1
 ORDER BY barns.created_at;
 
 -- name: GetChickensOfBarn :many

@@ -7,25 +7,25 @@
 package main
 
 import (
-	farm2 "chicken-farmer/backend/internal/farm"
+	"chicken-farmer/backend/internal/farm"
 	"database/sql"
-
 	"go.uber.org/zap"
+)
 
+import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-
 	_ "github.com/lib/pq"
 )
 
 // Injectors from wire.go:
 
-func initializeService(address string, logger *zap.SugaredLogger, dbConnection *sql.DB) (farm2.Service, error) {
-	sqlDatabase, err := farm2.ProvideSQLDatabase(dbConnection)
+func initializeService(address string, logger *zap.SugaredLogger, dbConnection *sql.DB) (farm.Service, error) {
+	sqlDatabase, err := farm.ProvideSQLDatabase(dbConnection)
 	if err != nil {
-		return farm2.Service{}, err
+		return farm.Service{}, err
 	}
-	farmerService := farm2.ProvideFarmerService()
-	controller := farm2.ProvideController(sqlDatabase, farmerService)
-	service := farm2.ProvideService(address, logger, controller)
+	farmerService := farm.ProvideFarmerService()
+	controller := farm.ProvideController(sqlDatabase, farmerService)
+	service := farm.ProvideService(address, logger, controller)
 	return service, nil
 }

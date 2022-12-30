@@ -35,7 +35,7 @@ SELECT barns.id    as id,
     farms.owner_id as owner_id
 FROM barns
          INNER JOIN farms ON farm_id = farms.id
-WHERE barns.id = $1
+WHERE barns.farm_id = $1
 ORDER BY barns.created_at
 `
 
@@ -47,8 +47,8 @@ type GetBarnsOfFarmRow struct {
 	OwnerID       uuid.UUID
 }
 
-func (q *Queries) GetBarnsOfFarm(ctx context.Context, id uuid.UUID) ([]GetBarnsOfFarmRow, error) {
-	rows, err := q.db.QueryContext(ctx, getBarnsOfFarm, id)
+func (q *Queries) GetBarnsOfFarm(ctx context.Context, farmID uuid.UUID) ([]GetBarnsOfFarmRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBarnsOfFarm, farmID)
 	if err != nil {
 		return nil, err
 	}

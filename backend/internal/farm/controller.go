@@ -4,6 +4,7 @@ import (
 	"chicken-farmer/backend/internal/farm/ctxFarm"
 	"context"
 	"errors"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -88,6 +89,7 @@ func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
 	if err != nil {
 		return GetFarmResult{}, err
 	}
+	fmt.Println(barns, farm.ID)
 
 	resultBarns := make([]getFarmResultBarn, len(barns))
 	g, errGrpCtx := errgroup.WithContext(ctx)

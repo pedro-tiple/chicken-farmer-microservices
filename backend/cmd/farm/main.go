@@ -62,9 +62,9 @@ func main() {
 		logger.Fatal(err.Error())
 	}
 
-	if err := m.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		logger.Fatal(err.Error())
-	}
+	//if err := m.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+	//	logger.Fatal(err.Error())
+	//}
 
 	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		logger.Fatal(err.Error())
