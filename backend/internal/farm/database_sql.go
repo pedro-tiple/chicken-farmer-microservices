@@ -27,7 +27,6 @@ func ProvideSQLDatabase(dbConnection *sql.DB) (*SQLDatabase, error) {
 func (d *SQLDatabase) GetFarm(
 	ctx context.Context, farmID uuid.UUID,
 ) (Farm, error) {
-	fmt.Println("uuid", farmID.String())
 	farm, err := d.database.GetFarm(ctx, farmID)
 	if err != nil {
 		return Farm{}, internalDB.NormalizeNotFound(err)
@@ -47,7 +46,6 @@ func (d *SQLDatabase) GetBarnsOfFarm(
 	if err != nil {
 		return nil, internalDB.NormalizeNotFound(err)
 	}
-	fmt.Println(barns, farmID)
 
 	result := make([]Barn, len(barns))
 	for i, barn := range barns {
@@ -111,7 +109,6 @@ func (d *SQLDatabase) GetChicken(
 func (d *SQLDatabase) InsertChicken(
 	ctx context.Context, chicken Chicken,
 ) (chickenID uuid.UUID, err error) {
-	fmt.Println(chicken.BarnID, chicken.OwnerID)
 	insertedChicken, err := d.database.InsertChicken(
 		ctx, farmSQL.InsertChickenParams{
 			DateOfBirth:    int64(chicken.DateOfBirth),
@@ -155,6 +152,7 @@ func (d *SQLDatabase) UpdateChickenRestingUntil(
 func (d *SQLDatabase) IncrementBarnFeed(
 	ctx context.Context, barnID uuid.UUID, amount uint,
 ) error {
+	fmt.Println("increment feed", barnID, amount)
 	return d.database.IncrementBarnFeed(ctx, farmSQL.IncrementBarnFeedParams{
 		ID:   barnID,
 		Feed: int64(amount),

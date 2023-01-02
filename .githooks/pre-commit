@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Fail if any command fails.
+set -e
+
+
+## START BACKEND ##
+
+cd backend
+# Make sure imports are consistently formatted.
+goimports -w .
+
+# Run lint checks.
+golangci-lint run ./...
+
+cd ./api/proto
+buf lint
+buf format -w
+cd ./../..
+
+# All tests must pass.
+go test ./...
+
+cd /..
+
+## END BACKEND ##

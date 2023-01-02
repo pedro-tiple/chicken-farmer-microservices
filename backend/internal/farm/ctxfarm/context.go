@@ -1,4 +1,4 @@
-package ctxFarm
+package ctxfarm
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 type ctxMarker struct{}
 
 var (
+	//nolint:gochecknoglobals
 	ctxMarkerKey          = &ctxMarker{}
 	ErrMissingFarmContext = errors.New("proto context data is missing")
 )

@@ -2,19 +2,24 @@ package main
 
 import (
 	"chicken-farmer/backend/internal/farm"
+	farmGrpc "chicken-farmer/backend/internal/farm/grpc"
 	internalDB "chicken-farmer/backend/internal/pkg/database"
 	"context"
 	"errors"
 	"flag"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"golang.org/x/exp/slog"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
@@ -85,6 +90,7 @@ func main() {
 	defer cancel()
 
 	go farmService.ListenForConnections(ctx, farm.Authenticate)
+	go runRESTServer(*grpcAddr, farmService)
 
 	// Wait for termination signal.
 	quit := make(chan os.Signal, 1)
@@ -93,4 +99,23 @@ func main() {
 
 	slog.Info("Shutting down server...")
 	farmService.GracefulStop()
+}
+
+func runRESTServer(grpcAddr string, service farm.Service) error {
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// Register gRPC server endpoint
+	// Note: Make sure the gRPC server is running properly and accessible
+	mux := runtime.NewServeMux()
+	if err := farmGrpc.RegisterFarmServiceHandlerFromEndpoint(
+		ctx, mux, grpcAddr, []grpc.DialOption{
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		},
+	); err != nil {
+		return err
+	}
+
+	return http.ListenAndServe(":8081", mux)
 }

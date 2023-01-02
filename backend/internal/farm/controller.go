@@ -1,10 +1,9 @@
 package farm
 
 import (
-	"chicken-farmer/backend/internal/farm/ctxFarm"
+	"chicken-farmer/backend/internal/farm/ctxfarm"
 	"context"
 	"errors"
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -71,7 +70,7 @@ func ProvideController(
 }
 
 func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
-	ctxData, err := ctxFarm.Extract(ctx)
+	ctxData, err := ctxfarm.Extract(ctx)
 	if err != nil {
 		return GetFarmResult{}, err
 	}
@@ -89,7 +88,6 @@ func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
 	if err != nil {
 		return GetFarmResult{}, err
 	}
-	fmt.Println(barns, farm.ID)
 
 	resultBarns := make([]getFarmResultBarn, len(barns))
 	g, errGrpCtx := errgroup.WithContext(ctx)
@@ -130,7 +128,7 @@ func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
 }
 
 func (c *Controller) BuyBarn(ctx context.Context) error {
-	ctxData, err := ctxFarm.Extract(ctx)
+	ctxData, err := ctxfarm.Extract(ctx)
 	if err != nil {
 		return err
 	}
@@ -189,7 +187,7 @@ func (c *Controller) BuyChicken(
 }
 
 func (c *Controller) FeedChicken(ctx context.Context, chickenID uuid.UUID) error {
-	ctxData, err := ctxFarm.Extract(ctx)
+	ctxData, err := ctxfarm.Extract(ctx)
 	if err != nil {
 		return err
 	}

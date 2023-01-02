@@ -1,0 +1,372 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "farm/v1/farm.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "FarmService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/farm": {
+      "get": {
+        "operationId": "FarmService_GetFarm",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetFarmResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "FarmService"
+        ]
+      }
+    },
+    "/v1/farm/barns/buy": {
+      "post": {
+        "operationId": "FarmService_BuyBarn",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BuyBarnResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1BuyBarnRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FarmService"
+        ]
+      }
+    },
+    "/v1/farm/barns/{barnId}/buy_feed": {
+      "post": {
+        "operationId": "FarmService_BuyFeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BuyFeedResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "barnId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "amount": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              "required": [
+                "amount"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "FarmService"
+        ]
+      }
+    },
+    "/v1/farm/chickens/buy": {
+      "post": {
+        "operationId": "FarmService_BuyChicken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BuyChickenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1BuyChickenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FarmService"
+        ]
+      }
+    },
+    "/v1/farm/chickens/feed-all": {
+      "post": {
+        "operationId": "FarmService_FeedChickensOfBarn",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1FeedChickensOfBarnResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1FeedChickensOfBarnRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FarmService"
+        ]
+      }
+    },
+    "/v1/farm/chickens/{chickenId}/feed": {
+      "post": {
+        "operationId": "FarmService_FeedChicken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1FeedChickenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chickenId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "tags": [
+          "FarmService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1Barn": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "feed": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "hasAutoFeeder": {
+          "type": "boolean"
+        },
+        "chickens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Chicken"
+          }
+        }
+      }
+    },
+    "v1BuyBarnRequest": {
+      "type": "object"
+    },
+    "v1BuyBarnResponse": {
+      "type": "object"
+    },
+    "v1BuyChickenRequest": {
+      "type": "object",
+      "properties": {
+        "barnId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "barnId"
+      ]
+    },
+    "v1BuyChickenResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1BuyFeedResponse": {
+      "type": "object"
+    },
+    "v1Chicken": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "dateOfBirth": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "restingUntil": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "normalEggsLaid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "goldEggsLaid": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "v1Farm": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "day": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "goldenEggs": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "barns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Barn"
+          }
+        }
+      }
+    },
+    "v1FeedChickenResponse": {
+      "type": "object"
+    },
+    "v1FeedChickensOfBarnRequest": {
+      "type": "object",
+      "properties": {
+        "barnId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "barnId"
+      ]
+    },
+    "v1FeedChickensOfBarnResponse": {
+      "type": "object"
+    },
+    "v1GetFarmResponse": {
+      "type": "object",
+      "properties": {
+        "farm": {
+          "$ref": "#/definitions/v1Farm"
+        }
+      }
+    }
+  }
+}
