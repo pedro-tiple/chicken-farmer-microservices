@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package chicken_farmer.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+// import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+option go_package = "internal/pkg/grpc";
+
+service FarmService {
+  rpc GetFarm(GetFarmRequest) returns (GetFarmResponse) {
+    option (google.api.http) = {
+      get: "/v1/farm",
+    };
+  }
+
+  rpc BuyBarn(BuyBarnRequest) returns (BuyBarnResponse) {
+    option (google.api.http) = {
+      post: "/v1/farm/barns/buy",
+      body: "*"
+    };
+  }
+
+  rpc BuyFeedBag(BuyFeedBagRequest) returns (BuyFeedBagResponse) {
+    option (google.api.http) = {
+      post: "/v1/farm/barns/{barn_id}/buy-feed-bag",
+      body: "*"
+    };
+  }
+
+  rpc BuyChicken(BuyChickenRequest) returns (BuyChickenResponse) {
+    option (google.api.http) = {
+      post: "/v1/farm/chickens/buy",
+      body: "*"
+    };
+  }
+
+  rpc FeedChicken(FeedChickenRequest) returns (FeedChickenResponse) {
+    option (google.api.http) = {
+      post: "/v1/farm/chickens/{chicken_id}/feed",
+      body: "*"
+    };
+  }
+
+  rpc FeedChickensOfBarn(FeedChickensOfBarnRequest) returns (FeedChickensOfBarnResponse) {}
+
+}
+
+message Farm {
+  string name = 1;
+  uint32 day = 2;
+  uint32 golden_eggs = 3;
+  repeated Barn barns = 4;
+}
+
+message Barn {
+  string id = 1;
+  uint32 feed = 2;
+  bool has_auto_feeder = 3;
+  repeated Chicken chickens = 4;
+}
+
+message Chicken {
+  string id = 1;
+  uint32 date_of_birth = 2;
+  uint32 resting_until = 5;
+  uint32 normal_eggs_laid = 3;
+  uint32 gold_eggs_laid = 4;
+}
+
+message GetFarmRequest {}
+message GetFarmResponse {
+  Farm farm = 1;
+}
+
+message BuyBarnRequest {}
+message BuyBarnResponse {}
+
+message BuyFeedBagRequest {
+  string barn_id = 1 [(google.api.field_behavior) = REQUIRED];
+  uint32 amount = 2 [(google.api.field_behavior) = REQUIRED];
+}
+message BuyFeedBagResponse {}
+
+message BuyChickenRequest {
+  string barn_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message BuyChickenResponse {
+  string id = 1;
+}
+
+message FeedChickenRequest {
+  string chicken_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message FeedChickenResponse {}
+
+message FeedChickensOfBarnRequest {
+  string barn_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message FeedChickensOfBarnResponse {}

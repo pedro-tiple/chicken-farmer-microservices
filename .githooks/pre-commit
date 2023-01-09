@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO move this to github actions
+
 # Fail if any command fails.
 set -e
 

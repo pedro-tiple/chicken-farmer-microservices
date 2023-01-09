@@ -1,9 +1,11 @@
-# Chicken Farmer - Micro-services
+# Chicken Farmer - Micro-services - WIP
 Portfolio project to demonstrate knowledge in a variety of modern technologies.
 
 AKA: the over-engineered one
 
-## How to run it:
+Note: Ongoing WIP, making changes as new things to try out come up.
+
+## How to run it (outdated):
 Dependencies: Kubernetes (kubectl), Minikube, Docker
 
 minikube start
