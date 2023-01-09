@@ -5,6 +5,7 @@ import (
 	"chicken-farmer/backend/internal/pkg"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	grpcAuth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -15,14 +16,15 @@ import (
 )
 
 type IController interface {
-	GetFarm(ctx context.Context) (GetFarmResult, error)
+	NewFarm(ctx context.Context, farmerID uuid.UUID, name string) (farmID uuid.UUID, err error)
+	GetFarm(ctx context.Context, farmerID, farmID uuid.UUID) (GetFarmResult, error)
 
-	BuyBarn(ctx context.Context) error
-	BuyFeedBag(ctx context.Context, barnID uuid.UUID, amount uint) error
-	BuyChicken(ctx context.Context, barnID uuid.UUID) error
+	BuyBarn(ctx context.Context, farmerID, farmID uuid.UUID) error
+	BuyFeedBags(ctx context.Context, farmerID, barnID uuid.UUID, amount uint) error
+	BuyChicken(ctx context.Context, farmerID, barnID uuid.UUID) error
 
-	FeedChicken(ctx context.Context, chickenID uuid.UUID) error
-	FeedChickensOfBarn(ctx context.Context, barnID uuid.UUID) error
+	FeedChicken(ctx context.Context, farmerID, chickenID uuid.UUID) error
+	FeedChickensOfBarn(ctx context.Context, farmerID, barnID uuid.UUID) error
 
 	SetDay(ctx context.Context, day uint) error
 }
@@ -89,10 +91,31 @@ func (s *Service) GracefulStop() {
 	s.logger.Info("Stopped")
 }
 
+func (s *Service) NewFarm(
+	ctx context.Context, request *internalGrpc.NewFarmRequest,
+) (*internalGrpc.NewFarmResponse, error) {
+	farmID, err := s.controller.NewFarm(
+		ctx, pkg.UUIDFromString(request.GetOwnerId()), request.GetName(),
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &internalGrpc.NewFarmResponse{
+		FarmId: farmID.String(),
+	}, nil
+}
+
 func (s *Service) GetFarm(
 	ctx context.Context, _ *internalGrpc.GetFarmRequest,
 ) (*internalGrpc.GetFarmResponse, error) {
-	farm, err := s.controller.GetFarm(ctx)
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	fmt.Println(ctxData.FarmerID, ctxData.FarmID)
+	farm, err := s.controller.GetFarm(ctx, ctxData.FarmerID, ctxData.FarmID)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -131,7 +154,12 @@ func (s *Service) GetFarm(
 func (s *Service) BuyBarn(
 	ctx context.Context, _ *internalGrpc.BuyBarnRequest,
 ) (*internalGrpc.BuyBarnResponse, error) {
-	if err := s.controller.BuyBarn(ctx); err != nil {
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if err := s.controller.BuyBarn(ctx, ctxData.FarmerID, ctxData.FarmID); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -141,7 +169,14 @@ func (s *Service) BuyBarn(
 func (s *Service) BuyFeedBag(
 	ctx context.Context, request *internalGrpc.BuyFeedBagRequest,
 ) (*internalGrpc.BuyFeedBagResponse, error) {
-	if err := s.controller.BuyFeedBag(ctx,
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if err := s.controller.BuyFeedBags(
+		ctx,
+		ctxData.FarmerID,
 		pkg.UUIDFromString(request.GetBarnId()),
 		uint(request.GetAmount()),
 	); err != nil {
@@ -154,8 +189,13 @@ func (s *Service) BuyFeedBag(
 func (s *Service) BuyChicken(
 	ctx context.Context, request *internalGrpc.BuyChickenRequest,
 ) (*internalGrpc.BuyChickenResponse, error) {
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
 	if err := s.controller.BuyChicken(
-		ctx, pkg.UUIDFromString(request.GetBarnId()),
+		ctx, ctxData.FarmerID, pkg.UUIDFromString(request.GetBarnId()),
 	); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -166,8 +206,13 @@ func (s *Service) BuyChicken(
 func (s *Service) FeedChicken(
 	ctx context.Context, request *internalGrpc.FeedChickenRequest,
 ) (*internalGrpc.FeedChickenResponse, error) {
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
 	if err := s.controller.FeedChicken(
-		ctx, pkg.UUIDFromString(request.GetChickenId()),
+		ctx, ctxData.FarmerID, pkg.UUIDFromString(request.GetChickenId()),
 	); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -178,8 +223,13 @@ func (s *Service) FeedChicken(
 func (s *Service) FeedChickensOfBarn(
 	ctx context.Context, request *internalGrpc.FeedChickensOfBarnRequest,
 ) (*internalGrpc.FeedChickensOfBarnResponse, error) {
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
 	if err := s.controller.FeedChickensOfBarn(
-		ctx, pkg.UUIDFromString(request.GetBarnId()),
+		ctx, ctxData.FarmerID, pkg.UUIDFromString(request.GetBarnId()),
 	); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
@@ -30,10 +31,20 @@ func main() {
 		logger.Fatal(err.Error())
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	farmerService, err := initializeService(ctx, *grpcAddr, logger.Sugar())
+	farmGRPCConn, err := internalGrpc.CreateClientConnection(
+		ctx, os.Getenv("FARM_SERVICE_ADDRESS"),
+	)
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+	defer farmGRPCConn.Close()
+
+	farmerService, err := initializeService(
+		ctx, *grpcAddr, logger.Sugar(), farmGRPCConn,
+	)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}

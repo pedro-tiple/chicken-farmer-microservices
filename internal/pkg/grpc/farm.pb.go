@@ -7,12 +7,11 @@
 package grpc
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -243,6 +242,108 @@ func (x *Chicken) GetGoldEggsLaid() uint32 {
 	return 0
 }
 
+type NewFarmRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	OwnerId string `protobuf:"bytes,1,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *NewFarmRequest) Reset() {
+	*x = NewFarmRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NewFarmRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NewFarmRequest) ProtoMessage() {}
+
+func (x *NewFarmRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NewFarmRequest.ProtoReflect.Descriptor instead.
+func (*NewFarmRequest) Descriptor() ([]byte, []int) {
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *NewFarmRequest) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
+func (x *NewFarmRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type NewFarmResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	FarmId string `protobuf:"bytes,1,opt,name=farm_id,json=farmId,proto3" json:"farm_id,omitempty"`
+}
+
+func (x *NewFarmResponse) Reset() {
+	*x = NewFarmResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NewFarmResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NewFarmResponse) ProtoMessage() {}
+
+func (x *NewFarmResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NewFarmResponse.ProtoReflect.Descriptor instead.
+func (*NewFarmResponse) Descriptor() ([]byte, []int) {
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *NewFarmResponse) GetFarmId() string {
+	if x != nil {
+		return x.FarmId
+	}
+	return ""
+}
+
 type GetFarmRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -252,7 +353,7 @@ type GetFarmRequest struct {
 func (x *GetFarmRequest) Reset() {
 	*x = GetFarmRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[3]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -265,7 +366,7 @@ func (x *GetFarmRequest) String() string {
 func (*GetFarmRequest) ProtoMessage() {}
 
 func (x *GetFarmRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[3]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -278,7 +379,7 @@ func (x *GetFarmRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFarmRequest.ProtoReflect.Descriptor instead.
 func (*GetFarmRequest) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{3}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{5}
 }
 
 type GetFarmResponse struct {
@@ -292,7 +393,7 @@ type GetFarmResponse struct {
 func (x *GetFarmResponse) Reset() {
 	*x = GetFarmResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[4]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -305,7 +406,7 @@ func (x *GetFarmResponse) String() string {
 func (*GetFarmResponse) ProtoMessage() {}
 
 func (x *GetFarmResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[4]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -318,7 +419,7 @@ func (x *GetFarmResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFarmResponse.ProtoReflect.Descriptor instead.
 func (*GetFarmResponse) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{4}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetFarmResponse) GetFarm() *Farm {
@@ -337,7 +438,7 @@ type BuyBarnRequest struct {
 func (x *BuyBarnRequest) Reset() {
 	*x = BuyBarnRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[5]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -350,7 +451,7 @@ func (x *BuyBarnRequest) String() string {
 func (*BuyBarnRequest) ProtoMessage() {}
 
 func (x *BuyBarnRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[5]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -363,7 +464,7 @@ func (x *BuyBarnRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyBarnRequest.ProtoReflect.Descriptor instead.
 func (*BuyBarnRequest) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{5}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{7}
 }
 
 type BuyBarnResponse struct {
@@ -375,7 +476,7 @@ type BuyBarnResponse struct {
 func (x *BuyBarnResponse) Reset() {
 	*x = BuyBarnResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[6]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -388,7 +489,7 @@ func (x *BuyBarnResponse) String() string {
 func (*BuyBarnResponse) ProtoMessage() {}
 
 func (x *BuyBarnResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[6]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -401,7 +502,7 @@ func (x *BuyBarnResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyBarnResponse.ProtoReflect.Descriptor instead.
 func (*BuyBarnResponse) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{6}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{8}
 }
 
 type BuyFeedBagRequest struct {
@@ -416,7 +517,7 @@ type BuyFeedBagRequest struct {
 func (x *BuyFeedBagRequest) Reset() {
 	*x = BuyFeedBagRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[7]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -429,7 +530,7 @@ func (x *BuyFeedBagRequest) String() string {
 func (*BuyFeedBagRequest) ProtoMessage() {}
 
 func (x *BuyFeedBagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[7]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -442,7 +543,7 @@ func (x *BuyFeedBagRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyFeedBagRequest.ProtoReflect.Descriptor instead.
 func (*BuyFeedBagRequest) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{7}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *BuyFeedBagRequest) GetBarnId() string {
@@ -468,7 +569,7 @@ type BuyFeedBagResponse struct {
 func (x *BuyFeedBagResponse) Reset() {
 	*x = BuyFeedBagResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[8]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -481,7 +582,7 @@ func (x *BuyFeedBagResponse) String() string {
 func (*BuyFeedBagResponse) ProtoMessage() {}
 
 func (x *BuyFeedBagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[8]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -494,7 +595,7 @@ func (x *BuyFeedBagResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyFeedBagResponse.ProtoReflect.Descriptor instead.
 func (*BuyFeedBagResponse) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{8}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{10}
 }
 
 type BuyChickenRequest struct {
@@ -508,7 +609,7 @@ type BuyChickenRequest struct {
 func (x *BuyChickenRequest) Reset() {
 	*x = BuyChickenRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[9]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -521,7 +622,7 @@ func (x *BuyChickenRequest) String() string {
 func (*BuyChickenRequest) ProtoMessage() {}
 
 func (x *BuyChickenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[9]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -534,7 +635,7 @@ func (x *BuyChickenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyChickenRequest.ProtoReflect.Descriptor instead.
 func (*BuyChickenRequest) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{9}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *BuyChickenRequest) GetBarnId() string {
@@ -555,7 +656,7 @@ type BuyChickenResponse struct {
 func (x *BuyChickenResponse) Reset() {
 	*x = BuyChickenResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[10]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -568,7 +669,7 @@ func (x *BuyChickenResponse) String() string {
 func (*BuyChickenResponse) ProtoMessage() {}
 
 func (x *BuyChickenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[10]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -581,7 +682,7 @@ func (x *BuyChickenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyChickenResponse.ProtoReflect.Descriptor instead.
 func (*BuyChickenResponse) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{10}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *BuyChickenResponse) GetId() string {
@@ -602,7 +703,7 @@ type FeedChickenRequest struct {
 func (x *FeedChickenRequest) Reset() {
 	*x = FeedChickenRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[11]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -615,7 +716,7 @@ func (x *FeedChickenRequest) String() string {
 func (*FeedChickenRequest) ProtoMessage() {}
 
 func (x *FeedChickenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[11]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -628,7 +729,7 @@ func (x *FeedChickenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedChickenRequest.ProtoReflect.Descriptor instead.
 func (*FeedChickenRequest) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{11}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *FeedChickenRequest) GetChickenId() string {
@@ -647,7 +748,7 @@ type FeedChickenResponse struct {
 func (x *FeedChickenResponse) Reset() {
 	*x = FeedChickenResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[12]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -660,7 +761,7 @@ func (x *FeedChickenResponse) String() string {
 func (*FeedChickenResponse) ProtoMessage() {}
 
 func (x *FeedChickenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[12]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -673,7 +774,7 @@ func (x *FeedChickenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedChickenResponse.ProtoReflect.Descriptor instead.
 func (*FeedChickenResponse) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{12}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{14}
 }
 
 type FeedChickensOfBarnRequest struct {
@@ -687,7 +788,7 @@ type FeedChickensOfBarnRequest struct {
 func (x *FeedChickensOfBarnRequest) Reset() {
 	*x = FeedChickensOfBarnRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[13]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -700,7 +801,7 @@ func (x *FeedChickensOfBarnRequest) String() string {
 func (*FeedChickensOfBarnRequest) ProtoMessage() {}
 
 func (x *FeedChickensOfBarnRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[13]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -713,7 +814,7 @@ func (x *FeedChickensOfBarnRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedChickensOfBarnRequest.ProtoReflect.Descriptor instead.
 func (*FeedChickensOfBarnRequest) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{13}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *FeedChickensOfBarnRequest) GetBarnId() string {
@@ -732,7 +833,7 @@ type FeedChickensOfBarnResponse struct {
 func (x *FeedChickensOfBarnResponse) Reset() {
 	*x = FeedChickensOfBarnResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[14]
+		mi := &file_chicken_farmer_v1_farm_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -745,7 +846,7 @@ func (x *FeedChickensOfBarnResponse) String() string {
 func (*FeedChickensOfBarnResponse) ProtoMessage() {}
 
 func (x *FeedChickensOfBarnResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[14]
+	mi := &file_chicken_farmer_v1_farm_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -758,7 +859,7 @@ func (x *FeedChickensOfBarnResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedChickensOfBarnResponse.ProtoReflect.Descriptor instead.
 func (*FeedChickensOfBarnResponse) Descriptor() ([]byte, []int) {
-	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{14}
+	return file_chicken_farmer_v1_farm_proto_rawDescGZIP(), []int{16}
 }
 
 var File_chicken_farmer_v1_farm_proto protoreflect.FileDescriptor
@@ -799,37 +900,57 @@ var file_chicken_farmer_v1_farm_proto_rawDesc = []byte{
 	0x61, 0x6c, 0x45, 0x67, 0x67, 0x73, 0x4c, 0x61, 0x69, 0x64, 0x12, 0x24, 0x0a, 0x0e, 0x67, 0x6f,
 	0x6c, 0x64, 0x5f, 0x65, 0x67, 0x67, 0x73, 0x5f, 0x6c, 0x61, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01,
 	0x28, 0x0d, 0x52, 0x0c, 0x67, 0x6f, 0x6c, 0x64, 0x45, 0x67, 0x67, 0x73, 0x4c, 0x61, 0x69, 0x64,
-	0x22, 0x10, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x46, 0x61, 0x72, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x22, 0x3e, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x46, 0x61, 0x72, 0x6d, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2b, 0x0a, 0x04, 0x66, 0x61, 0x72, 0x6d, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x66, 0x61,
-	0x72, 0x6d, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x61, 0x72, 0x6d, 0x52, 0x04, 0x66, 0x61,
-	0x72, 0x6d, 0x22, 0x10, 0x0a, 0x0e, 0x42, 0x75, 0x79, 0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x22, 0x11, 0x0a, 0x0f, 0x42, 0x75, 0x79, 0x42, 0x61, 0x72, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x4e, 0x0a, 0x11, 0x42, 0x75, 0x79, 0x46, 0x65,
-	0x65, 0x64, 0x42, 0x61, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x07,
-	0x62, 0x61, 0x72, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0,
-	0x41, 0x02, 0x52, 0x06, 0x62, 0x61, 0x72, 0x6e, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x06, 0x61, 0x6d,
-	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52,
-	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x14, 0x0a, 0x12, 0x42, 0x75, 0x79, 0x46, 0x65,
-	0x65, 0x64, 0x42, 0x61, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x31, 0x0a,
-	0x11, 0x42, 0x75, 0x79, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x1c, 0x0a, 0x07, 0x62, 0x61, 0x72, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x06, 0x62, 0x61, 0x72, 0x6e, 0x49, 0x64,
-	0x22, 0x24, 0x0a, 0x12, 0x42, 0x75, 0x79, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x38, 0x0a, 0x12, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68,
-	0x69, 0x63, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x22, 0x0a, 0x0a,
-	0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x09, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x49, 0x64,
-	0x22, 0x15, 0x0a, 0x13, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x39, 0x0a, 0x19, 0x46, 0x65, 0x65, 0x64, 0x43,
-	0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x73, 0x4f, 0x66, 0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x07, 0x62, 0x61, 0x72, 0x6e, 0x5f, 0x69, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x06, 0x62, 0x61, 0x72, 0x6e,
-	0x49, 0x64, 0x22, 0x1c, 0x0a, 0x1a, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65,
-	0x6e, 0x73, 0x4f, 0x66, 0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x32, 0xf1, 0x05, 0x0a, 0x0b, 0x46, 0x61, 0x72, 0x6d, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x22, 0x49, 0x0a, 0x0e, 0x4e, 0x65, 0x77, 0x46, 0x61, 0x72, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x1e, 0x0a, 0x08, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x07, 0x6f, 0x77, 0x6e, 0x65, 0x72,
+	0x49, 0x64, 0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x2a, 0x0a, 0x0f, 0x4e,
+	0x65, 0x77, 0x46, 0x61, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x17,
+	0x0a, 0x07, 0x66, 0x61, 0x72, 0x6d, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x06, 0x66, 0x61, 0x72, 0x6d, 0x49, 0x64, 0x22, 0x10, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x46, 0x61,
+	0x72, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x3e, 0x0a, 0x0f, 0x47, 0x65, 0x74,
+	0x46, 0x61, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2b, 0x0a, 0x04,
+	0x66, 0x61, 0x72, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x68, 0x69,
+	0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x66, 0x61, 0x72, 0x6d, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x46,
+	0x61, 0x72, 0x6d, 0x52, 0x04, 0x66, 0x61, 0x72, 0x6d, 0x22, 0x10, 0x0a, 0x0e, 0x42, 0x75, 0x79,
+	0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x11, 0x0a, 0x0f, 0x42,
+	0x75, 0x79, 0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x4e,
+	0x0a, 0x11, 0x42, 0x75, 0x79, 0x46, 0x65, 0x65, 0x64, 0x42, 0x61, 0x67, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x07, 0x62, 0x61, 0x72, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x06, 0x62, 0x61, 0x72, 0x6e, 0x49,
+	0x64, 0x12, 0x1b, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0d, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x14,
+	0x0a, 0x12, 0x42, 0x75, 0x79, 0x46, 0x65, 0x65, 0x64, 0x42, 0x61, 0x67, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x31, 0x0a, 0x11, 0x42, 0x75, 0x79, 0x43, 0x68, 0x69, 0x63, 0x6b,
+	0x65, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x07, 0x62, 0x61, 0x72,
+	0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52,
+	0x06, 0x62, 0x61, 0x72, 0x6e, 0x49, 0x64, 0x22, 0x24, 0x0a, 0x12, 0x42, 0x75, 0x79, 0x43, 0x68,
+	0x69, 0x63, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a,
+	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x38, 0x0a,
+	0x12, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x22, 0x0a, 0x0a, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x09, 0x63, 0x68,
+	0x69, 0x63, 0x6b, 0x65, 0x6e, 0x49, 0x64, 0x22, 0x15, 0x0a, 0x13, 0x46, 0x65, 0x65, 0x64, 0x43,
+	0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x39,
+	0x0a, 0x19, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x73, 0x4f, 0x66,
+	0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x07, 0x62,
+	0x61, 0x72, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
+	0x02, 0x52, 0x06, 0x62, 0x61, 0x72, 0x6e, 0x49, 0x64, 0x22, 0x1c, 0x0a, 0x1a, 0x46, 0x65, 0x65,
+	0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x73, 0x4f, 0x66, 0x42, 0x61, 0x72, 0x6e, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xc5, 0x06, 0x0a, 0x0b, 0x46, 0x61, 0x72, 0x6d,
+	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x52, 0x0a, 0x07, 0x4e, 0x65, 0x77, 0x46, 0x61,
+	0x72, 0x6d, 0x12, 0x21, 0x2e, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x66, 0x61, 0x72,
+	0x6d, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x4e, 0x65, 0x77, 0x46, 0x61, 0x72, 0x6d, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f,
+	0x66, 0x61, 0x72, 0x6d, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x4e, 0x65, 0x77, 0x46, 0x61, 0x72,
+	0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x73, 0x0a, 0x12, 0x46,
+	0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x73, 0x4f, 0x66, 0x42, 0x61, 0x72,
+	0x6e, 0x12, 0x2c, 0x2e, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x66, 0x61, 0x72, 0x6d,
+	0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65,
+	0x6e, 0x73, 0x4f, 0x66, 0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x2d, 0x2e, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x66, 0x61, 0x72, 0x6d, 0x65, 0x72,
+	0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x73,
+	0x4f, 0x66, 0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
 	0x12, 0x62, 0x0a, 0x07, 0x47, 0x65, 0x74, 0x46, 0x61, 0x72, 0x6d, 0x12, 0x21, 0x2e, 0x63, 0x68,
 	0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x66, 0x61, 0x72, 0x6d, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e,
 	0x47, 0x65, 0x74, 0x46, 0x61, 0x72, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22,
@@ -868,17 +989,9 @@ var file_chicken_farmer_v1_farm_proto_rawDesc = []byte{
 	0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
 	0x2e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x28, 0x3a, 0x01, 0x2a, 0x22, 0x23, 0x2f, 0x76, 0x31, 0x2f,
 	0x66, 0x61, 0x72, 0x6d, 0x2f, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x73, 0x2f, 0x7b, 0x63,
-	0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x64, 0x7d, 0x2f, 0x66, 0x65, 0x65, 0x64, 0x12,
-	0x73, 0x0a, 0x12, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x73, 0x4f,
-	0x66, 0x42, 0x61, 0x72, 0x6e, 0x12, 0x2c, 0x2e, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f,
-	0x66, 0x61, 0x72, 0x6d, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68,
-	0x69, 0x63, 0x6b, 0x65, 0x6e, 0x73, 0x4f, 0x66, 0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x63, 0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x66, 0x61,
-	0x72, 0x6d, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x43, 0x68, 0x69, 0x63,
-	0x6b, 0x65, 0x6e, 0x73, 0x4f, 0x66, 0x42, 0x61, 0x72, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x00, 0x42, 0x13, 0x5a, 0x11, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c,
-	0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x68, 0x69, 0x63, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x64, 0x7d, 0x2f, 0x66, 0x65, 0x65, 0x64, 0x42,
+	0x13, 0x5a, 0x11, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x70, 0x6b, 0x67, 0x2f,
+	0x67, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -893,42 +1006,46 @@ func file_chicken_farmer_v1_farm_proto_rawDescGZIP() []byte {
 	return file_chicken_farmer_v1_farm_proto_rawDescData
 }
 
-var file_chicken_farmer_v1_farm_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_chicken_farmer_v1_farm_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_chicken_farmer_v1_farm_proto_goTypes = []interface{}{
 	(*Farm)(nil),                       // 0: chicken_farmer.v1.Farm
 	(*Barn)(nil),                       // 1: chicken_farmer.v1.Barn
 	(*Chicken)(nil),                    // 2: chicken_farmer.v1.Chicken
-	(*GetFarmRequest)(nil),             // 3: chicken_farmer.v1.GetFarmRequest
-	(*GetFarmResponse)(nil),            // 4: chicken_farmer.v1.GetFarmResponse
-	(*BuyBarnRequest)(nil),             // 5: chicken_farmer.v1.BuyBarnRequest
-	(*BuyBarnResponse)(nil),            // 6: chicken_farmer.v1.BuyBarnResponse
-	(*BuyFeedBagRequest)(nil),          // 7: chicken_farmer.v1.BuyFeedBagRequest
-	(*BuyFeedBagResponse)(nil),         // 8: chicken_farmer.v1.BuyFeedBagResponse
-	(*BuyChickenRequest)(nil),          // 9: chicken_farmer.v1.BuyChickenRequest
-	(*BuyChickenResponse)(nil),         // 10: chicken_farmer.v1.BuyChickenResponse
-	(*FeedChickenRequest)(nil),         // 11: chicken_farmer.v1.FeedChickenRequest
-	(*FeedChickenResponse)(nil),        // 12: chicken_farmer.v1.FeedChickenResponse
-	(*FeedChickensOfBarnRequest)(nil),  // 13: chicken_farmer.v1.FeedChickensOfBarnRequest
-	(*FeedChickensOfBarnResponse)(nil), // 14: chicken_farmer.v1.FeedChickensOfBarnResponse
+	(*NewFarmRequest)(nil),             // 3: chicken_farmer.v1.NewFarmRequest
+	(*NewFarmResponse)(nil),            // 4: chicken_farmer.v1.NewFarmResponse
+	(*GetFarmRequest)(nil),             // 5: chicken_farmer.v1.GetFarmRequest
+	(*GetFarmResponse)(nil),            // 6: chicken_farmer.v1.GetFarmResponse
+	(*BuyBarnRequest)(nil),             // 7: chicken_farmer.v1.BuyBarnRequest
+	(*BuyBarnResponse)(nil),            // 8: chicken_farmer.v1.BuyBarnResponse
+	(*BuyFeedBagRequest)(nil),          // 9: chicken_farmer.v1.BuyFeedBagRequest
+	(*BuyFeedBagResponse)(nil),         // 10: chicken_farmer.v1.BuyFeedBagResponse
+	(*BuyChickenRequest)(nil),          // 11: chicken_farmer.v1.BuyChickenRequest
+	(*BuyChickenResponse)(nil),         // 12: chicken_farmer.v1.BuyChickenResponse
+	(*FeedChickenRequest)(nil),         // 13: chicken_farmer.v1.FeedChickenRequest
+	(*FeedChickenResponse)(nil),        // 14: chicken_farmer.v1.FeedChickenResponse
+	(*FeedChickensOfBarnRequest)(nil),  // 15: chicken_farmer.v1.FeedChickensOfBarnRequest
+	(*FeedChickensOfBarnResponse)(nil), // 16: chicken_farmer.v1.FeedChickensOfBarnResponse
 }
 var file_chicken_farmer_v1_farm_proto_depIdxs = []int32{
 	1,  // 0: chicken_farmer.v1.Farm.barns:type_name -> chicken_farmer.v1.Barn
 	2,  // 1: chicken_farmer.v1.Barn.chickens:type_name -> chicken_farmer.v1.Chicken
 	0,  // 2: chicken_farmer.v1.GetFarmResponse.farm:type_name -> chicken_farmer.v1.Farm
-	3,  // 3: chicken_farmer.v1.FarmService.GetFarm:input_type -> chicken_farmer.v1.GetFarmRequest
-	5,  // 4: chicken_farmer.v1.FarmService.BuyBarn:input_type -> chicken_farmer.v1.BuyBarnRequest
-	7,  // 5: chicken_farmer.v1.FarmService.BuyFeedBag:input_type -> chicken_farmer.v1.BuyFeedBagRequest
-	9,  // 6: chicken_farmer.v1.FarmService.BuyChicken:input_type -> chicken_farmer.v1.BuyChickenRequest
-	11, // 7: chicken_farmer.v1.FarmService.FeedChicken:input_type -> chicken_farmer.v1.FeedChickenRequest
-	13, // 8: chicken_farmer.v1.FarmService.FeedChickensOfBarn:input_type -> chicken_farmer.v1.FeedChickensOfBarnRequest
-	4,  // 9: chicken_farmer.v1.FarmService.GetFarm:output_type -> chicken_farmer.v1.GetFarmResponse
-	6,  // 10: chicken_farmer.v1.FarmService.BuyBarn:output_type -> chicken_farmer.v1.BuyBarnResponse
-	8,  // 11: chicken_farmer.v1.FarmService.BuyFeedBag:output_type -> chicken_farmer.v1.BuyFeedBagResponse
-	10, // 12: chicken_farmer.v1.FarmService.BuyChicken:output_type -> chicken_farmer.v1.BuyChickenResponse
-	12, // 13: chicken_farmer.v1.FarmService.FeedChicken:output_type -> chicken_farmer.v1.FeedChickenResponse
-	14, // 14: chicken_farmer.v1.FarmService.FeedChickensOfBarn:output_type -> chicken_farmer.v1.FeedChickensOfBarnResponse
-	9,  // [9:15] is the sub-list for method output_type
-	3,  // [3:9] is the sub-list for method input_type
+	3,  // 3: chicken_farmer.v1.FarmService.NewFarm:input_type -> chicken_farmer.v1.NewFarmRequest
+	15, // 4: chicken_farmer.v1.FarmService.FeedChickensOfBarn:input_type -> chicken_farmer.v1.FeedChickensOfBarnRequest
+	5,  // 5: chicken_farmer.v1.FarmService.GetFarm:input_type -> chicken_farmer.v1.GetFarmRequest
+	7,  // 6: chicken_farmer.v1.FarmService.BuyBarn:input_type -> chicken_farmer.v1.BuyBarnRequest
+	9,  // 7: chicken_farmer.v1.FarmService.BuyFeedBag:input_type -> chicken_farmer.v1.BuyFeedBagRequest
+	11, // 8: chicken_farmer.v1.FarmService.BuyChicken:input_type -> chicken_farmer.v1.BuyChickenRequest
+	13, // 9: chicken_farmer.v1.FarmService.FeedChicken:input_type -> chicken_farmer.v1.FeedChickenRequest
+	4,  // 10: chicken_farmer.v1.FarmService.NewFarm:output_type -> chicken_farmer.v1.NewFarmResponse
+	16, // 11: chicken_farmer.v1.FarmService.FeedChickensOfBarn:output_type -> chicken_farmer.v1.FeedChickensOfBarnResponse
+	6,  // 12: chicken_farmer.v1.FarmService.GetFarm:output_type -> chicken_farmer.v1.GetFarmResponse
+	8,  // 13: chicken_farmer.v1.FarmService.BuyBarn:output_type -> chicken_farmer.v1.BuyBarnResponse
+	10, // 14: chicken_farmer.v1.FarmService.BuyFeedBag:output_type -> chicken_farmer.v1.BuyFeedBagResponse
+	12, // 15: chicken_farmer.v1.FarmService.BuyChicken:output_type -> chicken_farmer.v1.BuyChickenResponse
+	14, // 16: chicken_farmer.v1.FarmService.FeedChicken:output_type -> chicken_farmer.v1.FeedChickenResponse
+	10, // [10:17] is the sub-list for method output_type
+	3,  // [3:10] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
@@ -977,7 +1094,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetFarmRequest); i {
+			switch v := v.(*NewFarmRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -989,7 +1106,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetFarmResponse); i {
+			switch v := v.(*NewFarmResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1001,7 +1118,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BuyBarnRequest); i {
+			switch v := v.(*GetFarmRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1013,7 +1130,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BuyBarnResponse); i {
+			switch v := v.(*GetFarmResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1025,7 +1142,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BuyFeedBagRequest); i {
+			switch v := v.(*BuyBarnRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1037,7 +1154,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BuyFeedBagResponse); i {
+			switch v := v.(*BuyBarnResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1049,7 +1166,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BuyChickenRequest); i {
+			switch v := v.(*BuyFeedBagRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1061,7 +1178,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BuyChickenResponse); i {
+			switch v := v.(*BuyFeedBagResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1073,7 +1190,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FeedChickenRequest); i {
+			switch v := v.(*BuyChickenRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1085,7 +1202,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FeedChickenResponse); i {
+			switch v := v.(*BuyChickenResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1097,7 +1214,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FeedChickensOfBarnRequest); i {
+			switch v := v.(*FeedChickenRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1109,6 +1226,30 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			}
 		}
 		file_chicken_farmer_v1_farm_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FeedChickenResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_chicken_farmer_v1_farm_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FeedChickensOfBarnRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_chicken_farmer_v1_farm_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*FeedChickensOfBarnResponse); i {
 			case 0:
 				return &v.state
@@ -1127,7 +1268,7 @@ func file_chicken_farmer_v1_farm_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_chicken_farmer_v1_farm_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

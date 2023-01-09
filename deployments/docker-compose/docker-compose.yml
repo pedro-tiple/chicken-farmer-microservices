@@ -69,6 +69,8 @@ services:
     image: postgres
     container_name: cfm_postgres
     restart: always
+    volumes:
+      - ./.data/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -83,6 +85,8 @@ services:
     image: adminer
     container_name: cfm_adminer
     restart: always
+    volumes:
+      - ./adminer/adminer.css:/var/www/html/adminer.css
     ports:
       - "5433:8080"
     networks:

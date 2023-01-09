@@ -76,7 +76,7 @@ func CreateClientConnection(
 ) (*grpc.ClientConn, error) {
 	// TODO set secure credentials
 	return grpc.DialContext(ctx, address, []grpc.DialOption{
-		grpc.WithReturnConnectionError(),
+		//grpc.WithReturnConnectionError(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}...)
 }

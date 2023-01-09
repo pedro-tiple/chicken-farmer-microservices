@@ -6,6 +6,7 @@ import (
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
 
+	"github.com/google/uuid"
 	grpcAuth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -15,8 +16,9 @@ import (
 
 type IController interface {
 	Register(ctx context.Context, farmerName, farmName, password string) (Farmer, error)
-	GetGoldEggs(ctx context.Context) (uint, error)
-	SpendGoldEggs(ctx context.Context, amount uint) error
+	Login(ctx context.Context, farmerName, password string) (jwt string, err error)
+	GetGoldEggs(ctx context.Context, farmerID uuid.UUID) (uint, error)
+	SpendGoldEggs(ctx context.Context, farmerID uuid.UUID, amount uint) error
 }
 
 type Service struct {
@@ -91,16 +93,36 @@ func (s *Service) Register(
 	}
 
 	return &internalGrpc.RegisterResponse{
-		Id:     farmer.ID.String(),
-		Name:   farmer.Name,
-		FarmId: farmer.FarmID.String(),
+		FarmerId: farmer.ID.String(),
+		FarmId:   farmer.FarmID.String(),
+	}, nil
+}
+
+func (s *Service) Login(
+	ctx context.Context, request *internalGrpc.LoginRequest,
+) (*internalGrpc.LoginResponse, error) {
+	jwt, err := s.controller.Login(
+		ctx, request.GetFarmerName(), request.GetPassword(),
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &internalGrpc.LoginResponse{
+		Jwt: jwt,
 	}, nil
 }
 
 func (s *Service) SpendGoldEggs(
 	ctx context.Context, request *internalGrpc.SpendGoldEggsRequest,
 ) (*internalGrpc.SpendGoldEggsResponse, error) {
-	if err := s.controller.SpendGoldEggs(ctx, uint(request.GetAmount())); err != nil {
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if err := s.controller.SpendGoldEggs(
+		ctx, ctxData.FarmerID, uint(request.GetAmount())); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -110,7 +132,12 @@ func (s *Service) SpendGoldEggs(
 func (s *Service) GetGoldEggs(
 	ctx context.Context, _ *internalGrpc.GetGoldEggsRequest,
 ) (*internalGrpc.GetGoldEggsResponse, error) {
-	goldEggCount, err := s.controller.GetGoldEggs(ctx)
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	goldEggCount, err := s.controller.GetGoldEggs(ctx, ctxData.FarmerID)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

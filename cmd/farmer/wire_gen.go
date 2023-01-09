@@ -8,23 +8,27 @@ package main
 
 import (
 	"chicken-farmer/backend/internal/farmer"
+	grpc2 "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
-
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+)
 
+import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-
 	_ "github.com/lib/pq"
 )
 
 // Injectors from wire.go:
 
-func initializeService(ctx context.Context, address string, logger *zap.SugaredLogger) (farmer.Service, error) {
+func initializeService(ctx context.Context, address string, logger *zap.SugaredLogger, farmGRPCConn grpc.ClientConnInterface) (farmer.Service, error) {
 	mongoDatabase, err := farmer.ProvideMongoDatabase(ctx)
 	if err != nil {
 		return farmer.Service{}, err
 	}
-	controller := farmer.ProvideController(mongoDatabase)
+	farmServiceClient := grpc2.NewFarmServiceClient(farmGRPCConn)
+	farmService := farmer.ProvideFarmService(farmServiceClient)
+	controller := farmer.ProvideController(mongoDatabase, farmService, logger)
 	service := farmer.ProvideService(address, logger, controller)
 	return service, nil
 }

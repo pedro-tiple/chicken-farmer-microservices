@@ -10,12 +10,12 @@ import (
 	"chicken-farmer/backend/internal/farm"
 	grpc2 "chicken-farmer/backend/internal/pkg/grpc"
 	"database/sql"
-
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+)
 
+import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-
 	_ "github.com/lib/pq"
 )
 

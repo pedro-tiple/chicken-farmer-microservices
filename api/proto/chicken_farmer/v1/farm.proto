@@ -9,10 +9,12 @@ import "google/api/field_behavior.proto";
 option go_package = "internal/pkg/grpc";
 
 service FarmService {
+  rpc NewFarm(NewFarmRequest) returns (NewFarmResponse) {}
+  rpc FeedChickensOfBarn(FeedChickensOfBarnRequest) returns (FeedChickensOfBarnResponse) {}
+
+  // REST exposed functions
   rpc GetFarm(GetFarmRequest) returns (GetFarmResponse) {
-    option (google.api.http) = {
-      get: "/v1/farm",
-    };
+    option (google.api.http) = {get: "/v1/farm"};
   }
 
   rpc BuyBarn(BuyBarnRequest) returns (BuyBarnResponse) {
@@ -43,8 +45,6 @@ service FarmService {
     };
   }
 
-  rpc FeedChickensOfBarn(FeedChickensOfBarnRequest) returns (FeedChickensOfBarnResponse) {}
-
 }
 
 message Farm {
@@ -67,6 +67,14 @@ message Chicken {
   uint32 resting_until = 5;
   uint32 normal_eggs_laid = 3;
   uint32 gold_eggs_laid = 4;
+}
+
+message NewFarmRequest {
+  string owner_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+}
+message NewFarmResponse {
+  string farm_id = 1;
 }
 
 message GetFarmRequest {}

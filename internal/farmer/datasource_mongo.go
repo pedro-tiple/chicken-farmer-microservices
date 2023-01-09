@@ -36,6 +36,11 @@ func (m MongoDatabase) GetFarmer(ctx context.Context, farmerID uuid.UUID) (Farme
 	panic("implement me")
 }
 
+func (m MongoDatabase) GetFarmerByName(ctx context.Context, name string) (Farmer, error) {
+	// TODO implement me
+	panic("implement me")
+}
+
 func (m MongoDatabase) InsertFarmer(ctx context.Context, farmer Farmer) (uuid.UUID, error) {
 	// TODO implement me
 	panic("implement me")

@@ -37,6 +37,23 @@ func (d *SQLDatabase) GetFarm(
 	}, nil
 }
 
+func (d *SQLDatabase) GetBarn(
+	ctx context.Context, barnID uuid.UUID,
+) (Barn, error) {
+	barn, err := d.database.GetBarn(ctx, barnID)
+	if err != nil {
+		return Barn{}, internalDB.NormalizeNotFound(err)
+	}
+
+	return Barn{
+		ID:            barn.ID,
+		OwnerID:       barn.OwnerID,
+		FarmID:        barn.FarmID,
+		Feed:          uint(barn.Feed),
+		HasAutoFeeder: barn.HasAutoFeeder,
+	}, nil
+}
+
 func (d *SQLDatabase) GetBarnsOfFarm(
 	ctx context.Context, farmID uuid.UUID,
 ) ([]Barn, error) {
@@ -102,6 +119,23 @@ func (d *SQLDatabase) GetChicken(
 		GoldEggsLaid:   uint(chicken.GoldEggsLaid),
 		GoldEggChance:  uint(chicken.GoldEggChance),
 	}, nil
+}
+
+func (d *SQLDatabase) InsertFarm(
+	ctx context.Context, farm Farm,
+) (uuid.UUID, error) {
+	insertedChicken, err := d.database.InsertFarm(
+		ctx, farmSQL.InsertFarmParams{
+			ID:      farm.ID,
+			OwnerID: farm.OwnerID,
+			Name:    farm.Name,
+		},
+	)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+
+	return insertedChicken.ID, nil
 }
 
 func (d *SQLDatabase) InsertChicken(

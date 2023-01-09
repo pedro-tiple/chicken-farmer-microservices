@@ -21,6 +21,7 @@
   "paths": {
     "/v1/farm": {
       "get": {
+        "summary": "REST exposed functions",
         "operationId": "FarmService_GetFarm",
         "responses": {
           "200": {
@@ -207,6 +208,42 @@
             }
           }
         },
+        "tags": [
+          "FarmerService"
+        ]
+      }
+    },
+    "/v1/farmer/login": {
+      "get": {
+        "operationId": "FarmerService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "farmerName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "tags": [
           "FarmerService"
         ]
@@ -423,6 +460,22 @@
         }
       }
     },
+    "v1LoginResponse": {
+      "type": "object",
+      "properties": {
+        "jwt": {
+          "type": "string"
+        }
+      }
+    },
+    "v1NewFarmResponse": {
+      "type": "object",
+      "properties": {
+        "farmId": {
+          "type": "string"
+        }
+      }
+    },
     "v1RegisterRequest": {
       "type": "object",
       "properties": {
@@ -445,13 +498,7 @@
     "v1RegisterResponse": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "farmName": {
+        "farmerId": {
           "type": "string"
         },
         "farmId": {

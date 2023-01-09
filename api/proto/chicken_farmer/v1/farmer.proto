@@ -15,6 +15,12 @@ service FarmerService {
     };
   }
 
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      get: "/v1/farmer/login",
+    };
+  }
+
   rpc SpendGoldEggs(SpendGoldEggsRequest) returns (SpendGoldEggsResponse) {
     option (google.api.http) = {
       post: "/v1/farmer/spend-gold-eggs",
@@ -23,9 +29,7 @@ service FarmerService {
   }
 
   rpc GetGoldEggs(GetGoldEggsRequest) returns (GetGoldEggsResponse) {
-    option (google.api.http) = {
-      get: "/v1/farmer/gold-eggs",
-    };
+    option (google.api.http) = {get: "/v1/farmer/gold-eggs"};
   }
 }
 
@@ -38,23 +42,27 @@ message Farmer {
 message RegisterRequest {
   string farmer_name = 1 [(google.api.field_behavior) = REQUIRED];
   string farm_name = 2 [(google.api.field_behavior) = REQUIRED];
-  string password = 3[(google.api.field_behavior) = REQUIRED];
+  string password = 3 [(google.api.field_behavior) = REQUIRED];
 }
 message RegisterResponse {
-  string id = 1;
-  string name = 2;
-  string farm_name = 3;
-  string farm_id = 4;
+  string farmer_id = 1;
+  string farm_id = 2;
+}
+
+message LoginRequest {
+  string farmer_name = 1 [(google.api.field_behavior) = REQUIRED];
+  string password = 2 [(google.api.field_behavior) = REQUIRED];
+}
+message LoginResponse {
+  string jwt = 1;
 }
 
 message SpendGoldEggsRequest {
   uint32 amount = 1 [(google.api.field_behavior) = REQUIRED];
 }
-message SpendGoldEggsResponse {
-}
+message SpendGoldEggsResponse {}
 
-message GetGoldEggsRequest {
-}
+message GetGoldEggsRequest {}
 message GetGoldEggsResponse {
   uint32 amount = 1;
 }

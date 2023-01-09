@@ -1,7 +1,6 @@
 package farm
 
 import (
-	"chicken-farmer/backend/internal/farm/ctxfarm"
 	"context"
 	"errors"
 	"math/rand"
@@ -27,17 +26,20 @@ const (
 
 var (
 	ErrFarmNotYours    = errors.New("farm doesn't belong to you")
+	ErrBarnNotYours    = errors.New("barn doesn't belong to you")
 	ErrChickenNotYours = errors.New("chicken doesn't belong to you")
 	ErrChickenResting  = errors.New("chicken is resting")
 	ErrInvalidEggType  = errors.New("invalid egg type")
 )
 
 type IDataSource interface {
-	GetFarm(ctx context.Context, chickenID uuid.UUID) (Farm, error)
+	GetFarm(ctx context.Context, farmID uuid.UUID) (Farm, error)
 	GetBarnsOfFarm(ctx context.Context, farmID uuid.UUID) ([]Barn, error)
+	GetBarn(ctx context.Context, barnID uuid.UUID) (Barn, error)
 	GetChickensOfBarn(ctx context.Context, barnID uuid.UUID) ([]Chicken, error)
 	GetChicken(ctx context.Context, chickenID uuid.UUID) (Chicken, error)
 
+	InsertFarm(ctx context.Context, farm Farm) (farmID uuid.UUID, err error)
 	InsertChicken(ctx context.Context, chicken Chicken) (chickenID uuid.UUID, err error)
 	InsertBarn(ctx context.Context, barn Barn) (barnID uuid.UUID, err error)
 
@@ -72,21 +74,29 @@ func ProvideController(
 	}
 }
 
-func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
-	ctxData, err := ctxfarm.Extract(ctx)
+func (c *Controller) NewFarm(
+	ctx context.Context, ownerID uuid.UUID, name string,
+) (uuid.UUID, error) {
+	farmID, err := c.datasource.InsertFarm(ctx, Farm{
+		OwnerID: ownerID,
+		Name:    name,
+	})
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+
+	return farmID, nil
+}
+
+func (c *Controller) GetFarm(
+	ctx context.Context, farmerID, farmID uuid.UUID,
+) (GetFarmResult, error) {
+	farm, err := c.datasource.GetFarm(ctx, farmID)
 	if err != nil {
 		return GetFarmResult{}, err
 	}
 
-	farm, err := c.datasource.GetFarm(ctx, ctxData.FarmID)
-	if err != nil {
-		return GetFarmResult{}, err
-	}
-
-	// TODO if no farm exists, assume it's a new registration and create a new farm.
-	// This avoids creating a Farm dependency on the Farmer service.
-
-	if farm.OwnerID != ctxData.FarmerID {
+	if farm.ID != farmerID {
 		return GetFarmResult{}, ErrFarmNotYours
 	}
 
@@ -135,20 +145,25 @@ func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
 	}, nil
 }
 
-func (c *Controller) BuyBarn(ctx context.Context) error {
-	ctxData, err := ctxfarm.Extract(ctx)
+func (c *Controller) BuyBarn(
+	ctx context.Context, farmerID, farmID uuid.UUID,
+) error {
+	farm, err := c.datasource.GetFarm(ctx, farmID)
 	if err != nil {
 		return err
+	}
+
+	if farm.ID != farmerID {
+		return ErrBarnNotYours
 	}
 
 	if err := c.farmerService.SpendGoldEggs(ctx, PurchaseCostBarn); err != nil {
 		return err
 	}
 
-	_, err = c.datasource.InsertBarn(ctx, Barn{
-		FarmID: ctxData.FarmID,
-	})
+	_, err = c.datasource.InsertBarn(ctx, Barn{FarmID: farmID})
 	if err != nil {
+		// TODO unspend gold eggs?
 		return err
 	}
 
@@ -157,7 +172,18 @@ func (c *Controller) BuyBarn(ctx context.Context) error {
 	return nil
 }
 
-func (c *Controller) BuyFeedBag(ctx context.Context, barnID uuid.UUID, amount uint) error {
+func (c *Controller) BuyFeedBags(
+	ctx context.Context, farmerID, barnID uuid.UUID, amount uint,
+) error {
+	barn, err := c.datasource.GetBarn(ctx, barnID)
+	if err != nil {
+		return err
+	}
+
+	if barn.ID != farmerID {
+		return ErrBarnNotYours
+	}
+
 	if err := c.farmerService.SpendGoldEggs(ctx, PurchaseCostFeedBag*amount); err != nil {
 		return err
 	}
@@ -172,16 +198,25 @@ func (c *Controller) BuyFeedBag(ctx context.Context, barnID uuid.UUID, amount ui
 }
 
 func (c *Controller) BuyChicken(
-	ctx context.Context, barnID uuid.UUID,
+	ctx context.Context, farmerID, barnID uuid.UUID,
 ) error {
+	barn, err := c.datasource.GetBarn(ctx, barnID)
+	if err != nil {
+		return err
+	}
+
+	if barn.ID != farmerID {
+		return ErrBarnNotYours
+	}
+
 	if err := c.farmerService.SpendGoldEggs(ctx, PurchaseCostBarn); err != nil {
 		return err
 	}
 
-	// Maybe have the gold egg chance be on a bell curve?
+	// Maybe have the gold egg chance be on a normal distribution?
 	rand.Seed(time.Now().Unix())
 
-	_, err := c.datasource.InsertChicken(ctx, Chicken{
+	_, err = c.datasource.InsertChicken(ctx, Chicken{
 		ID:            uuid.New(),
 		BarnID:        barnID,
 		DateOfBirth:   c.currentDay,
@@ -196,18 +231,15 @@ func (c *Controller) BuyChicken(
 	return nil
 }
 
-func (c *Controller) FeedChicken(ctx context.Context, chickenID uuid.UUID) error {
-	ctxData, err := ctxfarm.Extract(ctx)
-	if err != nil {
-		return err
-	}
-
+func (c *Controller) FeedChicken(
+	ctx context.Context, farmerID, chickenID uuid.UUID,
+) error {
 	chicken, err := c.datasource.GetChicken(ctx, chickenID)
 	if err != nil {
 		return err
 	}
 
-	if chicken.OwnerID != ctxData.FarmerID {
+	if chicken.OwnerID != farmerID {
 		return ErrChickenNotYours
 	}
 
@@ -247,7 +279,7 @@ func (c *Controller) FeedChicken(ctx context.Context, chickenID uuid.UUID) error
 }
 
 func (c *Controller) FeedChickensOfBarn(
-	ctx context.Context, barnID uuid.UUID,
+	ctx context.Context, farmerID, barnID uuid.UUID,
 ) error {
 	// TODO
 	return nil

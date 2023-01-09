@@ -6,6 +6,16 @@ FROM farms
 WHERE id = $1
 LIMIT 1;
 
+-- name: GetBarn :one
+SELECT barns.id    as id,
+    farm_id,
+    feed,
+    has_auto_feeder,
+    farms.owner_id as owner_id
+FROM barns
+         INNER JOIN farms ON farm_id = farms.id
+WHERE barns.id = $1;
+
 -- name: GetBarnsOfFarm :many
 SELECT barns.id    as id,
     farm_id,
@@ -45,6 +55,15 @@ FROM chickens
          INNER JOIN barns ON barn_id = barns.id
          INNER JOIN farms ON farm_id = farms.id
 WHERE chickens.id = $1;
+
+-- name: InsertFarm :one
+INSERT INTO farms (
+    id, owner_id, name
+)
+VALUES (
+    $1, $2, $3
+)
+RETURNING *;
 
 -- name: InsertChicken :one
 INSERT INTO chickens (

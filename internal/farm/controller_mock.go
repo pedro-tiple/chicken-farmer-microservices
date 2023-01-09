@@ -167,6 +167,21 @@ func (mr *MockIDataSourceMockRecorder) InsertChicken(ctx, chicken interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertChicken", reflect.TypeOf((*MockIDataSource)(nil).InsertChicken), ctx, chicken)
 }
 
+// InsertFarm mocks base method.
+func (m *MockIDataSource) InsertFarm(ctx context.Context, farm Farm) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertFarm", ctx, farm)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertFarm indicates an expected call of InsertFarm.
+func (mr *MockIDataSourceMockRecorder) InsertFarm(ctx, farm interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertFarm", reflect.TypeOf((*MockIDataSource)(nil).InsertFarm), ctx, farm)
+}
+
 // UpdateChickenRestingUntil mocks base method.
 func (m *MockIDataSource) UpdateChickenRestingUntil(ctx context.Context, chickenID uuid.UUID, day uint) error {
 	m.ctrl.T.Helper()

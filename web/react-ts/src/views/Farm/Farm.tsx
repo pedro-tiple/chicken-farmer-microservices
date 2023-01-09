@@ -1,5 +1,4 @@
 import "./Farm.scss";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import { FarmServiceApi, V1Farm } from "chicken-farmer-service/api";
@@ -9,20 +8,18 @@ import { Barn } from "../../components/Barn/Barn";
 // Used to update TanStack client.
 // const queryClient = useQueryClient();
 
-const farmServiceApi = new FarmServiceApi(
-  new Configuration({ basePath: "http://localhost:8081" })
-);
-
 // const farmValidator = z.object({
 //   name: z.string(),
 //   day: z.number(),
 //   golden_eggs: z.number(),
 // });
 
+const farmServiceApi = new FarmServiceApi(
+    new Configuration({ basePath: "http://localhost:8081" })
+);
+
 const getFarm = (): { farm: V1Farm; error: any } => {
-  const { data, error } = useQuery(["getFarm"], async () =>
-    farmServiceApi.farmServiceGetFarm()
-  );
+  const { data, error } = useQuery(["getFarm"], async () => farmServiceApi.farmServiceGetFarm());
   return { farm: data?.data.farm as V1Farm, error };
 };
 
@@ -32,7 +29,7 @@ export const Farm = () => {
   return (
     <div className="farm">
       <div className="farm-info">
-        <h1>My Farm</h1>
+        <h1>{farm.name}</h1>
         <span>
           <label>Current Day:</label> <span>{farm?.day}</span>
         </span>

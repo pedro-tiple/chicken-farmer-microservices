@@ -27,6 +27,38 @@ func (q *Queries) DecrementBarnFeed(ctx context.Context, arg DecrementBarnFeedPa
 	return err
 }
 
+const getBarn = `-- name: GetBarn :one
+SELECT barns.id    as id,
+    farm_id,
+    feed,
+    has_auto_feeder,
+    farms.owner_id as owner_id
+FROM barns
+         INNER JOIN farms ON farm_id = farms.id
+WHERE barns.id = $1
+`
+
+type GetBarnRow struct {
+	ID            uuid.UUID
+	FarmID        uuid.UUID
+	Feed          int64
+	HasAutoFeeder bool
+	OwnerID       uuid.UUID
+}
+
+func (q *Queries) GetBarn(ctx context.Context, id uuid.UUID) (GetBarnRow, error) {
+	row := q.db.QueryRowContext(ctx, getBarn, id)
+	var i GetBarnRow
+	err := row.Scan(
+		&i.ID,
+		&i.FarmID,
+		&i.Feed,
+		&i.HasAutoFeeder,
+		&i.OwnerID,
+	)
+	return i, err
+}
+
 const getBarnsOfFarm = `-- name: GetBarnsOfFarm :many
 SELECT barns.id    as id,
     farm_id,
@@ -307,6 +339,35 @@ func (q *Queries) InsertChicken(ctx context.Context, arg InsertChickenParams) (C
 		&i.NormalEggsLaid,
 		&i.GoldEggsLaid,
 		&i.GoldEggChance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertFarm = `-- name: InsertFarm :one
+INSERT INTO farms (
+    id, owner_id, name
+)
+VALUES (
+    $1, $2, $3
+)
+RETURNING id, owner_id, name, created_at, updated_at
+`
+
+type InsertFarmParams struct {
+	ID      uuid.UUID
+	OwnerID uuid.UUID
+	Name    string
+}
+
+func (q *Queries) InsertFarm(ctx context.Context, arg InsertFarmParams) (Farm, error) {
+	row := q.db.QueryRowContext(ctx, insertFarm, arg.ID, arg.OwnerID, arg.Name)
+	var i Farm
+	err := row.Scan(
+		&i.ID,
+		&i.OwnerID,
+		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
