@@ -8,10 +8,10 @@ set -e
 ## START BACKEND ##
 
 # Make sure imports are consistently formatted.
-#goimports -w=true .
+goimports -w=true .
 
 # Run lint checks.
-#golangci-lint run ./...
+golangci-lint run ./...
 
 # All tests must pass.
 go test ./...
