@@ -31,16 +31,16 @@ func ProvideController(
 func (c *Controller) Register(
 	ctx context.Context, farmerName, farmName, password string,
 ) (Farmer, error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (c *Controller) GetGoldEggs(ctx context.Context) (uint, error) {
-	//TODO implement me
+	// TODO implement me
 	return 10, nil
 }
 
 func (c *Controller) SpendGoldEggs(ctx context.Context, amount uint) error {
-	//TODO implement me
+	// TODO implement me
 	return nil
 }

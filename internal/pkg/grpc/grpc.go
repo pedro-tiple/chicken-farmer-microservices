@@ -4,6 +4,7 @@ import (
 	"context"
 	"net"
 	"net/http"
+	"time"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -18,6 +19,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+const readHeaderTimeout = 3 * time.Second
 
 type ServiceRegistrar interface {
 	RegisterGrpcServer(server *grpc.Server)
@@ -34,6 +37,7 @@ func ListenForConnections(
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		slog.Error("Errored listening", err)
+
 		return
 	}
 
@@ -45,7 +49,7 @@ func ListenForConnections(
 			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(logger),
 			grpc_auth.StreamServerInterceptor(authFunction),
-			//grpc_recovery.StreamServerInterceptor(),
+			// grpc_recovery.StreamServerInterceptor(),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_ctxtags.UnaryServerInterceptor(),
@@ -53,14 +57,15 @@ func ListenForConnections(
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger),
 			grpc_auth.UnaryServerInterceptor(authFunction),
-			//grpc_recovery.UnaryServerInterceptor(),
+			// grpc_recovery.UnaryServerInterceptor(),
 		)),
 	)
 	registrar.RegisterGrpcServer(srv)
-	//reflection.Register(srv)
+	// reflection.Register(srv)
 
 	if err := srv.Serve(listener); err != nil {
 		slog.Error("Errored serving", err)
+
 		return
 	}
 }
@@ -92,7 +97,12 @@ func RunRESTGateway(
 		logger.Fatal(err)
 	}
 
-	if err := http.ListenAndServe(restAddr, cors.Default().Handler(mux)); err != nil {
+	server := &http.Server{
+		Addr:              restAddr,
+		Handler:           cors.Default().Handler(mux),
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		logger.Fatal(err)
 	}
 }

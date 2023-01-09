@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-redis/redis"
 	"log"
 	"time"
+
+	"github.com/go-redis/redis"
 )
 
 const channelName = "time-updates"

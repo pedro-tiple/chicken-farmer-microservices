@@ -26,6 +26,7 @@ const (
 )
 
 var (
+	ErrFarmNotYours    = errors.New("farm doesn't belong to you")
 	ErrChickenNotYours = errors.New("chicken doesn't belong to you")
 	ErrChickenResting  = errors.New("chicken is resting")
 	ErrInvalidEggType  = errors.New("invalid egg type")
@@ -86,7 +87,7 @@ func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
 	// This avoids creating a Farm dependency on the Farmer service.
 
 	if farm.OwnerID != ctxData.FarmerID {
-		return GetFarmResult{}, errors.New("proto doesn't belong to farmer")
+		return GetFarmResult{}, ErrFarmNotYours
 	}
 
 	barns, err := c.datasource.GetBarnsOfFarm(ctx, farm.ID)
@@ -95,11 +96,13 @@ func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
 	}
 
 	resultBarns := make([]getFarmResultBarn, len(barns))
-	g, errGrpCtx := errgroup.WithContext(ctx)
-	g.SetLimit(5)
+	errGrp, errGrpCtx := errgroup.WithContext(ctx)
+	errGrp.SetLimit(5)
+
 	for i, barn := range barns {
-		i, barn := i, barn
-		g.Go(func() error {
+		i, barn := i, barn //nolint:varnamelen
+
+		errGrp.Go(func() error {
 			chickens, err := c.datasource.GetChickensOfBarn(errGrpCtx, barn.ID)
 			if err != nil {
 				return err
@@ -112,7 +115,8 @@ func (c *Controller) GetFarm(ctx context.Context) (GetFarmResult, error) {
 			return nil
 		})
 	}
-	if err := g.Wait(); err != nil {
+
+	if err := errGrp.Wait(); err != nil {
 		return GetFarmResult{}, err
 	}
 
@@ -176,6 +180,7 @@ func (c *Controller) BuyChicken(
 
 	// Maybe have the gold egg chance be on a bell curve?
 	rand.Seed(time.Now().Unix())
+
 	_, err := c.datasource.InsertChicken(ctx, Chicken{
 		ID:            uuid.New(),
 		BarnID:        barnID,
@@ -216,8 +221,9 @@ func (c *Controller) FeedChicken(ctx context.Context, chickenID uuid.UUID) error
 		return err
 	}
 
-	var eggType = EggTypeNormal
 	rand.Seed(time.Now().Unix())
+
+	var eggType = EggTypeNormal
 	if rand.Intn(100) <= int(chicken.GoldEggChance) {
 		eggType = EggTypeGolden
 	}
@@ -251,6 +257,7 @@ func (c *Controller) SetDay(
 	ctx context.Context, day uint,
 ) error {
 	c.currentDay = day
+
 	return nil
 }
 

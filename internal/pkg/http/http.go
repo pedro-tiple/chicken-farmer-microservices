@@ -31,6 +31,7 @@ func NewHTTPClient() *http.Client {
 			ExpectContinueTimeout: httpExpectContinueTimeout,
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: false,
+				MinVersion:         tls.VersionTLS12,
 			},
 		},
 	}

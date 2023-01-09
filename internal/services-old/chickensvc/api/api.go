@@ -1,12 +1,13 @@
 package api
 
 import (
-	"github.com/go-redis/redis"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"ptiple/chickensvc/mongodatabase"
 	"ptiple/util"
+
+	"github.com/go-redis/redis"
+	"github.com/gorilla/mux"
 )
 
 type Api struct {

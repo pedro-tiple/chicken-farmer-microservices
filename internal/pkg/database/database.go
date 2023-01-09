@@ -19,8 +19,9 @@ type ConnectionSettings struct {
 
 func OpenSQLConnections(dbConnectionSettings []ConnectionSettings) ([]*sql.DB, error) {
 	result := make([]*sql.DB, 0)
+
 	for _, setting := range dbConnectionSettings {
-		db, err := sql.Open("postgres", fmt.Sprintf(
+		dbConnection, err := sql.Open("postgres", fmt.Sprintf(
 			"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
 			setting.Host,
 			setting.Port,
@@ -32,7 +33,7 @@ func OpenSQLConnections(dbConnectionSettings []ConnectionSettings) ([]*sql.DB, e
 			return nil, err
 		}
 
-		result = append(result, db)
+		result = append(result, dbConnection)
 	}
 
 	return result, nil
@@ -42,5 +43,6 @@ func NormalizeNotFound(err error) error {
 	if errors.Is(err, sql.ErrNoRows) {
 		return ErrNotFound
 	}
+
 	return err
 }

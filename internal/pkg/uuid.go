@@ -9,6 +9,7 @@ import (
 // UUIDFromString converts a string to UUID ignoring errors.
 func UUIDFromString(s string) uuid.UUID {
 	result, _ := uuid.Parse(s)
+
 	return result
 }
 
@@ -18,5 +19,6 @@ func UUIDFromString(s string) uuid.UUID {
 func UUIDFromInt64(i int64) (uuid.UUID, error) {
 	bigInt := new(big.Int)
 	bigInt.SetInt64(i)
+
 	return uuid.FromBytes(bigInt.Bytes())
 }

@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"github.com/go-redis/redis"
 	"log"
 	"ptiple/barnsvc/api"
 	"ptiple/barnsvc/mongodatabase"
+
+	"github.com/go-redis/redis"
 )
 
 func main() {

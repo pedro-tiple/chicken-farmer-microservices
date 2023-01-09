@@ -3,7 +3,6 @@ package farmer
 import (
 	"chicken-farmer/backend/internal/farm/ctxfarm"
 	"chicken-farmer/backend/internal/pkg"
-	cfGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
 
@@ -21,7 +20,7 @@ type IController interface {
 }
 
 type Service struct {
-	cfGrpc.UnimplementedFarmerServiceServer
+	internalGrpc.UnimplementedFarmerServiceServer
 
 	address string
 	server  *grpc.Server
@@ -30,7 +29,7 @@ type Service struct {
 	controller IController
 }
 
-var _ cfGrpc.FarmerServiceServer = &Service{}
+var _ internalGrpc.FarmerServiceServer = &Service{}
 
 func ProvideService(
 	address string,
@@ -48,13 +47,11 @@ func ProvideService(
 // service. We'll need one per service because of the different context values
 // needed, maybe.
 func Authenticate(ctx context.Context) (context.Context, error) {
-	//token, err := grpcAuth.AuthFromMD(ctx, "bearer")
-	//if err != nil {
+	// token, err := grpcAuth.AuthFromMD(ctx, "bearer")
+	// if err != nil {
 	//	return nil, err
-	//}
-
+	// }
 	// TODO validate JWT and build context from claims.
-
 	return ctxfarm.SetInContext(
 		ctx,
 		pkg.UUIDFromString("65e4d8ff-8766-48a7-bfcd-7160d149a319"),
@@ -74,7 +71,7 @@ func (s *Service) RegisterGrpcServer(server *grpc.Server) {
 	// Keep track of server for the graceful stop.
 	s.server = server
 
-	cfGrpc.RegisterFarmerServiceServer(server, s)
+	internalGrpc.RegisterFarmerServiceServer(server, s)
 }
 
 func (s *Service) GracefulStop() {
@@ -82,9 +79,10 @@ func (s *Service) GracefulStop() {
 	s.server.GracefulStop()
 	s.logger.Info("Stopped")
 }
+
 func (s *Service) Register(
-	ctx context.Context, request *cfGrpc.RegisterRequest,
-) (*cfGrpc.RegisterResponse, error) {
+	ctx context.Context, request *internalGrpc.RegisterRequest,
+) (*internalGrpc.RegisterResponse, error) {
 	farmer, err := s.controller.Register(
 		ctx, request.GetFarmerName(), request.GetFarmName(), request.GetPassword(),
 	)
@@ -92,7 +90,7 @@ func (s *Service) Register(
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &cfGrpc.RegisterResponse{
+	return &internalGrpc.RegisterResponse{
 		Id:     farmer.ID.String(),
 		Name:   farmer.Name,
 		FarmId: farmer.FarmID.String(),
@@ -100,22 +98,22 @@ func (s *Service) Register(
 }
 
 func (s *Service) SpendGoldEggs(
-	ctx context.Context, request *cfGrpc.SpendGoldEggsRequest,
-) (*cfGrpc.SpendGoldEggsResponse, error) {
+	ctx context.Context, request *internalGrpc.SpendGoldEggsRequest,
+) (*internalGrpc.SpendGoldEggsResponse, error) {
 	if err := s.controller.SpendGoldEggs(ctx, uint(request.GetAmount())); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &cfGrpc.SpendGoldEggsResponse{}, nil
+	return &internalGrpc.SpendGoldEggsResponse{}, nil
 }
 
 func (s *Service) GetGoldEggs(
-	ctx context.Context, _ *cfGrpc.GetGoldEggsRequest,
-) (*cfGrpc.GetGoldEggsResponse, error) {
+	ctx context.Context, _ *internalGrpc.GetGoldEggsRequest,
+) (*internalGrpc.GetGoldEggsResponse, error) {
 	goldEggCount, err := s.controller.GetGoldEggs(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &cfGrpc.GetGoldEggsResponse{Amount: uint32(goldEggCount)}, nil
+	return &internalGrpc.GetGoldEggsResponse{Amount: uint32(goldEggCount)}, nil
 }

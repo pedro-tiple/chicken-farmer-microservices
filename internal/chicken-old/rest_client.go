@@ -2,7 +2,7 @@ package chicken_old
 
 import (
 	"bytes"
-	"chicken-farmer/backend/internal/pkg"
+	internalHttp "chicken-farmer/backend/internal/pkg/http"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -17,7 +17,7 @@ type RESTChickenClient struct {
 
 func ProvideRESTChickenClient(baseURL string) API {
 	return &RESTChickenClient{
-		httpClient: pkg.NewHTTPClient(),
+		httpClient: internalHttp.NewHTTPClient(),
 		baseURL:    baseURL,
 	}
 }

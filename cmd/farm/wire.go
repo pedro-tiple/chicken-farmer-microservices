@@ -5,7 +5,7 @@ package main
 
 import (
 	"chicken-farmer/backend/internal/farm"
-	cfGrpc "chicken-farmer/backend/internal/pkg/grpc"
+	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"database/sql"
 
 	"github.com/google/wire"
@@ -28,7 +28,7 @@ func initializeService(
 		farm.ProvideSQLDatabase,
 		wire.Bind(new(farm.IDataSource), new(*farm.SQLDatabase)),
 
-		cfGrpc.NewFarmerServiceClient,
+		internalGrpc.NewFarmerServiceClient,
 		farm.ProvideFarmerService,
 		wire.Bind(new(farm.IFarmerService), new(*farm.FarmerService)),
 	))

@@ -17,7 +17,6 @@ var _ IDataSource = &SQLDatabase{}
 
 func ProvideSQLDatabase(dbConnection *sql.DB) (*SQLDatabase, error) {
 	// TODO use multiple connections
-
 	return &SQLDatabase{
 		database: farmSQL.New(dbConnection),
 	}, nil
@@ -107,7 +106,7 @@ func (d *SQLDatabase) GetChicken(
 
 func (d *SQLDatabase) InsertChicken(
 	ctx context.Context, chicken Chicken,
-) (chickenID uuid.UUID, err error) {
+) (uuid.UUID, error) {
 	insertedChicken, err := d.database.InsertChicken(
 		ctx, farmSQL.InsertChickenParams{
 			ID:             chicken.ID,
@@ -177,5 +176,6 @@ func (d *SQLDatabase) IncrementChickenEggLayCount(
 	case EggTypeNormal:
 		return d.database.IncrementChickenNormalEggLayCount(ctx, chickenID)
 	}
+
 	return ErrInvalidEggType
 }

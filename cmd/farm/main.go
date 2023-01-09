@@ -3,7 +3,7 @@ package main
 import (
 	"chicken-farmer/backend/internal/farm"
 	internalDB "chicken-farmer/backend/internal/pkg/database"
-	cfGrpc "chicken-farmer/backend/internal/pkg/grpc"
+	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
 	"errors"
 	"flag"
@@ -23,6 +23,7 @@ import (
 
 func main() {
 	log.Println("Setting up things...")
+
 	logger, _ := zap.NewProduction()
 
 	grpcAddr := flag.String("grpcAddr", "localhost:50051", "gRPC server address")
@@ -45,6 +46,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
+
 	defer func() {
 		for _, connection := range dbConnections {
 			_ = connection.Close()
@@ -56,25 +58,25 @@ func main() {
 		logger.Fatal(err.Error())
 	}
 
-	m, err := migrate.NewWithDatabaseInstance(
+	migrator, err := migrate.NewWithDatabaseInstance(
 		os.Getenv("MIGRATIONS_FOLDER"), os.Getenv("POSTGRES_DB"), driver,
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
 
-	//if err := m.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+	// if err := migrator.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 	//	logger.Fatal(err.Error())
-	//}
+	// }
 
-	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+	if err := migrator.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		logger.Fatal(err.Error())
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	farmerGRPCConn, err := cfGrpc.CreateClientConnection(
+	farmerGRPCConn, err := internalGrpc.CreateClientConnection(
 		ctx, os.Getenv("FARMER_SERVICE_ADDRESS"),
 	)
 	if err != nil {
@@ -98,9 +100,9 @@ func main() {
 	defer cancel()
 
 	go farmService.ListenForConnections(ctx, farm.Authenticate)
-	go cfGrpc.RunRESTGateway(
+	go internalGrpc.RunRESTGateway(
 		ctx, logger.Sugar(),
-		cfGrpc.RegisterFarmServiceHandlerFromEndpoint,
+		internalGrpc.RegisterFarmServiceHandlerFromEndpoint,
 		*restAddr, *grpcAddr,
 	)
 

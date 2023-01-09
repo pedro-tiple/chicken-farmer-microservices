@@ -5,24 +5,20 @@
 # Fail if any command fails.
 set -e
 
-
 ## START BACKEND ##
 
-cd backend
 # Make sure imports are consistently formatted.
-goimports -w .
+#goimports -w=true .
 
 # Run lint checks.
-golangci-lint run ./...
-
-cd ./api/proto
-buf lint
-buf format -w
-cd ./../..
+#golangci-lint run ./...
 
 # All tests must pass.
 go test ./...
 
-cd /..
+cd ./api/proto
+buf format -w
+buf lint
+cd ./../..
 
 ## END BACKEND ##

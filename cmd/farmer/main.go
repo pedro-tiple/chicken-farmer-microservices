@@ -2,7 +2,7 @@ package main
 
 import (
 	"chicken-farmer/backend/internal/farmer"
-	cfGrpc "chicken-farmer/backend/internal/pkg/grpc"
+	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
 	"flag"
 	"log"
@@ -18,6 +18,7 @@ import (
 
 func main() {
 	log.Println("Setting up things...")
+
 	logger, _ := zap.NewProduction()
 
 	grpcAddr := flag.String("grpcAddr", "localhost:50051", "gRPC server address")
@@ -40,9 +41,9 @@ func main() {
 	log.Println("Service listening")
 
 	go farmerService.ListenForConnections(ctx, farmer.Authenticate)
-	go cfGrpc.RunRESTGateway(
+	go internalGrpc.RunRESTGateway(
 		ctx, logger.Sugar(),
-		cfGrpc.RegisterFarmerServiceHandlerFromEndpoint,
+		internalGrpc.RegisterFarmerServiceHandlerFromEndpoint,
 		*restAddr, *grpcAddr,
 	)
 

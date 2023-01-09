@@ -9,11 +9,11 @@ package main
 import (
 	"chicken-farmer/backend/internal/farmer"
 	"context"
-	"go.uber.org/zap"
-)
 
-import (
+	"go.uber.org/zap"
+
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+
 	_ "github.com/lib/pq"
 )
 
