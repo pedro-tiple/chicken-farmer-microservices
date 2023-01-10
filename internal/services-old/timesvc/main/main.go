@@ -8,21 +8,23 @@ import (
 	"github.com/go-redis/redis"
 )
 
-const channelName = "time-updates"
+const channelName = "universe-updates"
 
 func main() {
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "redis-svc:6379",
-		Password: "password",
-		DB:       0,
-	})
+	redisClient := redis.NewClient(
+		&redis.Options{
+			Addr:     "redis-svc:6379",
+			Password: "password",
+			DB:       0,
+		},
+	)
 	defer redisClient.Close()
 
 	tickTime(redisClient)
 }
 
 func tickTime(_redisClient *redis.Client) {
-	// TODO persist time between restarts?
+	// TODO persist universe between restarts?
 	var currentTime = 0
 	for {
 		time.Sleep(1 * time.Second)
@@ -31,7 +33,7 @@ func tickTime(_redisClient *redis.Client) {
 
 		err := _redisClient.Publish(
 			channelName,
-			fmt.Sprintf(`{"time": "%d"}`, currentTime),
+			fmt.Sprintf(`{"universe": "%d"}`, currentTime),
 		).Err()
 		if err != nil {
 			log.Println("failed publishing to redis", err)

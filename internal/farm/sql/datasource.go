@@ -1,51 +1,56 @@
-package farm
+package sql
 
 import (
-	farmSQL "chicken-farmer/backend/internal/farm/sql"
+	farmPkg "chicken-farmer/backend/internal/farm"
 	internalDB "chicken-farmer/backend/internal/pkg/database"
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/google/uuid"
 )
 
-type SQLDatabase struct {
-	database *farmSQL.Queries
+var (
+	ErrInvalidEggType = errors.New("invalid egg type")
+)
+
+type Datasource struct {
+	database *Queries
 }
 
-var _ IDataSource = &SQLDatabase{}
+var _ farmPkg.IDataSource = &Datasource{}
 
-func ProvideSQLDatabase(dbConnection *sql.DB) (*SQLDatabase, error) {
+func ProvideDatasource(dbConnection *sql.DB) (*Datasource, error) {
 	// TODO use multiple connections
-	return &SQLDatabase{
-		database: farmSQL.New(dbConnection),
+	return &Datasource{
+		database: New(dbConnection),
 	}, nil
 }
 
-func (d *SQLDatabase) GetFarm(
+func (d *Datasource) GetFarm(
 	ctx context.Context, farmID uuid.UUID,
-) (Farm, error) {
+) (farmPkg.Farm, error) {
 	farm, err := d.database.GetFarm(ctx, farmID)
 	if err != nil {
-		return Farm{}, internalDB.NormalizeNotFound(err)
+		return farmPkg.Farm{}, internalDB.NormalizeNotFound(err)
 	}
 
-	return Farm{
+	return farmPkg.Farm{
 		ID:      farm.ID,
 		OwnerID: farm.OwnerID,
 		Name:    farm.Name,
 	}, nil
 }
 
-func (d *SQLDatabase) GetBarn(
+func (d *Datasource) GetBarn(
 	ctx context.Context, barnID uuid.UUID,
-) (Barn, error) {
+) (farmPkg.Barn, error) {
 	barn, err := d.database.GetBarn(ctx, barnID)
 	if err != nil {
-		return Barn{}, internalDB.NormalizeNotFound(err)
+		return farmPkg.Barn{}, internalDB.NormalizeNotFound(err)
 	}
 
-	return Barn{
+	return farmPkg.Barn{
 		ID:            barn.ID,
 		OwnerID:       barn.OwnerID,
 		FarmID:        barn.FarmID,
@@ -54,17 +59,17 @@ func (d *SQLDatabase) GetBarn(
 	}, nil
 }
 
-func (d *SQLDatabase) GetBarnsOfFarm(
+func (d *Datasource) GetBarnsOfFarm(
 	ctx context.Context, farmID uuid.UUID,
-) ([]Barn, error) {
+) ([]farmPkg.Barn, error) {
 	barns, err := d.database.GetBarnsOfFarm(ctx, farmID)
 	if err != nil {
 		return nil, internalDB.NormalizeNotFound(err)
 	}
 
-	result := make([]Barn, len(barns))
+	result := make([]farmPkg.Barn, len(barns))
 	for i, barn := range barns {
-		result[i] = Barn{
+		result[i] = farmPkg.Barn{
 			ID:            barn.ID,
 			OwnerID:       barn.OwnerID,
 			FarmID:        barn.FarmID,
@@ -76,17 +81,17 @@ func (d *SQLDatabase) GetBarnsOfFarm(
 	return result, nil
 }
 
-func (d *SQLDatabase) GetChickensOfBarn(
+func (d *Datasource) GetChickensOfBarn(
 	ctx context.Context, barnID uuid.UUID,
-) ([]Chicken, error) {
+) ([]farmPkg.Chicken, error) {
 	chickens, err := d.database.GetChickensOfBarn(ctx, barnID)
 	if err != nil {
 		return nil, internalDB.NormalizeNotFound(err)
 	}
 
-	result := make([]Chicken, len(chickens))
+	result := make([]farmPkg.Chicken, len(chickens))
 	for i, chicken := range chickens {
-		result[i] = Chicken{
+		result[i] = farmPkg.Chicken{
 			ID:             chicken.ID,
 			OwnerID:        chicken.OwnerID,
 			BarnID:         chicken.BarnID,
@@ -101,15 +106,15 @@ func (d *SQLDatabase) GetChickensOfBarn(
 	return result, nil
 }
 
-func (d *SQLDatabase) GetChicken(
+func (d *Datasource) GetChicken(
 	ctx context.Context, chickenID uuid.UUID,
-) (Chicken, error) {
+) (farmPkg.Chicken, error) {
 	chicken, err := d.database.GetChicken(ctx, chickenID)
 	if err != nil {
-		return Chicken{}, internalDB.NormalizeNotFound(err)
+		return farmPkg.Chicken{}, internalDB.NormalizeNotFound(err)
 	}
 
-	return Chicken{
+	return farmPkg.Chicken{
 		ID:             chicken.ID,
 		OwnerID:        chicken.OwnerID,
 		BarnID:         chicken.BarnID,
@@ -121,11 +126,11 @@ func (d *SQLDatabase) GetChicken(
 	}, nil
 }
 
-func (d *SQLDatabase) InsertFarm(
-	ctx context.Context, farm Farm,
+func (d *Datasource) InsertFarm(
+	ctx context.Context, farm farmPkg.Farm,
 ) (uuid.UUID, error) {
 	insertedChicken, err := d.database.InsertFarm(
-		ctx, farmSQL.InsertFarmParams{
+		ctx, InsertFarmParams{
 			ID:      farm.ID,
 			OwnerID: farm.OwnerID,
 			Name:    farm.Name,
@@ -138,11 +143,11 @@ func (d *SQLDatabase) InsertFarm(
 	return insertedChicken.ID, nil
 }
 
-func (d *SQLDatabase) InsertChicken(
-	ctx context.Context, chicken Chicken,
+func (d *Datasource) InsertChicken(
+	ctx context.Context, chicken farmPkg.Chicken,
 ) (uuid.UUID, error) {
 	insertedChicken, err := d.database.InsertChicken(
-		ctx, farmSQL.InsertChickenParams{
+		ctx, InsertChickenParams{
 			ID:             chicken.ID,
 			DateOfBirth:    int64(chicken.DateOfBirth),
 			RestingUntil:   int64(chicken.RestingUntil),
@@ -159,14 +164,16 @@ func (d *SQLDatabase) InsertChicken(
 	return insertedChicken.ID, nil
 }
 
-func (d *SQLDatabase) InsertBarn(
-	ctx context.Context, barn Barn,
+func (d *Datasource) InsertBarn(
+	ctx context.Context, barn farmPkg.Barn,
 ) (uuid.UUID, error) {
-	insertedBarn, err := d.database.InsertBarn(ctx, farmSQL.InsertBarnParams{
-		FarmID:        barn.FarmID,
-		Feed:          int64(barn.Feed),
-		HasAutoFeeder: barn.HasAutoFeeder,
-	})
+	insertedBarn, err := d.database.InsertBarn(
+		ctx, InsertBarnParams{
+			FarmID:        barn.FarmID,
+			Feed:          int64(barn.Feed),
+			HasAutoFeeder: barn.HasAutoFeeder,
+		},
+	)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
@@ -174,40 +181,47 @@ func (d *SQLDatabase) InsertBarn(
 	return insertedBarn.ID, nil
 }
 
-func (d *SQLDatabase) UpdateChickenRestingUntil(
+func (d *Datasource) UpdateChickenRestingUntil(
 	ctx context.Context, chickenID uuid.UUID, day uint,
 ) error {
-	return d.database.UpdateChickenRestingUntil(ctx, farmSQL.UpdateChickenRestingUntilParams{
-		ID:           chickenID,
-		RestingUntil: int64(day),
-	})
+	return d.database.UpdateChickenRestingUntil(
+		ctx, UpdateChickenRestingUntilParams{
+			ID:           chickenID,
+			RestingUntil: int64(day),
+		},
+	)
 }
 
-func (d *SQLDatabase) IncrementBarnFeed(
+func (d *Datasource) IncrementBarnFeed(
 	ctx context.Context, barnID uuid.UUID, amount uint,
 ) error {
-	return d.database.IncrementBarnFeed(ctx, farmSQL.IncrementBarnFeedParams{
-		ID:   barnID,
-		Feed: int64(amount),
-	})
+	return d.database.IncrementBarnFeed(
+		ctx, IncrementBarnFeedParams{
+			ID:   barnID,
+			Feed: int64(amount),
+		},
+	)
 }
 
-func (d *SQLDatabase) DecrementBarnFeed(
+func (d *Datasource) DecrementBarnFeed(
 	ctx context.Context, barnID uuid.UUID, amount uint,
 ) error {
-	return d.database.DecrementBarnFeed(ctx, farmSQL.DecrementBarnFeedParams{
-		ID:   barnID,
-		Feed: int64(amount),
-	})
+	return d.database.DecrementBarnFeed(
+		ctx, DecrementBarnFeedParams{
+			ID:   barnID,
+			Feed: int64(amount),
+		},
+	)
 }
 
-func (d *SQLDatabase) IncrementChickenEggLayCount(
+func (d *Datasource) IncrementChickenEggLayCount(
 	ctx context.Context, chickenID uuid.UUID, eggType int,
 ) error {
+	// TODO this is business logic and shouldn't be here.
 	switch eggType {
-	case EggTypeGolden:
+	case farmPkg.EggTypeGolden:
 		return d.database.IncrementChickenGoldEggLayCount(ctx, chickenID)
-	case EggTypeNormal:
+	case farmPkg.EggTypeNormal:
 		return d.database.IncrementChickenNormalEggLayCount(ctx, chickenID)
 	}
 

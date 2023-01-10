@@ -1,15 +1,15 @@
 package main
 
 import (
-	"chicken-farmer/backend/internal/farmer"
-	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
-	"flag"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -21,30 +21,26 @@ func main() {
 
 	logger, _ := zap.NewProduction()
 
-	grpcAddr := flag.String(
-		"grpcAddr", "localhost:50051", "gRPC server address",
-	)
-	restAddr := flag.String("restAddr", "localhost:8081", "REST server address")
-	flag.Parse()
-
 	// Load environment variables.
 	if err := godotenv.Load(); err != nil {
 		logger.Fatal(err.Error())
 	}
 
-	farmGRPCConn, err := internalGrpc.CreateClientConnection(
-		context.Background(), os.Getenv("FARM_SERVICE_ADDRESS"),
+	// TODO amqp string on .env
+	// TODO log to zap
+	publisher, err := amqp.NewPublisher(
+		amqp.NewDurableQueueConfig("amqp://guest:guest@localhost:5672/"),
+		watermill.NewStdLogger(false, false),
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
-	defer farmGRPCConn.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	farmerService, err := initializeService(
-		ctx, *grpcAddr, logger.Sugar(), farmGRPCConn,
+	universeService, err := initializeService(
+		ctx, logger.Sugar(), time.Second, publisher,
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
@@ -52,12 +48,11 @@ func main() {
 
 	log.Println("Service listening")
 
-	go farmerService.ListenForConnections(ctx, farmer.Authenticate)
-	go internalGrpc.RunRESTGateway(
-		ctx, logger.Sugar(),
-		internalGrpc.RegisterFarmerServiceHandlerFromEndpoint,
-		*restAddr, *grpcAddr,
-	)
+	go func() {
+		if err := universeService.BigBang(ctx); err != nil {
+			logger.Error(err.Error())
+		}
+	}()
 
 	// Wait for termination signal.
 	quit := make(chan os.Signal, 1)
@@ -65,5 +60,4 @@ func main() {
 	<-quit
 
 	log.Println("Shutting down server...")
-	farmerService.GracefulStop()
 }

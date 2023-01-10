@@ -14,6 +14,6 @@ type API interface {
 	NewChicken(ctx context.Context, farmID string) (string, error)
 
 	// FeedChicken makes the proto-old lay an egg.
-	// Each proto-old can only be fed once per time tick.
+	// Each proto-old can only be fed once per universe tick.
 	FeedChicken(ctx context.Context, chickenID string) error
 }

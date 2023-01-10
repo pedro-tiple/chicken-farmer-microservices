@@ -6,7 +6,10 @@ import (
 	"fmt"
 )
 
-var ErrNotFound = errors.New("not found in database")
+var (
+	ErrNotFound          = errors.New("not found in database")
+	ErrNotEnoughGoldEggs = errors.New("not enough gold eggs")
+)
 
 type ConnectionSettings struct {
 	Host          string
@@ -21,14 +24,16 @@ func OpenSQLConnections(dbConnectionSettings []ConnectionSettings) ([]*sql.DB, e
 	result := make([]*sql.DB, 0)
 
 	for _, setting := range dbConnectionSettings {
-		dbConnection, err := sql.Open("postgres", fmt.Sprintf(
-			"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-			setting.Host,
-			setting.Port,
-			setting.DatabaseName,
-			setting.User,
-			setting.Password,
-		))
+		dbConnection, err := sql.Open(
+			"postgres", fmt.Sprintf(
+				"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
+				setting.Host,
+				setting.Port,
+				setting.DatabaseName,
+				setting.User,
+				setting.Password,
+			),
+		)
 		if err != nil {
 			return nil, err
 		}

@@ -1,12 +1,16 @@
 package farm
 
 import (
+	"chicken-farmer/backend/internal/universe"
 	"context"
+	"encoding/json"
 	"errors"
 	"math/rand"
 	"time"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -29,7 +33,6 @@ var (
 	ErrBarnNotYours    = errors.New("barn doesn't belong to you")
 	ErrChickenNotYours = errors.New("chicken doesn't belong to you")
 	ErrChickenResting  = errors.New("chicken is resting")
-	ErrInvalidEggType  = errors.New("invalid egg type")
 )
 
 type IDataSource interface {
@@ -40,14 +43,20 @@ type IDataSource interface {
 	GetChicken(ctx context.Context, chickenID uuid.UUID) (Chicken, error)
 
 	InsertFarm(ctx context.Context, farm Farm) (farmID uuid.UUID, err error)
-	InsertChicken(ctx context.Context, chicken Chicken) (chickenID uuid.UUID, err error)
+	InsertChicken(
+		ctx context.Context, chicken Chicken,
+	) (chickenID uuid.UUID, err error)
 	InsertBarn(ctx context.Context, barn Barn) (barnID uuid.UUID, err error)
 
-	UpdateChickenRestingUntil(ctx context.Context, chickenID uuid.UUID, day uint) error
+	UpdateChickenRestingUntil(
+		ctx context.Context, chickenID uuid.UUID, day uint,
+	) error
 
 	IncrementBarnFeed(ctx context.Context, barnID uuid.UUID, amount uint) error
 	DecrementBarnFeed(ctx context.Context, barnID uuid.UUID, amount uint) error
-	IncrementChickenEggLayCount(ctx context.Context, chickenID uuid.UUID, eggType int) error
+	IncrementChickenEggLayCount(
+		ctx context.Context, chickenID uuid.UUID, eggType int,
+	) error
 }
 
 type IFarmerService interface {
@@ -56,31 +65,69 @@ type IFarmerService interface {
 }
 
 type Controller struct {
+	logger        *zap.SugaredLogger
 	datasource    IDataSource
 	farmerService IFarmerService
+	subscriber    message.Subscriber
 	currentDay    uint
 }
 
 var _ IController = &Controller{}
 
 func ProvideController(
+	logger *zap.SugaredLogger,
 	datasource IDataSource,
 	farmerService IFarmerService,
-) *Controller {
-	return &Controller{
+	subscriber message.Subscriber,
+) (*Controller, error) {
+	messages, err := subscriber.Subscribe(
+		context.Background(), universe.DayTopic,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	c := Controller{
+		logger:        logger,
 		datasource:    datasource,
 		farmerService: farmerService,
+		subscriber:    subscriber,
 		currentDay:    1,
+	}
+
+	go c.processTimeMessages(messages)
+
+	return &c, nil
+}
+
+func (c *Controller) processTimeMessages(messages <-chan *message.Message) {
+	for msg := range messages {
+		var dayMessage universe.DayMessage
+		if err := json.Unmarshal(msg.Payload, &dayMessage); err != nil {
+			// TODO move to DLQ
+			c.logger.Error(err)
+			continue
+		}
+
+		// Ignore outdated messages.
+		newDay := dayMessage.Day
+		if newDay > c.currentDay {
+			c.currentDay = dayMessage.Day
+		}
+		msg.Ack()
 	}
 }
 
 func (c *Controller) NewFarm(
 	ctx context.Context, ownerID uuid.UUID, name string,
 ) (uuid.UUID, error) {
-	farmID, err := c.datasource.InsertFarm(ctx, Farm{
-		OwnerID: ownerID,
-		Name:    name,
-	})
+	farmID, err := c.datasource.InsertFarm(
+		ctx, Farm{
+			ID:      uuid.New(),
+			OwnerID: ownerID,
+			Name:    name,
+		},
+	)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
@@ -88,21 +135,21 @@ func (c *Controller) NewFarm(
 	return farmID, nil
 }
 
-func (c *Controller) GetFarm(
+func (c *Controller) FarmDetails(
 	ctx context.Context, farmerID, farmID uuid.UUID,
-) (GetFarmResult, error) {
+) (FarmDetailsResult, error) {
 	farm, err := c.datasource.GetFarm(ctx, farmID)
 	if err != nil {
-		return GetFarmResult{}, err
+		return FarmDetailsResult{}, err
 	}
 
-	if farm.ID != farmerID {
-		return GetFarmResult{}, ErrFarmNotYours
+	if farm.OwnerID != farmerID {
+		return FarmDetailsResult{}, ErrFarmNotYours
 	}
 
 	barns, err := c.datasource.GetBarnsOfFarm(ctx, farm.ID)
 	if err != nil {
-		return GetFarmResult{}, err
+		return FarmDetailsResult{}, err
 	}
 
 	resultBarns := make([]getFarmResultBarn, len(barns))
@@ -112,32 +159,36 @@ func (c *Controller) GetFarm(
 	for i, barn := range barns {
 		i, barn := i, barn //nolint:varnamelen
 
-		errGrp.Go(func() error {
-			chickens, err := c.datasource.GetChickensOfBarn(errGrpCtx, barn.ID)
-			if err != nil {
-				return err
-			}
-			resultBarns[i] = getFarmResultBarn{
-				Barn:     barn,
-				Chickens: chickens,
-			}
+		errGrp.Go(
+			func() error {
+				chickens, err := c.datasource.GetChickensOfBarn(
+					errGrpCtx, barn.ID,
+				)
+				if err != nil {
+					return err
+				}
+				resultBarns[i] = getFarmResultBarn{
+					Barn:     barn,
+					Chickens: chickens,
+				}
 
-			return nil
-		})
+				return nil
+			},
+		)
 	}
 
 	if err := errGrp.Wait(); err != nil {
-		return GetFarmResult{}, err
+		return FarmDetailsResult{}, err
 	}
 
 	// Gold egg count lives in another service for this implementation so must
 	// go fetch it there.
 	goldEggCount, err := c.farmerService.GetGoldEggs(ctx)
 	if err != nil {
-		return GetFarmResult{}, err
+		return FarmDetailsResult{}, err
 	}
 
-	return GetFarmResult{
+	return FarmDetailsResult{
 		Farm:         farm,
 		GoldEggCount: goldEggCount,
 		CurrentDay:   c.currentDay,
@@ -153,7 +204,7 @@ func (c *Controller) BuyBarn(
 		return err
 	}
 
-	if farm.ID != farmerID {
+	if farm.OwnerID != farmerID {
 		return ErrBarnNotYours
 	}
 
@@ -180,15 +231,19 @@ func (c *Controller) BuyFeedBags(
 		return err
 	}
 
-	if barn.ID != farmerID {
+	if barn.OwnerID != farmerID {
 		return ErrBarnNotYours
 	}
 
-	if err := c.farmerService.SpendGoldEggs(ctx, PurchaseCostFeedBag*amount); err != nil {
+	if err := c.farmerService.SpendGoldEggs(
+		ctx, PurchaseCostFeedBag*amount,
+	); err != nil {
 		return err
 	}
 
-	if err := c.datasource.IncrementBarnFeed(ctx, barnID, amount*FeedPerBag); err != nil {
+	if err := c.datasource.IncrementBarnFeed(
+		ctx, barnID, amount*FeedPerBag,
+	); err != nil {
 		return err
 	}
 
@@ -205,23 +260,27 @@ func (c *Controller) BuyChicken(
 		return err
 	}
 
-	if barn.ID != farmerID {
+	if barn.OwnerID != farmerID {
 		return ErrBarnNotYours
 	}
 
-	if err := c.farmerService.SpendGoldEggs(ctx, PurchaseCostBarn); err != nil {
+	if err := c.farmerService.SpendGoldEggs(
+		ctx, PurchaseCostChicken,
+	); err != nil {
 		return err
 	}
 
 	// Maybe have the gold egg chance be on a normal distribution?
 	rand.Seed(time.Now().Unix())
 
-	_, err = c.datasource.InsertChicken(ctx, Chicken{
-		ID:            uuid.New(),
-		BarnID:        barnID,
-		DateOfBirth:   c.currentDay,
-		GoldEggChance: uint(rand.Intn(99) + 1), // [1,100]
-	})
+	_, err = c.datasource.InsertChicken(
+		ctx, Chicken{
+			ID:            uuid.New(),
+			BarnID:        barnID,
+			DateOfBirth:   c.currentDay,
+			GoldEggChance: uint(rand.Intn(99) + 1), // [1,100]
+		},
+	)
 	if err != nil {
 		return err
 	}

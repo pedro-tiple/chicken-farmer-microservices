@@ -106,10 +106,10 @@ func (mr *MockIControllerMockRecorder) FeedChickensOfBarn(ctx, barnID interface{
 }
 
 // GetFarm mocks base method.
-func (m *MockIController) GetFarm(ctx context.Context, farmID uuid.UUID) (GetFarmResult, error) {
+func (m *MockIController) GetFarm(ctx context.Context, farmID uuid.UUID) (FarmDetailsResult, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetFarm", ctx, farmID)
-	ret0, _ := ret[0].(GetFarmResult)
+	ret0, _ := ret[0].(FarmDetailsResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

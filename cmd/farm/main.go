@@ -11,8 +11,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -22,11 +23,14 @@ import (
 )
 
 func main() {
+	// TODO this is too much code and a lot of duplication with other mains, split and clean up.
 	log.Println("Setting up things...")
 
 	logger, _ := zap.NewProduction()
 
-	grpcAddr := flag.String("grpcAddr", "localhost:50051", "gRPC server address")
+	grpcAddr := flag.String(
+		"grpcAddr", "localhost:50051", "gRPC server address",
+	)
 	restAddr := flag.String("restAddr", "localhost:8081", "REST server address")
 	flag.Parse()
 
@@ -35,14 +39,16 @@ func main() {
 		logger.Fatal(err.Error())
 	}
 
-	dbConnections, err := internalDB.OpenSQLConnections([]internalDB.ConnectionSettings{{
-		Host:          os.Getenv("POSTGRES_HOST"),
-		Port:          os.Getenv("POSTGRES_PORT"),
-		DatabaseName:  os.Getenv("POSTGRES_DB"),
-		User:          os.Getenv("POSTGRES_USER"),
-		Password:      os.Getenv("POSTGRES_PASSWORD"),
-		IsReadReplica: false,
-	}})
+	dbConnections, err := internalDB.OpenSQLConnections(
+		[]internalDB.ConnectionSettings{{
+			Host:          os.Getenv("POSTGRES_HOST"),
+			Port:          os.Getenv("POSTGRES_PORT"),
+			DatabaseName:  os.Getenv("POSTGRES_DB"),
+			User:          os.Getenv("POSTGRES_USER"),
+			Password:      os.Getenv("POSTGRES_PASSWORD"),
+			IsReadReplica: false,
+		}},
+	)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
@@ -69,26 +75,35 @@ func main() {
 	//	logger.Fatal(err.Error())
 	// }
 
-	if err := migrator.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+	if err := migrator.Up(); err != nil && !errors.Is(
+		err, migrate.ErrNoChange,
+	) {
 		logger.Fatal(err.Error())
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
 	farmerGRPCConn, err := internalGrpc.CreateClientConnection(
-		ctx, os.Getenv("FARMER_SERVICE_ADDRESS"),
+		context.Background(), os.Getenv("FARMER_SERVICE_ADDRESS"),
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
 	defer farmerGRPCConn.Close()
 
+	// TODO from .env
+	subscriber, err := amqp.NewSubscriber(
+		amqp.NewDurableQueueConfig("amqp://guest:guest@localhost:5672/"),
+		watermill.NewStdLogger(false, false),
+	)
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+
 	farmService, err := initializeService(
 		*grpcAddr,
 		logger.Sugar(),
 		dbConnections[0],
 		farmerGRPCConn,
+		subscriber,
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
@@ -96,7 +111,7 @@ func main() {
 
 	log.Println("Service listening")
 
-	ctx, cancel = context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	go farmService.ListenForConnections(ctx, farm.Authenticate)

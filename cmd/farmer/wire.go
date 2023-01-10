@@ -5,6 +5,7 @@ package main
 
 import (
 	"chicken-farmer/backend/internal/farmer"
+	farmerMongo "chicken-farmer/backend/internal/farmer/mongo"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
 
@@ -19,17 +20,19 @@ func initializeService(
 	logger *zap.SugaredLogger,
 	farmGRPCConn grpc.ClientConnInterface,
 ) (farmer.Service, error) {
-	panic(wire.Build(
-		farmer.ProvideService,
+	panic(
+		wire.Build(
+			farmer.ProvideService,
 
-		farmer.ProvideController,
-		wire.Bind(new(farmer.IController), new(*farmer.Controller)),
+			farmer.ProvideController,
+			wire.Bind(new(farmer.IController), new(*farmer.Controller)),
 
-		farmer.ProvideMongoDatabase,
-		wire.Bind(new(farmer.IDataSource), new(*farmer.MongoDatabase)),
+			farmerMongo.ProvideDatasource,
+			wire.Bind(new(farmer.IDataSource), new(*farmerMongo.Datasource)),
 
-		internalGrpc.NewFarmServiceClient,
-		farmer.ProvideFarmService,
-		wire.Bind(new(farmer.IFarmService), new(*farmer.FarmService)),
-	))
+			internalGrpc.NewFarmServiceClient,
+			farmer.ProvideFarmService,
+			wire.Bind(new(farmer.IFarmService), new(*farmer.FarmService)),
+		),
+	)
 }

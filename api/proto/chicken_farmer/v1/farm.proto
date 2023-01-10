@@ -13,7 +13,7 @@ service FarmService {
   rpc FeedChickensOfBarn(FeedChickensOfBarnRequest) returns (FeedChickensOfBarnResponse) {}
 
   // REST exposed functions
-  rpc GetFarm(GetFarmRequest) returns (GetFarmResponse) {
+  rpc FarmDetails(FarmDetailsRequest) returns (FarmDetailsResponse) {
     option (google.api.http) = {get: "/v1/farm"};
   }
 
@@ -77,8 +77,8 @@ message NewFarmResponse {
   string farm_id = 1;
 }
 
-message GetFarmRequest {}
-message GetFarmResponse {
+message FarmDetailsRequest {}
+message FarmDetailsResponse {
   Farm farm = 1;
 }
 

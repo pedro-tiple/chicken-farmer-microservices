@@ -37,7 +37,7 @@ services:
 
   ### MongoDB ###############################################
   mongo:
-    image: mongo:3.6.18-xenial
+    image: mongo:latest
     container_name: cfm_mongodb
     restart: always
     volumes:
@@ -52,13 +52,15 @@ services:
 
   ### Mongo Express #########################################
   mongo-express:
-    image: mongo-express
+    image: mongo-express:latest
     container_name: cfm_mongodb_express
+    restart: always
     ports:
       - "27018:8081"
     networks:
       - backend
     environment:
+      ME_CONFIG_MONGODB_SERVER: cfm_mongodb
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ROOT_USERNAME}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ROOT_PASSWORD}
     depends_on:
@@ -93,3 +95,13 @@ services:
       - backend
     depends_on:
       - postgres
+
+  ### RabbitMQ ##############################################
+  rabbitmq:
+    image: rabbitmq:3.7
+    container_name: cfm_rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+    networks:
+      - backend

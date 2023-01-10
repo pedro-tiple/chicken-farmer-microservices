@@ -5,6 +5,7 @@ import (
 	"chicken-farmer/backend/internal/pkg"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	grpcAuth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -15,8 +16,12 @@ import (
 )
 
 type IController interface {
-	Register(ctx context.Context, farmerName, farmName, password string) (Farmer, error)
-	Login(ctx context.Context, farmerName, password string) (jwt string, err error)
+	Register(
+		ctx context.Context, farmerName, farmName, password string,
+	) (Farmer, error)
+	Login(
+		ctx context.Context, farmerName, password string,
+	) (jwt string, err error)
 	GetGoldEggs(ctx context.Context, farmerID uuid.UUID) (uint, error)
 	SpendGoldEggs(ctx context.Context, farmerID uuid.UUID, amount uint) error
 }
@@ -85,8 +90,12 @@ func (s *Service) GracefulStop() {
 func (s *Service) Register(
 	ctx context.Context, request *internalGrpc.RegisterRequest,
 ) (*internalGrpc.RegisterResponse, error) {
+	fmt.Println("service register")
 	farmer, err := s.controller.Register(
-		ctx, request.GetFarmerName(), request.GetFarmName(), request.GetPassword(),
+		ctx,
+		request.GetFarmerName(),
+		request.GetFarmName(),
+		request.GetPassword(),
 	)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -122,7 +131,8 @@ func (s *Service) SpendGoldEggs(
 	}
 
 	if err := s.controller.SpendGoldEggs(
-		ctx, ctxData.FarmerID, uint(request.GetAmount())); err != nil {
+		ctx, ctxData.FarmerID, uint(request.GetAmount()),
+	); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 

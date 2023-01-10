@@ -22,12 +22,12 @@
     "/v1/farm": {
       "get": {
         "summary": "REST exposed functions",
-        "operationId": "FarmService_GetFarm",
+        "operationId": "FarmService_FarmDetails",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GetFarmResponse"
+              "$ref": "#/definitions/v1FarmDetailsResponse"
             }
           },
           "default": {
@@ -437,19 +437,19 @@
         }
       }
     },
-    "v1FeedChickenResponse": {
-      "type": "object"
-    },
-    "v1FeedChickensOfBarnResponse": {
-      "type": "object"
-    },
-    "v1GetFarmResponse": {
+    "v1FarmDetailsResponse": {
       "type": "object",
       "properties": {
         "farm": {
           "$ref": "#/definitions/v1Farm"
         }
       }
+    },
+    "v1FeedChickenResponse": {
+      "type": "object"
+    },
+    "v1FeedChickensOfBarnResponse": {
+      "type": "object"
     },
     "v1GetGoldEggsResponse": {
       "type": "object",

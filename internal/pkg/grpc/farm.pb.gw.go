@@ -99,20 +99,20 @@ func local_request_FarmService_FeedChickensOfBarn_0(ctx context.Context, marshal
 
 }
 
-func request_FarmService_GetFarm_0(ctx context.Context, marshaler runtime.Marshaler, client FarmServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetFarmRequest
+func request_FarmService_FarmDetails_0(ctx context.Context, marshaler runtime.Marshaler, client FarmServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq FarmDetailsRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := client.GetFarm(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.FarmDetails(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_FarmService_GetFarm_0(ctx context.Context, marshaler runtime.Marshaler, server FarmServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetFarmRequest
+func local_request_FarmService_FarmDetails_0(ctx context.Context, marshaler runtime.Marshaler, server FarmServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq FarmDetailsRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := server.GetFarm(ctx, &protoReq)
+	msg, err := server.FarmDetails(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -377,7 +377,7 @@ func RegisterFarmServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("GET", pattern_FarmService_GetFarm_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_FarmService_FarmDetails_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -385,12 +385,12 @@ func RegisterFarmServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmService/GetFarm", runtime.WithHTTPPathPattern("/v1/farm"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmService/FarmDetails", runtime.WithHTTPPathPattern("/v1/farm"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_FarmService_GetFarm_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_FarmService_FarmDetails_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -398,7 +398,7 @@ func RegisterFarmServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_FarmService_GetFarm_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_FarmService_FarmDetails_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -587,25 +587,25 @@ func RegisterFarmServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("GET", pattern_FarmService_GetFarm_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_FarmService_FarmDetails_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmService/GetFarm", runtime.WithHTTPPathPattern("/v1/farm"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmService/FarmDetails", runtime.WithHTTPPathPattern("/v1/farm"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_FarmService_GetFarm_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_FarmService_FarmDetails_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_FarmService_GetFarm_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_FarmService_FarmDetails_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -705,7 +705,7 @@ var (
 
 	pattern_FarmService_FeedChickensOfBarn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"chicken_farmer.v1.FarmService", "FeedChickensOfBarn"}, ""))
 
-	pattern_FarmService_GetFarm_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "farm"}, ""))
+	pattern_FarmService_FarmDetails_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "farm"}, ""))
 
 	pattern_FarmService_BuyBarn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "farm", "barns", "buy"}, ""))
 
@@ -721,7 +721,7 @@ var (
 
 	forward_FarmService_FeedChickensOfBarn_0 = runtime.ForwardResponseMessage
 
-	forward_FarmService_GetFarm_0 = runtime.ForwardResponseMessage
+	forward_FarmService_FarmDetails_0 = runtime.ForwardResponseMessage
 
 	forward_FarmService_BuyBarn_0 = runtime.ForwardResponseMessage
 

@@ -7,4 +7,5 @@ type Farmer struct {
 	FarmID       uuid.UUID
 	Name         string
 	PasswordHash string
+	GoldEggCount uint
 }

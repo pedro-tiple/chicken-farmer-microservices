@@ -2,7 +2,9 @@ package farmer
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
@@ -11,39 +13,52 @@ import (
 type IDataSource interface {
 	GetFarmer(ctx context.Context, farmerID uuid.UUID) (Farmer, error)
 	GetFarmerByName(ctx context.Context, name string) (Farmer, error)
+	GetFarmerGoldEggs(ctx context.Context, farmerID uuid.UUID) (uint, error)
 
-	InsertFarmer(ctx context.Context, farmer Farmer) (farmerID uuid.UUID, err error)
+	InsertFarmer(
+		ctx context.Context, farmer Farmer,
+	) (farmerID uuid.UUID, err error)
+
+	// DecrementGoldEggCountGreaterEqualThan should atomically check that the value
+	// of gold egg count is greater or equal than the passed amount.
+	// Should return database.ErrNotEnoughGoldEggs when not greater or equal.
+	DecrementGoldEggCountGreaterEqualThan(
+		ctx context.Context, farmerID uuid.UUID, amount uint,
+	) error
 }
 
 type IFarmService interface {
-	NewFarm(ctx context.Context, ownerID uuid.UUID, name string) (farmID uuid.UUID, err error)
+	NewFarm(
+		ctx context.Context, ownerID uuid.UUID, name string,
+	) (farmID uuid.UUID, err error)
+	DeleteFarm(ctx context.Context, farmID uuid.UUID) error
 }
 
 type Controller struct {
+	logger      *zap.SugaredLogger
 	datasource  IDataSource
 	farmService IFarmService
-	currentDay  uint
-	logger      *zap.SugaredLogger
+	subscriber  message.Subscriber
 }
 
 var _ IController = &Controller{}
 
 func ProvideController(
+	logger *zap.SugaredLogger,
 	datasource IDataSource,
 	farmService IFarmService,
-	logger *zap.SugaredLogger,
 ) *Controller {
 	return &Controller{
+		logger:      logger,
 		datasource:  datasource,
 		farmService: farmService,
-		currentDay:  0,
-		logger:      logger,
 	}
 }
 
 func (c *Controller) Register(
 	ctx context.Context, farmerName, farmName, password string,
 ) (Farmer, error) {
+	fmt.Println("controller register")
 	farmerID := uuid.New()
 	farmID, err := c.farmService.NewFarm(ctx, farmerID, farmName)
 	if err != nil {
@@ -62,15 +77,20 @@ func (c *Controller) Register(
 		Name:         farmerName,
 		FarmID:       farmID,
 		PasswordHash: string(passwordHash),
+		GoldEggCount: 2,
 	}
 	_, err = c.datasource.InsertFarmer(ctx, farmer)
 	if err != nil {
-		c.logger.Errorw(
-			"should delete dangling farm",
-			"err", err,
-			"farmID", farmID,
-		)
-		// TODO delete the farm as it's gonna be left dangling uselessly
+		// Delete the farm as it would be left dangling uselessly.
+		if delErr := c.farmService.DeleteFarm(ctx, farmID); delErr != nil {
+			c.logger.Errorw(
+				"deleting dangling farm",
+				"farmID", farmID,
+				"err", err,
+				"delErr", err,
+			)
+		}
+
 		return Farmer{}, err
 	}
 
@@ -100,13 +120,22 @@ func (c *Controller) Login(
 func (c *Controller) GetGoldEggs(
 	ctx context.Context, farmerID uuid.UUID,
 ) (uint, error) {
-	// TODO implement me
-	return 10, nil
+	farmer, err := c.datasource.GetFarmer(ctx, farmerID)
+	if err != nil {
+		return 0, err
+	}
+
+	return farmer.GoldEggCount, nil
 }
 
 func (c *Controller) SpendGoldEggs(
 	ctx context.Context, farmerID uuid.UUID, amount uint,
 ) error {
-	// TODO implement me
+	if err := c.datasource.DecrementGoldEggCountGreaterEqualThan(
+		ctx, farmerID, amount,
+	); err != nil {
+		return err
+	}
+
 	return nil
 }

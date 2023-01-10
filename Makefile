@@ -1,4 +1,4 @@
-all: sqlc buf mockgen generate apiclient
+all: sqlc buf mockgen gogen apiclient
 backend: sqlc buf mockgen generate
 frontend: apiclient
 
@@ -9,7 +9,7 @@ buf:
 	cd ./api/proto; buf lint
 	cd ./api/proto; buf generate
 
-generate:
+gogen:
 	go generate "./..."
 
 mockgen:
@@ -26,4 +26,4 @@ apiclient:
 	cd "./web/chicken-farmer-service"; npm run build
 
 
-.PHONY: sqlc buf generate mockgen apiclient
+.PHONY: sqlc buf gogen mockgen apiclient

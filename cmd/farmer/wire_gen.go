@@ -8,6 +8,7 @@ package main
 
 import (
 	"chicken-farmer/backend/internal/farmer"
+	"chicken-farmer/backend/internal/farmer/mongo"
 	grpc2 "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
 	"go.uber.org/zap"
@@ -22,13 +23,13 @@ import (
 // Injectors from wire.go:
 
 func initializeService(ctx context.Context, address string, logger *zap.SugaredLogger, farmGRPCConn grpc.ClientConnInterface) (farmer.Service, error) {
-	mongoDatabase, err := farmer.ProvideMongoDatabase(ctx)
+	datasource, err := mongo.ProvideDatasource(ctx)
 	if err != nil {
 		return farmer.Service{}, err
 	}
 	farmServiceClient := grpc2.NewFarmServiceClient(farmGRPCConn)
 	farmService := farmer.ProvideFarmService(farmServiceClient)
-	controller := farmer.ProvideController(mongoDatabase, farmService, logger)
+	controller := farmer.ProvideController(logger, datasource, farmService)
 	service := farmer.ProvideService(address, logger, controller)
 	return service, nil
 }

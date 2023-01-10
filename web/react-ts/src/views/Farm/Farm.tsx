@@ -29,7 +29,7 @@ export const Farm = () => {
   return (
     <div className="farm">
       <div className="farm-info">
-        <h1>{farm.name}</h1>
+        <h1>{farm?.name}</h1>
         <span>
           <label>Current Day:</label> <span>{farm?.day}</span>
         </span>

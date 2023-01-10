@@ -8,12 +8,13 @@ package grpc
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )
 
-// This is a compile-time assertion to ensure that this generated file
+// This is a compile-universe assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
@@ -25,7 +26,7 @@ type FarmServiceClient interface {
 	NewFarm(ctx context.Context, in *NewFarmRequest, opts ...grpc.CallOption) (*NewFarmResponse, error)
 	FeedChickensOfBarn(ctx context.Context, in *FeedChickensOfBarnRequest, opts ...grpc.CallOption) (*FeedChickensOfBarnResponse, error)
 	// REST exposed functions
-	GetFarm(ctx context.Context, in *GetFarmRequest, opts ...grpc.CallOption) (*GetFarmResponse, error)
+	FarmDetails(ctx context.Context, in *FarmDetailsRequest, opts ...grpc.CallOption) (*FarmDetailsResponse, error)
 	BuyBarn(ctx context.Context, in *BuyBarnRequest, opts ...grpc.CallOption) (*BuyBarnResponse, error)
 	BuyFeedBag(ctx context.Context, in *BuyFeedBagRequest, opts ...grpc.CallOption) (*BuyFeedBagResponse, error)
 	BuyChicken(ctx context.Context, in *BuyChickenRequest, opts ...grpc.CallOption) (*BuyChickenResponse, error)
@@ -58,9 +59,9 @@ func (c *farmServiceClient) FeedChickensOfBarn(ctx context.Context, in *FeedChic
 	return out, nil
 }
 
-func (c *farmServiceClient) GetFarm(ctx context.Context, in *GetFarmRequest, opts ...grpc.CallOption) (*GetFarmResponse, error) {
-	out := new(GetFarmResponse)
-	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmService/GetFarm", in, out, opts...)
+func (c *farmServiceClient) FarmDetails(ctx context.Context, in *FarmDetailsRequest, opts ...grpc.CallOption) (*FarmDetailsResponse, error) {
+	out := new(FarmDetailsResponse)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmService/FarmDetails", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +111,7 @@ type FarmServiceServer interface {
 	NewFarm(context.Context, *NewFarmRequest) (*NewFarmResponse, error)
 	FeedChickensOfBarn(context.Context, *FeedChickensOfBarnRequest) (*FeedChickensOfBarnResponse, error)
 	// REST exposed functions
-	GetFarm(context.Context, *GetFarmRequest) (*GetFarmResponse, error)
+	FarmDetails(context.Context, *FarmDetailsRequest) (*FarmDetailsResponse, error)
 	BuyBarn(context.Context, *BuyBarnRequest) (*BuyBarnResponse, error)
 	BuyFeedBag(context.Context, *BuyFeedBagRequest) (*BuyFeedBagResponse, error)
 	BuyChicken(context.Context, *BuyChickenRequest) (*BuyChickenResponse, error)
@@ -128,8 +129,8 @@ func (UnimplementedFarmServiceServer) NewFarm(context.Context, *NewFarmRequest) 
 func (UnimplementedFarmServiceServer) FeedChickensOfBarn(context.Context, *FeedChickensOfBarnRequest) (*FeedChickensOfBarnResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FeedChickensOfBarn not implemented")
 }
-func (UnimplementedFarmServiceServer) GetFarm(context.Context, *GetFarmRequest) (*GetFarmResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFarm not implemented")
+func (UnimplementedFarmServiceServer) FarmDetails(context.Context, *FarmDetailsRequest) (*FarmDetailsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FarmDetails not implemented")
 }
 func (UnimplementedFarmServiceServer) BuyBarn(context.Context, *BuyBarnRequest) (*BuyBarnResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BuyBarn not implemented")
@@ -192,20 +193,20 @@ func _FarmService_FeedChickensOfBarn_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FarmService_GetFarm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetFarmRequest)
+func _FarmService_FarmDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FarmDetailsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FarmServiceServer).GetFarm(ctx, in)
+		return srv.(FarmServiceServer).FarmDetails(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chicken_farmer.v1.FarmService/GetFarm",
+		FullMethod: "/chicken_farmer.v1.FarmService/FarmDetails",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FarmServiceServer).GetFarm(ctx, req.(*GetFarmRequest))
+		return srv.(FarmServiceServer).FarmDetails(ctx, req.(*FarmDetailsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -298,8 +299,8 @@ var FarmService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _FarmService_FeedChickensOfBarn_Handler,
 		},
 		{
-			MethodName: "GetFarm",
-			Handler:    _FarmService_GetFarm_Handler,
+			MethodName: "FarmDetails",
+			Handler:    _FarmService_FarmDetails_Handler,
 		},
 		{
 			MethodName: "BuyBarn",

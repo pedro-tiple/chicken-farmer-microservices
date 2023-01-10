@@ -8,8 +8,10 @@ package main
 
 import (
 	"chicken-farmer/backend/internal/farm"
+	sql2 "chicken-farmer/backend/internal/farm/sql"
 	grpc2 "chicken-farmer/backend/internal/pkg/grpc"
 	"database/sql"
+	"github.com/ThreeDotsLabs/watermill/message"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -21,14 +23,17 @@ import (
 
 // Injectors from wire.go:
 
-func initializeService(address string, logger *zap.SugaredLogger, dbConnection *sql.DB, farmerGRPCConn grpc.ClientConnInterface) (farm.Service, error) {
-	sqlDatabase, err := farm.ProvideSQLDatabase(dbConnection)
+func initializeService(address string, logger *zap.SugaredLogger, dbConnection *sql.DB, farmerGRPCConn grpc.ClientConnInterface, subscriber message.Subscriber) (farm.Service, error) {
+	datasource, err := sql2.ProvideDatasource(dbConnection)
 	if err != nil {
 		return farm.Service{}, err
 	}
 	farmerServiceClient := grpc2.NewFarmerServiceClient(farmerGRPCConn)
 	farmerService := farm.ProvideFarmerService(farmerServiceClient)
-	controller := farm.ProvideController(sqlDatabase, farmerService)
+	controller, err := farm.ProvideController(logger, datasource, farmerService, subscriber)
+	if err != nil {
+		return farm.Service{}, err
+	}
 	service := farm.ProvideService(address, logger, controller)
 	return service, nil
 }

@@ -27,7 +27,7 @@ type Chicken struct {
 	GoldEggChance  uint
 }
 
-type GetFarmResult struct {
+type FarmDetailsResult struct {
 	Farm
 	GoldEggCount uint
 	CurrentDay   uint

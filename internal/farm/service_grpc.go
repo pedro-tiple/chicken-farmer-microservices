@@ -5,7 +5,6 @@ import (
 	"chicken-farmer/backend/internal/pkg"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	grpcAuth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -16,11 +15,17 @@ import (
 )
 
 type IController interface {
-	NewFarm(ctx context.Context, farmerID uuid.UUID, name string) (farmID uuid.UUID, err error)
-	GetFarm(ctx context.Context, farmerID, farmID uuid.UUID) (GetFarmResult, error)
+	NewFarm(
+		ctx context.Context, farmerID uuid.UUID, name string,
+	) (farmID uuid.UUID, err error)
+	FarmDetails(
+		ctx context.Context, farmerID, farmID uuid.UUID,
+	) (FarmDetailsResult, error)
 
 	BuyBarn(ctx context.Context, farmerID, farmID uuid.UUID) error
-	BuyFeedBags(ctx context.Context, farmerID, barnID uuid.UUID, amount uint) error
+	BuyFeedBags(
+		ctx context.Context, farmerID, barnID uuid.UUID, amount uint,
+	) error
 	BuyChicken(ctx context.Context, farmerID, barnID uuid.UUID) error
 
 	FeedChicken(ctx context.Context, farmerID, chickenID uuid.UUID) error
@@ -36,7 +41,7 @@ type Service struct {
 	server  *grpc.Server
 	logger  *zap.SugaredLogger
 
-	// TODO message queue to receive time ticks.
+	// TODO message queue to receive universe ticks.
 	controller IController
 }
 
@@ -106,16 +111,15 @@ func (s *Service) NewFarm(
 	}, nil
 }
 
-func (s *Service) GetFarm(
-	ctx context.Context, _ *internalGrpc.GetFarmRequest,
-) (*internalGrpc.GetFarmResponse, error) {
+func (s *Service) FarmDetails(
+	ctx context.Context, _ *internalGrpc.FarmDetailsRequest,
+) (*internalGrpc.FarmDetailsResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	fmt.Println(ctxData.FarmerID, ctxData.FarmID)
-	farm, err := s.controller.GetFarm(ctx, ctxData.FarmerID, ctxData.FarmID)
+	farm, err := s.controller.FarmDetails(ctx, ctxData.FarmerID, ctxData.FarmID)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -141,7 +145,7 @@ func (s *Service) GetFarm(
 		}
 	}
 
-	return &internalGrpc.GetFarmResponse{
+	return &internalGrpc.FarmDetailsResponse{
 		Farm: &internalGrpc.Farm{
 			Name:       farm.Name,
 			Barns:      protoBarns,
@@ -159,7 +163,9 @@ func (s *Service) BuyBarn(
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	if err := s.controller.BuyBarn(ctx, ctxData.FarmerID, ctxData.FarmID); err != nil {
+	if err := s.controller.BuyBarn(
+		ctx, ctxData.FarmerID, ctxData.FarmID,
+	); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
