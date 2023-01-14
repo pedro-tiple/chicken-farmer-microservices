@@ -12,25 +12,25 @@ type IController interface {
 	Tick(ctx context.Context) error
 }
 
-type Service struct {
+type TimeService struct {
 	logger     *zap.SugaredLogger
 	controller IController
 	frequency  time.Duration
 }
 
-func ProvideService(
+func ProvideTimeService(
 	logger *zap.SugaredLogger,
 	controller IController,
 	frequency time.Duration,
-) Service {
-	return Service{
+) *TimeService {
+	return &TimeService{
 		logger:     logger,
 		controller: controller,
 		frequency:  frequency,
 	}
 }
 
-func (s Service) BigBang(ctx context.Context) error {
+func (s TimeService) BigBang(ctx context.Context) error {
 	if err := s.controller.ResetTime(ctx); err != nil {
 		return err
 	}

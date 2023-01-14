@@ -14,15 +14,15 @@ import (
 	"google.golang.org/grpc"
 )
 
-func initializeService(
+func initializeGRPCService(
 	ctx context.Context,
 	address string,
 	logger *zap.SugaredLogger,
 	farmGRPCConn grpc.ClientConnInterface,
-) (farmer.Service, error) {
+) (*farmer.GRPCService, error) {
 	panic(
 		wire.Build(
-			farmer.ProvideService,
+			farmer.ProvideGRPCService,
 
 			farmer.ProvideController,
 			wire.Bind(new(farmer.IController), new(*farmer.Controller)),
@@ -31,8 +31,8 @@ func initializeService(
 			wire.Bind(new(farmer.IDataSource), new(*farmerMongo.Datasource)),
 
 			internalGrpc.NewFarmServiceClient,
-			farmer.ProvideFarmService,
-			wire.Bind(new(farmer.IFarmService), new(*farmer.FarmService)),
+			farmer.ProvideFarmGRPCClient,
+			wire.Bind(new(farmer.IFarmService), new(*farmer.FarmGRPCClient)),
 		),
 	)
 }

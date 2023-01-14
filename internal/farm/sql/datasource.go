@@ -203,21 +203,29 @@ func (d *Datasource) IncrementBarnFeed(
 	)
 }
 
-func (d *Datasource) DecrementBarnFeed(
+func (d *Datasource) DecrementBarnFeedGreaterEqualThan(
 	ctx context.Context, barnID uuid.UUID, amount uint,
 ) error {
-	return d.database.DecrementBarnFeed(
-		ctx, DecrementBarnFeedParams{
+	count, err := d.database.DecrementBarnFeedGreaterEqualThan(
+		ctx, DecrementBarnFeedGreaterEqualThanParams{
 			ID:   barnID,
 			Feed: int64(amount),
 		},
 	)
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return internalDB.ErrNotEnoughFeed
+	}
+
+	return nil
 }
 
 func (d *Datasource) IncrementChickenEggLayCount(
 	ctx context.Context, chickenID uuid.UUID, eggType int,
 ) error {
-	// TODO this is business logic and shouldn't be here.
 	switch eggType {
 	case farmPkg.EggTypeGolden:
 		return d.database.IncrementChickenGoldEggLayCount(ctx, chickenID)

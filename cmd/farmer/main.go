@@ -10,9 +10,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
@@ -43,7 +41,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	farmerService, err := initializeService(
+	farmerService, err := initializeGRPCService(
 		ctx, *grpcAddr, logger.Sugar(), farmGRPCConn,
 	)
 	if err != nil {

@@ -8,13 +8,12 @@ package grpc
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )
 
-// This is a compile-universe assertion to ensure that this generated file
+// This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
@@ -24,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FarmServiceClient interface {
 	NewFarm(ctx context.Context, in *NewFarmRequest, opts ...grpc.CallOption) (*NewFarmResponse, error)
+	DeleteFarm(ctx context.Context, in *DeleteFarmRequest, opts ...grpc.CallOption) (*DeleteFarmResponse, error)
 	FeedChickensOfBarn(ctx context.Context, in *FeedChickensOfBarnRequest, opts ...grpc.CallOption) (*FeedChickensOfBarnResponse, error)
 	// REST exposed functions
 	FarmDetails(ctx context.Context, in *FarmDetailsRequest, opts ...grpc.CallOption) (*FarmDetailsResponse, error)
@@ -44,6 +44,15 @@ func NewFarmServiceClient(cc grpc.ClientConnInterface) FarmServiceClient {
 func (c *farmServiceClient) NewFarm(ctx context.Context, in *NewFarmRequest, opts ...grpc.CallOption) (*NewFarmResponse, error) {
 	out := new(NewFarmResponse)
 	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmService/NewFarm", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *farmServiceClient) DeleteFarm(ctx context.Context, in *DeleteFarmRequest, opts ...grpc.CallOption) (*DeleteFarmResponse, error) {
+	out := new(DeleteFarmResponse)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmService/DeleteFarm", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,6 +118,7 @@ func (c *farmServiceClient) FeedChicken(ctx context.Context, in *FeedChickenRequ
 // for forward compatibility
 type FarmServiceServer interface {
 	NewFarm(context.Context, *NewFarmRequest) (*NewFarmResponse, error)
+	DeleteFarm(context.Context, *DeleteFarmRequest) (*DeleteFarmResponse, error)
 	FeedChickensOfBarn(context.Context, *FeedChickensOfBarnRequest) (*FeedChickensOfBarnResponse, error)
 	// REST exposed functions
 	FarmDetails(context.Context, *FarmDetailsRequest) (*FarmDetailsResponse, error)
@@ -125,6 +135,9 @@ type UnimplementedFarmServiceServer struct {
 
 func (UnimplementedFarmServiceServer) NewFarm(context.Context, *NewFarmRequest) (*NewFarmResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewFarm not implemented")
+}
+func (UnimplementedFarmServiceServer) DeleteFarm(context.Context, *DeleteFarmRequest) (*DeleteFarmResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFarm not implemented")
 }
 func (UnimplementedFarmServiceServer) FeedChickensOfBarn(context.Context, *FeedChickensOfBarnRequest) (*FeedChickensOfBarnResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FeedChickensOfBarn not implemented")
@@ -171,6 +184,24 @@ func _FarmService_NewFarm_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FarmServiceServer).NewFarm(ctx, req.(*NewFarmRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FarmService_DeleteFarm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteFarmRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FarmServiceServer).DeleteFarm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chicken_farmer.v1.FarmService/DeleteFarm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FarmServiceServer).DeleteFarm(ctx, req.(*DeleteFarmRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -293,6 +324,10 @@ var FarmService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NewFarm",
 			Handler:    _FarmService_NewFarm_Handler,
+		},
+		{
+			MethodName: "DeleteFarm",
+			Handler:    _FarmService_DeleteFarm_Handler,
 		},
 		{
 			MethodName: "FeedChickensOfBarn",

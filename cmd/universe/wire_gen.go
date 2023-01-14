@@ -14,19 +14,14 @@ import (
 	"time"
 )
 
-import (
-	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/lib/pq"
-)
-
 // Injectors from wire.go:
 
-func initializeService(ctx context.Context, logger *zap.SugaredLogger, frequency time.Duration, publisher message.Publisher) (universe.Service, error) {
+func initializeTimeService(ctx context.Context, logger *zap.SugaredLogger, frequency time.Duration, publisher message.Publisher) (*universe.TimeService, error) {
 	datasource, err := universe.ProvideMemoryDatasource()
 	if err != nil {
-		return universe.Service{}, err
+		return nil, err
 	}
 	controller := universe.ProvideController(datasource, publisher)
-	service := universe.ProvideService(logger, controller, frequency)
-	return service, nil
+	timeService := universe.ProvideTimeService(logger, controller, frequency)
+	return timeService, nil
 }

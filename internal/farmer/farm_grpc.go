@@ -8,19 +8,21 @@ import (
 	"github.com/google/uuid"
 )
 
-type FarmService struct {
+type FarmGRPCClient struct {
 	grpcClient internalGrpc.FarmServiceClient
 }
 
-var _ IFarmService = &FarmService{}
+var _ IFarmService = &FarmGRPCClient{}
 
-func ProvideFarmService(grpcClient internalGrpc.FarmServiceClient) *FarmService {
-	return &FarmService{
+func ProvideFarmGRPCClient(
+	grpcClient internalGrpc.FarmServiceClient,
+) *FarmGRPCClient {
+	return &FarmGRPCClient{
 		grpcClient: grpcClient,
 	}
 }
 
-func (f FarmService) NewFarm(
+func (f *FarmGRPCClient) NewFarm(
 	ctx context.Context, ownerID uuid.UUID, name string,
 ) (uuid.UUID, error) {
 	result, err := f.grpcClient.NewFarm(
@@ -36,7 +38,14 @@ func (f FarmService) NewFarm(
 	return pkg.UUIDFromString(result.GetFarmId()), nil
 }
 
-func (f FarmService) DeleteFarm(ctx context.Context, farmID uuid.UUID) error {
-	// TODO implement me
-	panic("implement me")
+func (f *FarmGRPCClient) DeleteFarm(
+	ctx context.Context, farmID uuid.UUID,
+) error {
+	if _, err := f.grpcClient.DeleteFarm(
+		ctx, &internalGrpc.DeleteFarmRequest{FarmId: farmID.String()},
+	); err != nil {
+		return err
+	}
+
+	return nil
 }

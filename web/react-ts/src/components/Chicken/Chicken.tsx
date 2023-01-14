@@ -13,7 +13,7 @@ enum Action {
   STANDING_RIGHT = "standing-right",
   SITTING_LEFT = "sitting-left",
   SITTING_RIGHT = "sitting-right",
-  FEEDING = "feeding",
+  FEEDING = "feeding"
 }
 
 // TODO have this on a shared file instead of one per chicken?
@@ -23,7 +23,7 @@ enum Medal {
   BRONZE = "bronze",
   SILVER = "silver",
   GOLD = "gold",
-  GOLDPLUS = "gold-plus",
+  GOLDPLUS = "gold-plus"
 }
 
 interface State {
@@ -44,7 +44,7 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (props.chicken.restingUntil ?? 0 >= props.day) {
+      if ((props.chicken.restingUntil ?? 0) >= props.day) {
         setAction(Action.FEEDING);
         return;
       }
@@ -72,14 +72,18 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
         </span>
         <span>
           <img src={clockImg} alt="resting until" width="20" />{" "}
-          {Math.max(props.chicken.restingUntil ?? 0 - props.day, 0)}
+          {Math.max(
+            props.chicken.restingUntil
+              ? props.chicken.restingUntil - props.day
+              : 0,
+            0
+          )}
         </span>
       </div>
       <div className="actions">
         <button
           onClick={() => feedChicken.mutate(props.chicken.id ?? "")}
-          disabled={(props.chicken.restingUntil ?? 0) >= props.day}
-        >
+          disabled={(props.chicken.restingUntil ?? 0) >= props.day}>
           Feed
         </button>
         {/*<button onClick={this.sellChicken}>Sell</button>*/}

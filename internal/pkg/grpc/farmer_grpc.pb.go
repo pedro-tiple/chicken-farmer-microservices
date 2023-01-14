@@ -8,13 +8,12 @@ package grpc
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )
 
-// This is a compile-universe assertion to ensure that this generated file
+// This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
@@ -25,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type FarmerServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	GrantGoldEggs(ctx context.Context, in *GrantGoldEggsRequest, opts ...grpc.CallOption) (*GrantGoldEggsResponse, error)
 	SpendGoldEggs(ctx context.Context, in *SpendGoldEggsRequest, opts ...grpc.CallOption) (*SpendGoldEggsResponse, error)
 	GetGoldEggs(ctx context.Context, in *GetGoldEggsRequest, opts ...grpc.CallOption) (*GetGoldEggsResponse, error)
 }
@@ -55,6 +55,15 @@ func (c *farmerServiceClient) Login(ctx context.Context, in *LoginRequest, opts 
 	return out, nil
 }
 
+func (c *farmerServiceClient) GrantGoldEggs(ctx context.Context, in *GrantGoldEggsRequest, opts ...grpc.CallOption) (*GrantGoldEggsResponse, error) {
+	out := new(GrantGoldEggsResponse)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerService/GrantGoldEggs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *farmerServiceClient) SpendGoldEggs(ctx context.Context, in *SpendGoldEggsRequest, opts ...grpc.CallOption) (*SpendGoldEggsResponse, error) {
 	out := new(SpendGoldEggsResponse)
 	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerService/SpendGoldEggs", in, out, opts...)
@@ -79,6 +88,7 @@ func (c *farmerServiceClient) GetGoldEggs(ctx context.Context, in *GetGoldEggsRe
 type FarmerServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	GrantGoldEggs(context.Context, *GrantGoldEggsRequest) (*GrantGoldEggsResponse, error)
 	SpendGoldEggs(context.Context, *SpendGoldEggsRequest) (*SpendGoldEggsResponse, error)
 	GetGoldEggs(context.Context, *GetGoldEggsRequest) (*GetGoldEggsResponse, error)
 	mustEmbedUnimplementedFarmerServiceServer()
@@ -93,6 +103,9 @@ func (UnimplementedFarmerServiceServer) Register(context.Context, *RegisterReque
 }
 func (UnimplementedFarmerServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedFarmerServiceServer) GrantGoldEggs(context.Context, *GrantGoldEggsRequest) (*GrantGoldEggsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GrantGoldEggs not implemented")
 }
 func (UnimplementedFarmerServiceServer) SpendGoldEggs(context.Context, *SpendGoldEggsRequest) (*SpendGoldEggsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SpendGoldEggs not implemented")
@@ -149,6 +162,24 @@ func _FarmerService_Login_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FarmerService_GrantGoldEggs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GrantGoldEggsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FarmerServiceServer).GrantGoldEggs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chicken_farmer.v1.FarmerService/GrantGoldEggs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FarmerServiceServer).GrantGoldEggs(ctx, req.(*GrantGoldEggsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FarmerService_SpendGoldEggs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SpendGoldEggsRequest)
 	if err := dec(in); err != nil {
@@ -199,6 +230,10 @@ var FarmerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _FarmerService_Login_Handler,
+		},
+		{
+			MethodName: "GrantGoldEggs",
+			Handler:    _FarmerService_GrantGoldEggs_Handler,
 		},
 		{
 			MethodName: "SpendGoldEggs",

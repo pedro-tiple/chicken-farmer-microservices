@@ -34,7 +34,7 @@ type IController interface {
 	SetDay(ctx context.Context, day uint) error
 }
 
-type Service struct {
+type GRPCService struct {
 	internalGrpc.UnimplementedFarmServiceServer
 
 	address string
@@ -45,14 +45,14 @@ type Service struct {
 	controller IController
 }
 
-var _ internalGrpc.FarmServiceServer = &Service{}
+var _ internalGrpc.FarmServiceServer = &GRPCService{}
 
-func ProvideService(
+func ProvideGRPCService(
 	address string,
 	logger *zap.SugaredLogger,
 	controller IController,
-) Service {
-	return Service{
+) *GRPCService {
+	return &GRPCService{
 		address:    address,
 		logger:     logger,
 		controller: controller,
@@ -75,7 +75,7 @@ func Authenticate(ctx context.Context) (context.Context, error) {
 	), nil
 }
 
-func (s *Service) ListenForConnections(
+func (s *GRPCService) ListenForConnections(
 	ctx context.Context, authFunction grpcAuth.AuthFunc,
 ) {
 	internalGrpc.ListenForConnections(
@@ -83,20 +83,20 @@ func (s *Service) ListenForConnections(
 	)
 }
 
-func (s *Service) RegisterGrpcServer(server *grpc.Server) {
+func (s *GRPCService) RegisterGrpcServer(server *grpc.Server) {
 	// Keep track of server for the graceful stop.
 	s.server = server
 
 	internalGrpc.RegisterFarmServiceServer(server, s)
 }
 
-func (s *Service) GracefulStop() {
+func (s *GRPCService) GracefulStop() {
 	s.logger.Info("Stopping gracefully...")
 	s.server.GracefulStop()
 	s.logger.Info("Stopped")
 }
 
-func (s *Service) NewFarm(
+func (s *GRPCService) NewFarm(
 	ctx context.Context, request *internalGrpc.NewFarmRequest,
 ) (*internalGrpc.NewFarmResponse, error) {
 	farmID, err := s.controller.NewFarm(
@@ -111,7 +111,7 @@ func (s *Service) NewFarm(
 	}, nil
 }
 
-func (s *Service) FarmDetails(
+func (s *GRPCService) FarmDetails(
 	ctx context.Context, _ *internalGrpc.FarmDetailsRequest,
 ) (*internalGrpc.FarmDetailsResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)
@@ -155,7 +155,7 @@ func (s *Service) FarmDetails(
 	}, nil
 }
 
-func (s *Service) BuyBarn(
+func (s *GRPCService) BuyBarn(
 	ctx context.Context, _ *internalGrpc.BuyBarnRequest,
 ) (*internalGrpc.BuyBarnResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)
@@ -172,7 +172,7 @@ func (s *Service) BuyBarn(
 	return &internalGrpc.BuyBarnResponse{}, nil
 }
 
-func (s *Service) BuyFeedBag(
+func (s *GRPCService) BuyFeedBag(
 	ctx context.Context, request *internalGrpc.BuyFeedBagRequest,
 ) (*internalGrpc.BuyFeedBagResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)
@@ -192,7 +192,7 @@ func (s *Service) BuyFeedBag(
 	return &internalGrpc.BuyFeedBagResponse{}, nil
 }
 
-func (s *Service) BuyChicken(
+func (s *GRPCService) BuyChicken(
 	ctx context.Context, request *internalGrpc.BuyChickenRequest,
 ) (*internalGrpc.BuyChickenResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)
@@ -209,7 +209,7 @@ func (s *Service) BuyChicken(
 	return &internalGrpc.BuyChickenResponse{}, nil
 }
 
-func (s *Service) FeedChicken(
+func (s *GRPCService) FeedChicken(
 	ctx context.Context, request *internalGrpc.FeedChickenRequest,
 ) (*internalGrpc.FeedChickenResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)
@@ -226,7 +226,7 @@ func (s *Service) FeedChicken(
 	return &internalGrpc.FeedChickenResponse{}, nil
 }
 
-func (s *Service) FeedChickensOfBarn(
+func (s *GRPCService) FeedChickensOfBarn(
 	ctx context.Context, request *internalGrpc.FeedChickensOfBarnRequest,
 ) (*internalGrpc.FeedChickensOfBarnResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)

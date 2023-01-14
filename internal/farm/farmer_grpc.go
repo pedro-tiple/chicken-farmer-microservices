@@ -5,29 +5,48 @@ import (
 	"context"
 )
 
-type FarmerService struct {
+type FarmerGRPCClient struct {
 	grpcClient internalGrpc.FarmerServiceClient
 }
 
-var _ IFarmerService = &FarmerService{}
+var _ IFarmerService = &FarmerGRPCClient{}
 
-func ProvideFarmerService(grpcClient internalGrpc.FarmerServiceClient) *FarmerService {
-	return &FarmerService{
+func ProvideFarmerGRPCClient(
+	grpcClient internalGrpc.FarmerServiceClient,
+) *FarmerGRPCClient {
+	return &FarmerGRPCClient{
 		grpcClient: grpcClient,
 	}
 }
 
-func (f FarmerService) SpendGoldEggs(ctx context.Context, amount uint) error {
-	_, err := f.grpcClient.SpendGoldEggs(
-		ctx, &internalGrpc.SpendGoldEggsRequest{
+func (f FarmerGRPCClient) GrantGoldEggs(
+	ctx context.Context, amount uint,
+) error {
+	_, err := f.grpcClient.GrantGoldEggs(
+		ctx, &internalGrpc.GrantGoldEggsRequest{
 			Amount: uint32(amount),
-		})
+		},
+	)
 
 	return err
 }
 
-func (f FarmerService) GetGoldEggs(ctx context.Context) (uint, error) {
-	result, err := f.grpcClient.GetGoldEggs(ctx, &internalGrpc.GetGoldEggsRequest{})
+func (f FarmerGRPCClient) SpendGoldEggs(
+	ctx context.Context, amount uint,
+) error {
+	_, err := f.grpcClient.SpendGoldEggs(
+		ctx, &internalGrpc.SpendGoldEggsRequest{
+			Amount: uint32(amount),
+		},
+	)
+
+	return err
+}
+
+func (f FarmerGRPCClient) GetGoldEggs(ctx context.Context) (uint, error) {
+	result, err := f.grpcClient.GetGoldEggs(
+		ctx, &internalGrpc.GetGoldEggsRequest{},
+	)
 	if err != nil {
 		return 0, err
 	}

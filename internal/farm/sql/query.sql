@@ -94,10 +94,11 @@ UPDATE barns
 SET feed = feed + $2
 WHERE id = $1;
 
--- name: DecrementBarnFeed :exec
+-- name: DecrementBarnFeedGreaterEqualThan :execrows
 UPDATE barns
 SET feed = feed - $2
-WHERE id = $1;
+WHERE id = $1
+  AND feed >= $2;
 
 
 -- name: IncrementChickenNormalEggLayCount :exec

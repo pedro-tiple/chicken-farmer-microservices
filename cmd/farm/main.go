@@ -17,6 +17,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
@@ -90,29 +91,40 @@ func main() {
 	defer farmerGRPCConn.Close()
 
 	// TODO from .env
+	amqpConfig := amqp.NewDurablePubSubConfig(
+		"amqp://guest:guest@localhost:5672/",
+		amqp.GenerateQueueNameTopicNameWithSuffix(uuid.New().String()),
+	)
 	subscriber, err := amqp.NewSubscriber(
-		amqp.NewDurableQueueConfig("amqp://guest:guest@localhost:5672/"),
-		watermill.NewStdLogger(false, false),
+		amqpConfig, watermill.NewStdLogger(false, false),
+	)
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+	publisher, err := amqp.NewPublisher(
+		amqpConfig, watermill.NewStdLogger(false, false),
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
 
-	farmService, err := initializeService(
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	farmService, err := initializeGRPCService(
+		ctx,
 		*grpcAddr,
 		logger.Sugar(),
 		dbConnections[0],
 		farmerGRPCConn,
 		subscriber,
+		publisher,
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
 
 	log.Println("Service listening")
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	go farmService.ListenForConnections(ctx, farm.Authenticate)
 	go internalGrpc.RunRESTGateway(

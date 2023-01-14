@@ -10,6 +10,7 @@ option go_package = "internal/pkg/grpc";
 
 service FarmService {
   rpc NewFarm(NewFarmRequest) returns (NewFarmResponse) {}
+  rpc DeleteFarm(DeleteFarmRequest) returns (DeleteFarmResponse) {}
   rpc FeedChickensOfBarn(FeedChickensOfBarnRequest) returns (FeedChickensOfBarnResponse) {}
 
   // REST exposed functions
@@ -75,6 +76,12 @@ message NewFarmRequest {
 }
 message NewFarmResponse {
   string farm_id = 1;
+}
+
+message DeleteFarmRequest {
+  string farm_id = 1;
+}
+message DeleteFarmResponse {
 }
 
 message FarmDetailsRequest {}

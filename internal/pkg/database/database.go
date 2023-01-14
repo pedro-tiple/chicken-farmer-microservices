@@ -9,6 +9,7 @@ import (
 var (
 	ErrNotFound          = errors.New("not found in database")
 	ErrNotEnoughGoldEggs = errors.New("not enough gold eggs")
+	ErrNotEnoughFeed     = errors.New("not enough feed")
 )
 
 type ConnectionSettings struct {

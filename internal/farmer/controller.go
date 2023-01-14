@@ -2,7 +2,6 @@ package farmer
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
@@ -18,6 +17,10 @@ type IDataSource interface {
 	InsertFarmer(
 		ctx context.Context, farmer Farmer,
 	) (farmerID uuid.UUID, err error)
+
+	IncrementGoldEggCount(
+		ctx context.Context, farmerID uuid.UUID, amount uint,
+	) error
 
 	// DecrementGoldEggCountGreaterEqualThan should atomically check that the value
 	// of gold egg count is greater or equal than the passed amount.
@@ -38,7 +41,7 @@ type Controller struct {
 	logger      *zap.SugaredLogger
 	datasource  IDataSource
 	farmService IFarmService
-	subscriber  message.Subscriber
+	publisher   message.Publisher
 }
 
 var _ IController = &Controller{}
@@ -58,7 +61,6 @@ func ProvideController(
 func (c *Controller) Register(
 	ctx context.Context, farmerName, farmName, password string,
 ) (Farmer, error) {
-	fmt.Println("controller register")
 	farmerID := uuid.New()
 	farmID, err := c.farmService.NewFarm(ctx, farmerID, farmName)
 	if err != nil {
@@ -128,6 +130,20 @@ func (c *Controller) GetGoldEggs(
 	return farmer.GoldEggCount, nil
 }
 
+func (c *Controller) GrantGoldEggs(
+	ctx context.Context, farmerID uuid.UUID, amount uint,
+) error {
+	if err := c.datasource.IncrementGoldEggCount(
+		ctx, farmerID, amount,
+	); err != nil {
+		return err
+	}
+
+	// TODO grant gold eggs event
+
+	return nil
+}
+
 func (c *Controller) SpendGoldEggs(
 	ctx context.Context, farmerID uuid.UUID, amount uint,
 ) error {
@@ -136,6 +152,8 @@ func (c *Controller) SpendGoldEggs(
 	); err != nil {
 		return err
 	}
+
+	// TODO spent gold eggs event
 
 	return nil
 }

@@ -13,15 +13,15 @@ import (
 	"go.uber.org/zap"
 )
 
-func initializeService(
+func initializeTimeService(
 	ctx context.Context,
 	logger *zap.SugaredLogger,
 	frequency time.Duration,
 	publisher message.Publisher,
-) (universe.Service, error) {
+) (*universe.TimeService, error) {
 	panic(
 		wire.Build(
-			universe.ProvideService,
+			universe.ProvideTimeService,
 
 			universe.ProvideController,
 			wire.Bind(new(universe.IController), new(*universe.Controller)),

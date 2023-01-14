@@ -24,9 +24,10 @@ type IController interface {
 	) (jwt string, err error)
 	GetGoldEggs(ctx context.Context, farmerID uuid.UUID) (uint, error)
 	SpendGoldEggs(ctx context.Context, farmerID uuid.UUID, amount uint) error
+	GrantGoldEggs(ctx context.Context, farmerID uuid.UUID, amount uint) error
 }
 
-type Service struct {
+type GRPCService struct {
 	internalGrpc.UnimplementedFarmerServiceServer
 
 	address string
@@ -36,14 +37,14 @@ type Service struct {
 	controller IController
 }
 
-var _ internalGrpc.FarmerServiceServer = &Service{}
+var _ internalGrpc.FarmerServiceServer = &GRPCService{}
 
-func ProvideService(
+func ProvideGRPCService(
 	address string,
 	logger *zap.SugaredLogger,
 	controller IController,
-) Service {
-	return Service{
+) *GRPCService {
+	return &GRPCService{
 		address:    address,
 		logger:     logger,
 		controller: controller,
@@ -66,7 +67,7 @@ func Authenticate(ctx context.Context) (context.Context, error) {
 	), nil
 }
 
-func (s *Service) ListenForConnections(
+func (s *GRPCService) ListenForConnections(
 	ctx context.Context, authFunction grpcAuth.AuthFunc,
 ) {
 	internalGrpc.ListenForConnections(
@@ -74,20 +75,20 @@ func (s *Service) ListenForConnections(
 	)
 }
 
-func (s *Service) RegisterGrpcServer(server *grpc.Server) {
+func (s *GRPCService) RegisterGrpcServer(server *grpc.Server) {
 	// Keep track of server for the graceful stop.
 	s.server = server
 
 	internalGrpc.RegisterFarmerServiceServer(server, s)
 }
 
-func (s *Service) GracefulStop() {
+func (s *GRPCService) GracefulStop() {
 	s.logger.Info("Stopping gracefully...")
 	s.server.GracefulStop()
 	s.logger.Info("Stopped")
 }
 
-func (s *Service) Register(
+func (s *GRPCService) Register(
 	ctx context.Context, request *internalGrpc.RegisterRequest,
 ) (*internalGrpc.RegisterResponse, error) {
 	fmt.Println("service register")
@@ -107,7 +108,7 @@ func (s *Service) Register(
 	}, nil
 }
 
-func (s *Service) Login(
+func (s *GRPCService) Login(
 	ctx context.Context, request *internalGrpc.LoginRequest,
 ) (*internalGrpc.LoginResponse, error) {
 	jwt, err := s.controller.Login(
@@ -122,7 +123,24 @@ func (s *Service) Login(
 	}, nil
 }
 
-func (s *Service) SpendGoldEggs(
+func (s *GRPCService) GrantGoldEggs(
+	ctx context.Context, request *internalGrpc.GrantGoldEggsRequest,
+) (*internalGrpc.GrantGoldEggsResponse, error) {
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if err := s.controller.GrantGoldEggs(
+		ctx, ctxData.FarmerID, uint(request.GetAmount()),
+	); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &internalGrpc.GrantGoldEggsResponse{}, nil
+}
+
+func (s *GRPCService) SpendGoldEggs(
 	ctx context.Context, request *internalGrpc.SpendGoldEggsRequest,
 ) (*internalGrpc.SpendGoldEggsResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)
@@ -139,7 +157,7 @@ func (s *Service) SpendGoldEggs(
 	return &internalGrpc.SpendGoldEggsResponse{}, nil
 }
 
-func (s *Service) GetGoldEggs(
+func (s *GRPCService) GetGoldEggs(
 	ctx context.Context, _ *internalGrpc.GetGoldEggsRequest,
 ) (*internalGrpc.GetGoldEggsResponse, error) {
 	ctxData, err := ctxfarm.Extract(ctx)

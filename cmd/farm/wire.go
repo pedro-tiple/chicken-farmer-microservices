@@ -7,6 +7,7 @@ import (
 	"chicken-farmer/backend/internal/farm"
 	farmSql "chicken-farmer/backend/internal/farm/sql"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
+	"context"
 	"database/sql"
 
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -15,16 +16,18 @@ import (
 	"google.golang.org/grpc"
 )
 
-func initializeService(
+func initializeGRPCService(
+	ctx context.Context,
 	address string,
 	logger *zap.SugaredLogger,
 	dbConnection *sql.DB,
 	farmerGRPCConn grpc.ClientConnInterface,
 	subscriber message.Subscriber,
-) (farm.Service, error) {
+	publisher message.Publisher,
+) (*farm.GRPCService, error) {
 	panic(
 		wire.Build(
-			farm.ProvideService,
+			farm.ProvideGRPCService,
 
 			farm.ProvideController,
 			wire.Bind(new(farm.IController), new(*farm.Controller)),
@@ -33,8 +36,8 @@ func initializeService(
 			wire.Bind(new(farm.IDataSource), new(*farmSql.Datasource)),
 
 			internalGrpc.NewFarmerServiceClient,
-			farm.ProvideFarmerService,
-			wire.Bind(new(farm.IFarmerService), new(*farm.FarmerService)),
+			farm.ProvideFarmerGRPCClient,
+			wire.Bind(new(farm.IFarmerService), new(*farm.FarmerGRPCClient)),
 		),
 	)
 }

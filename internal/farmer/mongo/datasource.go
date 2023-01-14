@@ -48,7 +48,7 @@ func ProvideDatasource(ctx context.Context) (*Datasource, error) {
 	}, nil
 }
 
-func (d Datasource) GetFarmer(
+func (d *Datasource) GetFarmer(
 	ctx context.Context, farmerID uuid.UUID,
 ) (farmerPkg.Farmer, error) {
 	var farmer Farmer
@@ -68,7 +68,7 @@ func (d Datasource) GetFarmer(
 	}, nil
 }
 
-func (d Datasource) GetFarmerByName(
+func (d *Datasource) GetFarmerByName(
 	ctx context.Context, name string,
 ) (farmerPkg.Farmer, error) {
 	var farmer Farmer
@@ -88,7 +88,7 @@ func (d Datasource) GetFarmerByName(
 	}, nil
 }
 
-func (d Datasource) GetFarmerGoldEggs(
+func (d *Datasource) GetFarmerGoldEggs(
 	ctx context.Context, farmerID uuid.UUID,
 ) (uint, error) {
 	var farmer Farmer
@@ -110,7 +110,7 @@ func (d Datasource) GetFarmerGoldEggs(
 	return farmer.GoldEggCount, nil
 }
 
-func (d Datasource) InsertFarmer(
+func (d *Datasource) InsertFarmer(
 	ctx context.Context, farmer farmerPkg.Farmer,
 ) (uuid.UUID, error) {
 	if farmer.ID.String() == (uuid.UUID{}).String() {
@@ -135,7 +135,25 @@ func (d Datasource) InsertFarmer(
 	return farmer.FarmID, nil
 }
 
-func (d Datasource) DecrementGoldEggCountGreaterEqualThan(
+func (d *Datasource) IncrementGoldEggCount(
+	ctx context.Context, farmerID uuid.UUID, amount uint,
+) error {
+	_, err := d.db.
+		Collection(farmersCollection).
+		UpdateOne(
+			ctx,
+			bson.D{{"uuid", farmerID.String()}},
+			// bson.D{{"$set", bson.D{{"test", "test"}}}},
+			bson.D{{"$inc", bson.D{{"goldEggCount", amount}}}},
+		)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *Datasource) DecrementGoldEggCountGreaterEqualThan(
 	ctx context.Context, farmerID uuid.UUID, amount uint,
 ) error {
 	result, err := d.db.

@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
-        <Farm />
+        <Farm/>
       </QueryClientProvider>
     </div>
   );

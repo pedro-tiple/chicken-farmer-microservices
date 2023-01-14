@@ -10,9 +10,8 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
@@ -29,7 +28,10 @@ func main() {
 	// TODO amqp string on .env
 	// TODO log to zap
 	publisher, err := amqp.NewPublisher(
-		amqp.NewDurableQueueConfig("amqp://guest:guest@localhost:5672/"),
+		amqp.NewDurablePubSubConfig(
+			"amqp://guest:guest@localhost:5672/",
+			amqp.GenerateQueueNameTopicNameWithSuffix(uuid.New().String()),
+		),
 		watermill.NewStdLogger(false, false),
 	)
 	if err != nil {
@@ -39,7 +41,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	universeService, err := initializeService(
+	universeService, err := initializeTimeService(
 		ctx, logger.Sugar(), time.Second, publisher,
 	)
 	if err != nil {

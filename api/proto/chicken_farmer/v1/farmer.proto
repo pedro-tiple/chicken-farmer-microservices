@@ -21,6 +21,13 @@ service FarmerService {
     };
   }
 
+  rpc GrantGoldEggs(GrantGoldEggsRequest) returns (GrantGoldEggsResponse) {
+    option (google.api.http) = {
+      post: "/v1/farmer/grant-gold-eggs",
+      body: "*"
+    };
+  }
+
   rpc SpendGoldEggs(SpendGoldEggsRequest) returns (SpendGoldEggsResponse) {
     option (google.api.http) = {
       post: "/v1/farmer/spend-gold-eggs",
@@ -56,6 +63,11 @@ message LoginRequest {
 message LoginResponse {
   string jwt = 1;
 }
+
+message GrantGoldEggsRequest {
+  uint32 amount = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message GrantGoldEggsResponse {}
 
 message SpendGoldEggsRequest {
   uint32 amount = 1 [(google.api.field_behavior) = REQUIRED];

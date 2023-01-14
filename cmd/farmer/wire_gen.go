@@ -15,21 +15,16 @@ import (
 	"google.golang.org/grpc"
 )
 
-import (
-	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/lib/pq"
-)
-
 // Injectors from wire.go:
 
-func initializeService(ctx context.Context, address string, logger *zap.SugaredLogger, farmGRPCConn grpc.ClientConnInterface) (farmer.Service, error) {
+func initializeGRPCService(ctx context.Context, address string, logger *zap.SugaredLogger, farmGRPCConn grpc.ClientConnInterface) (*farmer.GRPCService, error) {
 	datasource, err := mongo.ProvideDatasource(ctx)
 	if err != nil {
-		return farmer.Service{}, err
+		return nil, err
 	}
 	farmServiceClient := grpc2.NewFarmServiceClient(farmGRPCConn)
-	farmService := farmer.ProvideFarmService(farmServiceClient)
-	controller := farmer.ProvideController(logger, datasource, farmService)
-	service := farmer.ProvideService(address, logger, controller)
-	return service, nil
+	farmGRPCClient := farmer.ProvideFarmGRPCClient(farmServiceClient)
+	controller := farmer.ProvideController(logger, datasource, farmGRPCClient)
+	grpcService := farmer.ProvideGRPCService(address, logger, controller)
+	return grpcService, nil
 }

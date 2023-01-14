@@ -1,7 +1,7 @@
 package farm
 
 import (
-	"chicken-farmer/backend/internal/universe"
+	"chicken-farmer/backend/internal/pkg/event"
 	"context"
 	"encoding/json"
 	"errors"
@@ -22,8 +22,13 @@ const (
 	FeedChickenCost = 1
 	FeedPerBag      = 10
 
-	MaxChickenRestingDays = 5
+	MinChickenRestingDays = 5
+	MaxChickenRestingDays = 15
 
+	GoldEggsPerFeed = 1
+)
+
+const (
 	EggTypeNormal = iota
 	EggTypeGolden
 )
@@ -53,13 +58,20 @@ type IDataSource interface {
 	) error
 
 	IncrementBarnFeed(ctx context.Context, barnID uuid.UUID, amount uint) error
-	DecrementBarnFeed(ctx context.Context, barnID uuid.UUID, amount uint) error
+	// DecrementBarnFeedGreaterEqualThan should atomically check that the value
+	// of feed egg count is greater or equal than the passed amount.
+	// Should return database.ErrNotEnoughFeed when not greater or equal.
+	DecrementBarnFeedGreaterEqualThan(
+		ctx context.Context, barnID uuid.UUID, amount uint,
+	) error
+
 	IncrementChickenEggLayCount(
 		ctx context.Context, chickenID uuid.UUID, eggType int,
 	) error
 }
 
 type IFarmerService interface {
+	GrantGoldEggs(ctx context.Context, amount uint) error
 	SpendGoldEggs(ctx context.Context, amount uint) error
 	GetGoldEggs(ctx context.Context) (uint, error)
 }
@@ -69,30 +81,32 @@ type Controller struct {
 	datasource    IDataSource
 	farmerService IFarmerService
 	subscriber    message.Subscriber
+	publisher     message.Publisher
 	currentDay    uint
 }
 
 var _ IController = &Controller{}
 
 func ProvideController(
+	ctx context.Context,
 	logger *zap.SugaredLogger,
 	datasource IDataSource,
 	farmerService IFarmerService,
 	subscriber message.Subscriber,
+	publisher message.Publisher,
 ) (*Controller, error) {
-	messages, err := subscriber.Subscribe(
-		context.Background(), universe.DayTopic,
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	c := Controller{
 		logger:        logger,
 		datasource:    datasource,
 		farmerService: farmerService,
 		subscriber:    subscriber,
+		publisher:     publisher,
 		currentDay:    1,
+	}
+
+	messages, err := subscriber.Subscribe(ctx, event.UniverseTopic)
+	if err != nil {
+		return nil, err
 	}
 
 	go c.processTimeMessages(messages)
@@ -102,7 +116,7 @@ func ProvideController(
 
 func (c *Controller) processTimeMessages(messages <-chan *message.Message) {
 	for msg := range messages {
-		var dayMessage universe.DayMessage
+		var dayMessage event.DayMessage
 		if err := json.Unmarshal(msg.Payload, &dayMessage); err != nil {
 			// TODO move to DLQ
 			c.logger.Error(err)
@@ -114,6 +128,7 @@ func (c *Controller) processTimeMessages(messages <-chan *message.Message) {
 		if newDay > c.currentDay {
 			c.currentDay = dayMessage.Day
 		}
+
 		msg.Ack()
 	}
 }
@@ -306,17 +321,23 @@ func (c *Controller) FeedChicken(
 		return ErrChickenResting
 	}
 
-	if err := c.datasource.DecrementBarnFeed(
-		ctx, chickenID, FeedChickenCost,
+	if err := c.datasource.DecrementBarnFeedGreaterEqualThan(
+		ctx, chicken.BarnID, FeedChickenCost,
 	); err != nil {
 		return err
 	}
 
-	rand.Seed(time.Now().Unix())
+	rand.Seed(int64(time.Now().Nanosecond()))
 
 	var eggType = EggTypeNormal
 	if rand.Intn(100) <= int(chicken.GoldEggChance) {
 		eggType = EggTypeGolden
+
+		if err := c.farmerService.GrantGoldEggs(
+			ctx, GoldEggsPerFeed,
+		); err != nil {
+			return err
+		}
 	}
 
 	if err := c.datasource.IncrementChickenEggLayCount(
@@ -326,13 +347,29 @@ func (c *Controller) FeedChicken(
 	}
 
 	// Must rest at least one day, can rest up to 1 + MaxChickenRestingDays.
+	chicken.RestingUntil = c.currentDay + MinChickenRestingDays +
+		uint(rand.Intn(MaxChickenRestingDays-MinChickenRestingDays))
+
 	if err := c.datasource.UpdateChickenRestingUntil(
-		ctx, chickenID, c.currentDay+1+uint(rand.Intn(MaxChickenRestingDays)),
+		ctx, chickenID, chicken.RestingUntil,
 	); err != nil {
 		return err
 	}
 
-	// TODO send egg event
+	if err := event.PublishMessage(
+		c.publisher,
+		farmerID,
+		event.FarmTopic,
+		event.MessageTypeEggLaid,
+		event.EggLaidMessage{
+			Day:          c.currentDay,
+			ChickenID:    chickenID.String(),
+			EggType:      eggType,
+			RestingUntil: chicken.RestingUntil,
+		},
+	); err != nil {
+		return err
+	}
 
 	return nil
 }

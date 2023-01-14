@@ -1,6 +1,7 @@
 package universe
 
 import (
+	"chicken-farmer/backend/internal/pkg/event"
 	"context"
 	"encoding/json"
 
@@ -8,9 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	DayTopic = "universe.day.topic"
-)
+const ()
 
 var ()
 
@@ -46,15 +45,16 @@ func (c *Controller) Tick(ctx context.Context) error {
 		return err
 	}
 
-	dayMessage, err := json.Marshal(DayMessage{Day: newDay})
+	dayMessageBody, err := json.Marshal(event.DayMessage{Day: newDay})
 	if err != nil {
 		return err
 	}
 
-	if err := c.publisher.Publish(
-		DayTopic, message.NewMessage(uuid.New().String(), dayMessage),
-	); err != nil {
-		panic(err)
+	msg := message.NewMessage(uuid.New().String(), dayMessageBody)
+	msg.Metadata[event.MetadataFieldType] = event.MessageTypeDay
+
+	if err := c.publisher.Publish(event.UniverseTopic, msg); err != nil {
+		return err
 	}
 
 	return nil

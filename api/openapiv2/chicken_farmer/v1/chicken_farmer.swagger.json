@@ -213,6 +213,38 @@
         ]
       }
     },
+    "/v1/farmer/grant-gold-eggs": {
+      "post": {
+        "operationId": "FarmerService_GrantGoldEggs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GrantGoldEggsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1GrantGoldEggsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FarmerService"
+        ]
+      }
+    },
     "/v1/farmer/login": {
       "get": {
         "operationId": "FarmerService_Login",
@@ -415,6 +447,9 @@
         }
       }
     },
+    "v1DeleteFarmResponse": {
+      "type": "object"
+    },
     "v1Farm": {
       "type": "object",
       "properties": {
@@ -459,6 +494,21 @@
           "format": "int64"
         }
       }
+    },
+    "v1GrantGoldEggsRequest": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "amount"
+      ]
+    },
+    "v1GrantGoldEggsResponse": {
+      "type": "object"
     },
     "v1LoginResponse": {
       "type": "object",

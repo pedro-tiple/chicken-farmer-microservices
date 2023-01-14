@@ -11,20 +11,24 @@ import (
 	"github.com/google/uuid"
 )
 
-const decrementBarnFeed = `-- name: DecrementBarnFeed :exec
+const decrementBarnFeedGreaterEqualThan = `-- name: DecrementBarnFeedGreaterEqualThan :execrows
 UPDATE barns
 SET feed = feed - $2
 WHERE id = $1
+  AND feed >= $2
 `
 
-type DecrementBarnFeedParams struct {
+type DecrementBarnFeedGreaterEqualThanParams struct {
 	ID   uuid.UUID
 	Feed int64
 }
 
-func (q *Queries) DecrementBarnFeed(ctx context.Context, arg DecrementBarnFeedParams) error {
-	_, err := q.db.ExecContext(ctx, decrementBarnFeed, arg.ID, arg.Feed)
-	return err
+func (q *Queries) DecrementBarnFeedGreaterEqualThan(ctx context.Context, arg DecrementBarnFeedGreaterEqualThanParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, decrementBarnFeedGreaterEqualThan, arg.ID, arg.Feed)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getBarn = `-- name: GetBarn :one
