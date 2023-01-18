@@ -1,11 +1,9 @@
-import "./Farm.scss";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import { FarmServiceApi, V1Farm } from "chicken-farmer-service/api";
 import { Configuration } from "chicken-farmer-service/configuration";
 import { Barn } from "../../components/Barn/Barn";
 import { useEffect, useState } from "react";
-import { Buffer } from "buffer";
 
 // Used to update TanStack client.
 // const queryClient = useQueryClient();
@@ -31,72 +29,70 @@ export const Farm = () => {
   const [farm, setFarm] = useState<V1Farm>({});
   const { result, error } = getFarm();
 
+  const buyBarn = useMutation({
+    mutationFn: () => farmServiceApi.farmServiceBuyBarn({})
+  });
+
   useEffect(() => {
     setFarm(result);
-    const es = new EventSource("http://localhost:8083/event-feed", {
+  }, [result]);
+
+  useEffect(() => {
+    const eventSource = new EventSource("http://localhost:8083/event-feed", {
       withCredentials: false
     });
-    es.addEventListener(
-      "data",
-      (event) => {
-        // TODO deal with this stupid quotes thing server side later
-        if (!farm || event.data.trim() == '"accepted"') {
-          return;
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      farm?.barns?.every((barn) => {
+        const chicken = barn.chickens?.find((chicken) => {
+          return chicken.id == data.chickenID;
+        });
+        if (typeof chicken === "undefined") {
+          return true;
         }
 
-        const data = JSON.parse(Buffer.from(event.data, "base64").toString());
+        chicken.restingUntil = data.restingUntil;
 
-        setFarm((farm) => ({ ...farm, day: data.day ?? farm.day }));
-
-        farm?.barns?.every((barn) => {
-          const chicken = barn.chickens?.find((chicken) => {
-            return chicken.id == data.chickenID;
-          });
-          if (typeof chicken === "undefined") {
+        switch (data.eggType) {
+          case 0:
+            chicken.normalEggsLaid++;
+            return false;
+          case 1:
+            chicken.goldEggsLaid++;
+            return false;
+          default:
             return true;
-          }
+        }
+      });
 
-          chicken.restingUntil = data.restingUntil;
+      setFarm((farm) => ({ ...farm, day: data.day ?? farm.day }));
+    };
 
-          switch (data.eggType) {
-            case 0:
-              chicken.normalEggsLaid++;
-              return false;
-            case 1:
-              chicken.goldEggsLaid++;
-              return false;
-            default:
-              return true;
-          }
-        });
-      },
-      false
-    );
-
-    es.addEventListener("close", () => {
-      console.log("close");
-      es.close();
-    });
-
-    return () => es.close();
-  }, [result]);
-  console.log("farm update");
+    return () => eventSource.close();
+  }, []);
 
   return farm ? (
-    <div className="farm" key={farm.day}>
-      <div className="farm-info">
-        <h1>{farm?.name}</h1>
+    <div className="flex h-screen">
+      <div className="flex flex-col items-center basis-2/12 p-4">
+        <h1 className="text-center text-3xl font-extrabold mb-3">
+          {farm?.name}
+        </h1>
         <span>
-          <label>Current Day:</label> <span>{farm?.day}</span>
+          <label>Current Day:</label> <span key={farm.day}>{farm?.day}</span>
         </span>
 
         <span>
-          <label>Golden Eggs:</label> <span>{farm?.goldenEggs}</span>
+          <label>Golden Eggs:</label>{" "}
+          <span key={farm.goldenEggs}>{farm?.goldenEggs}</span>
         </span>
 
-        <button>Buy Barn</button>
+        <button className="btn-primary mt-4" onClick={() => buyBarn.mutate()}>
+          Buy Barn
+        </button>
 
-        {error && <span className="error">{error}</span>}
+        {error && <span className="mt-4 text-red-700">{error}</span>}
       </div>
       <div className="barns">
         {farm?.barns?.map((barn, index: number) => {

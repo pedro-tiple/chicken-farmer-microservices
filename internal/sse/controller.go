@@ -3,8 +3,6 @@ package sse
 import (
 	"chicken-farmer/backend/internal/pkg/event"
 	"context"
-	"encoding/json"
-	"fmt"
 
 	messagePkg "github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
@@ -12,25 +10,27 @@ import (
 )
 
 type Controller struct {
-	logger            *zap.SugaredLogger
-	subscriber        messagePkg.Subscriber
-	publisher         messagePkg.Publisher
-	registeredFarmers map[string]context.Context
+	logger             *zap.SugaredLogger
+	subscriber         messagePkg.Subscriber
+	openConnectionsMap map[string][]openConnection
 }
 
 var _ IController = &Controller{}
+
+type openConnection struct {
+	ctx     context.Context
+	channel chan string
+}
 
 func ProvideController(
 	ctx context.Context,
 	logger *zap.SugaredLogger,
 	subscriber messagePkg.Subscriber,
-	publisher messagePkg.Publisher,
 ) (*Controller, error) {
 	controller := Controller{
-		logger:            logger,
-		subscriber:        subscriber,
-		publisher:         publisher,
-		registeredFarmers: make(map[string]context.Context),
+		logger:             logger,
+		subscriber:         subscriber,
+		openConnectionsMap: make(map[string][]openConnection),
 	}
 
 	go func() {
@@ -54,86 +54,87 @@ func (c *Controller) processMessages(ctx context.Context) error {
 		return err
 	}
 
-	var (
-		topic   string
-		message *messagePkg.Message
-	)
-OuterLoop:
 	for {
 		select {
 		case farmMessage := <-farmChan:
-			farmerID := farmMessage.Metadata[event.MetadataFieldFarmerID]
-			if _, ok := c.registeredFarmers[farmerID]; ok {
-				message, err = farmMessageToEventMessage(
-					string(farmMessage.Payload),
-				)
-				if err != nil {
-					c.logger.Error(err.Error())
-					continue
-				}
-
-				topic = fmt.Sprintf(event.UserEventsTopic, farmerID)
-				farmMessage.Ack()
-				// Continue to single message publish.
+			if err := c.processFarmMessage(farmMessage); err != nil {
+				c.logger.Error(err.Error())
+				continue
 			}
 		case universeMessage := <-universeChan:
-			// Single universe message is fanned out to all farmers.
-			for k, v := range c.registeredFarmers {
-				// Remove closed connections.
-				if v.Err() != nil {
-					delete(c.registeredFarmers, k)
-					continue
-				}
+			if err := c.processUniverseMessage(universeMessage); err != nil {
+				c.logger.Error(err.Error())
+				continue
+			}
+		}
+	}
+}
 
-				message, err = universeMessageToEventMessage(
-					string(universeMessage.Payload),
+func (c *Controller) processFarmMessage(message *messagePkg.Message) error {
+	farmerID := message.Metadata[event.MetadataFieldFarmerID]
+	if openConnections, ok := c.openConnectionsMap[farmerID]; ok {
+		// TODO event message to SSE update
+
+		for i, oc := range openConnections {
+			// Remove closed connections
+			if oc.ctx.Err() != nil {
+				c.openConnectionsMap[farmerID] = append(
+					c.openConnectionsMap[farmerID][:i],
+					c.openConnectionsMap[farmerID][i+1:]...,
 				)
-				if err != nil {
-					c.logger.Error(err.Error())
-					continue
-				}
-
-				if err = c.publisher.Publish(
-					fmt.Sprintf(event.UserEventsTopic, k), message,
-				); err != nil {
-					c.logger.Error(err.Error())
-					continue
-				}
+				continue
 			}
 
-			universeMessage.Ack()
-
-			// Don't continue to single message publish.
-			continue OuterLoop
+			oc.channel <- string(message.Payload)
 		}
 
-		if err := c.publisher.Publish(topic, message); err != nil {
-			c.logger.Error(err.Error())
-			continue
-		}
-	}
-}
-
-func farmMessageToEventMessage(message string) (*messagePkg.Message, error) {
-	// TODO convert event to change
-
-	messagePayload, err := json.Marshal(message)
-	if err != nil {
-		return nil, err
 	}
 
-	return messagePkg.NewMessage(uuid.NewString(), messagePayload), nil
-}
-
-func universeMessageToEventMessage(message string) (*messagePkg.Message, error) {
-	fmt.Println(message)
-	return messagePkg.NewMessage(uuid.NewString(), []byte(message)), nil
-}
-
-func (c Controller) RegisterFarmer(
-	ctx context.Context, farmerID uuid.UUID,
-) error {
-	c.registeredFarmers[farmerID.String()] = ctx
+	message.Ack()
 
 	return nil
+}
+
+func (c *Controller) processUniverseMessage(message *messagePkg.Message) error {
+	for _, openConnections := range c.openConnectionsMap {
+		c.sendMessageToConnections(string(message.Payload), &openConnections)
+	}
+
+	message.Ack()
+
+	return nil
+}
+
+func (c *Controller) sendMessageToConnections(
+	message string, openConnections *[]openConnection,
+) {
+	for k, oc := range *openConnections {
+		if oc.channel == nil {
+			continue
+		}
+
+		// Remove closed connections
+		if oc.ctx.Err() != nil {
+			// TODO here we would want to delete the entry in openConnections
+			// but removing while ranging causes issues and couldn't find a simple alternative.
+			close(oc.channel)
+			(*openConnections)[k] = openConnection{}
+			continue
+		}
+
+		oc.channel <- message
+	}
+}
+
+func (c *Controller) SubscribeToFarmer(
+	ctx context.Context, farmerID uuid.UUID,
+) (chan string, error) {
+	newOC := openConnection{ctx: ctx, channel: make(chan string)}
+	if oc, ok := c.openConnectionsMap[farmerID.String()]; ok {
+		c.openConnectionsMap[farmerID.String()] = append(oc, newOC)
+	} else {
+		c.openConnectionsMap[farmerID.String()] = []openConnection{newOC}
+	}
+
+	return newOC.channel, nil
 }

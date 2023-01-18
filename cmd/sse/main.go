@@ -10,7 +10,6 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
-	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
@@ -42,13 +41,8 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// Controller will communicate with SSE server by go channel.
-	goChanPubSub := gochannel.NewGoChannel(
-		gochannel.Config{}, watermill.NewStdLogger(false, false),
-	)
-
 	sseService, err := initializeHTTPService(
-		ctx, logger.Sugar(), goChanPubSub, rabbitMQSubscriber, goChanPubSub,
+		ctx, logger.Sugar(), rabbitMQSubscriber,
 	)
 	if err != nil {
 		logger.Fatal(err.Error())

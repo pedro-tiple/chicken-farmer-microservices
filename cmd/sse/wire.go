@@ -15,13 +15,11 @@ import (
 func initializeHTTPService(
 	ctx context.Context,
 	logger *zap.SugaredLogger,
-	sseSubscriber message.Subscriber,
-	controllerSubscriber message.Subscriber,
-	controllerPublisher message.Publisher,
+	subscriber message.Subscriber,
 ) (*sse.HTTPService, error) {
 	panic(
 		wire.Build(
-			sse.ProvideWatermillService,
+			sse.ProvideHTTPService,
 
 			sse.ProvideController,
 			wire.Bind(new(sse.IController), new(*sse.Controller)),
