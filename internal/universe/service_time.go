@@ -35,6 +35,10 @@ func (s TimeService) BigBang(ctx context.Context) error {
 		return err
 	}
 
+	// Wait until the time is at 0 ms so ticks are synched with time.
+	for now := time.Now(); (now.UnixMilli() % 1000) != 0; now = time.Now() {
+	}
+
 	ticker := time.NewTicker(s.frequency)
 	for {
 		select {
