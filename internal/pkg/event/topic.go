@@ -1,7 +1,6 @@
 package event
 
 const (
-	UniverseTopic   = "universe.topic"
-	FarmTopic       = "farm.topic"
-	UserEventsTopic = "%s.events.topic"
+	UniverseTopic = "event.universe.topic"
+	FarmTopic     = "event.farm.topic"
 )

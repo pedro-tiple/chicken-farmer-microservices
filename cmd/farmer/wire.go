@@ -9,6 +9,7 @@ import (
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -19,6 +20,7 @@ func initializeGRPCService(
 	address string,
 	logger *zap.SugaredLogger,
 	farmGRPCConn grpc.ClientConnInterface,
+	publisher message.Publisher,
 ) (*farmer.GRPCService, error) {
 	panic(
 		wire.Build(

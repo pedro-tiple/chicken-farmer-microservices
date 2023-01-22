@@ -101,12 +101,7 @@ WHERE id = $1
   AND feed >= $2;
 
 
--- name: IncrementChickenNormalEggLayCount :exec
+-- name: IncrementChickenEggLayCount :exec
 UPDATE chickens
-SET normal_eggs_laid = normal_eggs_laid + 1
-WHERE id = $1;
-
--- name: IncrementChickenGoldEggLayCount :exec
-UPDATE chickens
-SET gold_eggs_laid = gold_eggs_laid + 1
+SET normal_eggs_laid = normal_eggs_laid + $2, gold_eggs_laid = gold_eggs_laid + $3
 WHERE id = $1;

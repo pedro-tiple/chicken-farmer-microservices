@@ -393,7 +393,14 @@
             "$ref": "#/definitions/v1Chicken"
           }
         }
-      }
+      },
+      "title": "Barn",
+      "required": [
+        "id",
+        "feed",
+        "hasAutoFeeder",
+        "chickens"
+      ]
     },
     "v1BuyBarnRequest": {
       "type": "object"
@@ -445,7 +452,15 @@
           "type": "integer",
           "format": "int64"
         }
-      }
+      },
+      "title": "Chicken",
+      "required": [
+        "id",
+        "dateOfBirth",
+        "restingUntil",
+        "normalEggsLaid",
+        "goldEggsLaid"
+      ]
     },
     "v1DeleteFarmResponse": {
       "type": "object"
@@ -456,11 +471,11 @@
         "name": {
           "type": "string"
         },
-        "day": {
+        "goldenEggs": {
           "type": "integer",
           "format": "int64"
         },
-        "goldenEggs": {
+        "day": {
           "type": "integer",
           "format": "int64"
         },
@@ -470,7 +485,14 @@
             "$ref": "#/definitions/v1Barn"
           }
         }
-      }
+      },
+      "title": "Farm",
+      "required": [
+        "name",
+        "goldenEggs",
+        "day",
+        "barns"
+      ]
     },
     "v1FarmDetailsResponse": {
       "type": "object",
@@ -478,7 +500,10 @@
         "farm": {
           "$ref": "#/definitions/v1Farm"
         }
-      }
+      },
+      "required": [
+        "farm"
+      ]
     },
     "v1FeedChickenResponse": {
       "type": "object"

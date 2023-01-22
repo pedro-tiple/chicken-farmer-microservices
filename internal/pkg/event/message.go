@@ -1,6 +1,7 @@
 package event
 
 import (
+	"context"
 	"encoding/json"
 
 	messagePkg "github.com/ThreeDotsLabs/watermill/message"
@@ -11,22 +12,53 @@ const (
 	MetadataFieldFarmerID = "farmerID"
 	MetadataFieldType     = "message-type"
 
-	MessageTypeDay     = "day"
-	MessageTypeEggLaid = "egg-laid"
+	MessageTypeDay              = "day"
+	MessageTypeNewBarn          = "new-barn"
+	MessageTypeNewChicken       = "new-chicken"
+	MessageTypeFeedChange       = "feed-change"
+	MessageTypeGoldenEggsChange = "golden-eggs-change"
+	MessageTypeChickenFed       = "chicken-fed"
 )
+
+// Future thing: send these messages encoded with protobuf?
 
 type DayMessage struct {
 	Day uint `json:"day"`
 }
 
-type EggLaidMessage struct {
-	Day          uint   `json:"day"`
-	ChickenID    string `json:"chickenID"`
-	EggType      int    `json:"eggType"`
-	RestingUntil uint   `json:"restingUntil"`
+type NewBarnMessage struct {
+	ID            string `json:"barnID"`
+	Feed          uint   `json:"feed"`
+	HasAutoFeeder bool   `json:"hasAutoFeeder"`
+}
+
+type NewChickenMessage struct {
+	BarnID         string `json:"barnID"`
+	ChickenID      string `json:"chickenID"`
+	DateOfBirth    uint   `json:"dateOfBirth"`
+	RestingUntil   uint   `json:"restingUntil"`
+	NormalEggsLaid uint   `json:"normalEggsLaid"`
+	GoldEggsLaid   uint   `json:"goldEggsLaid"`
+}
+
+type FeedChangeMessage struct {
+	BarnID string `json:"barnID"`
+	Count  int    `json:"count"`
+}
+
+type GoldenEggChangeMessage struct {
+	Count int `json:"count"`
+}
+
+type ChickenFedMessage struct {
+	ChickenID      string `json:"chickenID"`
+	RestingUntil   uint   `json:"restingUntil"`
+	NormalEggsLaid uint   `json:"normalEggsLaid"`
+	GoldEggsLaid   uint   `json:"goldEggsLaid"`
 }
 
 func PublishMessage(
+	ctx context.Context,
 	publisher messagePkg.Publisher,
 	farmerID uuid.UUID,
 	topic, messageType string,
@@ -38,6 +70,7 @@ func PublishMessage(
 	}
 
 	msg := messagePkg.NewMessage(uuid.New().String(), eggLaidMessage)
+	msg.SetContext(ctx)
 	msg.Metadata[MetadataFieldFarmerID] = farmerID.String()
 	msg.Metadata[MetadataFieldType] = messageType
 

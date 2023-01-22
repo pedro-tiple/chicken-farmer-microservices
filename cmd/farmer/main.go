@@ -10,6 +10,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
@@ -38,11 +41,21 @@ func main() {
 	}
 	defer farmGRPCConn.Close()
 
+	publisher, err := amqp.NewPublisher(
+		amqp.NewDurablePubSubConfig(
+			"amqp://guest:guest@localhost:5672/",
+			amqp.GenerateQueueNameTopicNameWithSuffix(uuid.New().String()),
+		), watermill.NewStdLogger(false, false),
+	)
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	farmerService, err := initializeGRPCService(
-		ctx, *grpcAddr, logger.Sugar(), farmGRPCConn,
+		ctx, *grpcAddr, logger.Sugar(), farmGRPCConn, publisher,
 	)
 	if err != nil {
 		logger.Fatal(err.Error())

@@ -3,7 +3,8 @@ syntax = "proto3";
 package chicken_farmer.v1;
 
 import "google/api/annotations.proto";
-import "google/api/field_behavior.proto";
+// import "google/api/field_behavior.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 // import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 option go_package = "internal/pkg/grpc";
@@ -49,6 +50,18 @@ service FarmService {
 }
 
 message Farm {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Farm"
+      required: [
+        "name",
+        "golden_eggs",
+        "day",
+        "barns"
+      ]
+    }
+  };
+
   string name = 1;
   uint32 day = 2;
   uint32 golden_eggs = 3;
@@ -56,6 +69,18 @@ message Farm {
 }
 
 message Barn {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Barn"
+      required: [
+        "id",
+        "feed",
+        "has_auto_feeder",
+        "chickens"
+      ]
+    }
+  };
+
   string id = 1;
   uint32 feed = 2;
   bool has_auto_feeder = 3;
@@ -63,6 +88,19 @@ message Barn {
 }
 
 message Chicken {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "Chicken"
+      required: [
+        "id",
+        "date_of_birth",
+        "resting_until",
+        "normal_eggs_laid",
+        "gold_eggs_laid"
+      ]
+    }
+  };
+
   string id = 1;
   uint32 date_of_birth = 2;
   uint32 resting_until = 5;
@@ -71,8 +109,17 @@ message Chicken {
 }
 
 message NewFarmRequest {
-  string owner_id = 1 [(google.api.field_behavior) = REQUIRED];
-  string name = 2 [(google.api.field_behavior) = REQUIRED];
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "owner_id",
+        "name"
+      ]
+    }
+  };
+
+  string owner_id = 1;
+  string name = 2;
 }
 message NewFarmResponse {
   string farm_id = 1;
@@ -86,6 +133,14 @@ message DeleteFarmResponse {
 
 message FarmDetailsRequest {}
 message FarmDetailsResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "farm"
+      ]
+    }
+  };
+
   Farm farm = 1;
 }
 
@@ -93,24 +148,57 @@ message BuyBarnRequest {}
 message BuyBarnResponse {}
 
 message BuyFeedBagRequest {
-  string barn_id = 1 [(google.api.field_behavior) = REQUIRED];
-  uint32 amount = 2 [(google.api.field_behavior) = REQUIRED];
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "barn_id",
+        "amount"
+      ]
+    }
+  };
+
+  string barn_id = 1;
+  uint32 amount = 2;
 }
 message BuyFeedBagResponse {}
 
 message BuyChickenRequest {
-  string barn_id = 1 [(google.api.field_behavior) = REQUIRED];
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "barn_id"
+      ]
+    }
+  };
+
+  string barn_id = 1;
 }
 message BuyChickenResponse {
   string id = 1;
 }
 
 message FeedChickenRequest {
-  string chicken_id = 1 [(google.api.field_behavior) = REQUIRED];
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "chicken_id"
+      ]
+    }
+  };
+
+  string chicken_id = 1;
 }
 message FeedChickenResponse {}
 
 message FeedChickensOfBarnRequest {
-  string barn_id = 1 [(google.api.field_behavior) = REQUIRED];
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "barn_id"
+      ]
+    }
+  };
+
+  string barn_id = 1;
 }
 message FeedChickensOfBarnResponse {}

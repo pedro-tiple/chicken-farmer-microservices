@@ -1,6 +1,7 @@
 package farmer
 
 import (
+	"chicken-farmer/backend/internal/pkg/event"
 	"context"
 
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -50,11 +51,13 @@ func ProvideController(
 	logger *zap.SugaredLogger,
 	datasource IDataSource,
 	farmService IFarmService,
+	publisher message.Publisher,
 ) *Controller {
 	return &Controller{
 		logger:      logger,
 		datasource:  datasource,
 		farmService: farmService,
+		publisher:   publisher,
 	}
 }
 
@@ -139,7 +142,18 @@ func (c *Controller) GrantGoldEggs(
 		return err
 	}
 
-	// TODO grant gold eggs event
+	if err := event.PublishMessage(
+		ctx,
+		c.publisher,
+		farmerID,
+		event.FarmTopic,
+		event.MessageTypeGoldenEggsChange,
+		event.GoldenEggChangeMessage{
+			Count: int(amount),
+		},
+	); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -153,7 +167,17 @@ func (c *Controller) SpendGoldEggs(
 		return err
 	}
 
-	// TODO spent gold eggs event
-
+	if err := event.PublishMessage(
+		ctx,
+		c.publisher,
+		farmerID,
+		event.FarmTopic,
+		event.MessageTypeGoldenEggsChange,
+		event.GoldenEggChangeMessage{
+			Count: -int(amount),
+		},
+	); err != nil {
+		return err
+	}
 	return nil
 }

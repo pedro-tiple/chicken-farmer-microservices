@@ -251,25 +251,20 @@ func (q *Queries) IncrementBarnFeed(ctx context.Context, arg IncrementBarnFeedPa
 	return err
 }
 
-const incrementChickenGoldEggLayCount = `-- name: IncrementChickenGoldEggLayCount :exec
+const incrementChickenEggLayCount = `-- name: IncrementChickenEggLayCount :exec
 UPDATE chickens
-SET gold_eggs_laid = gold_eggs_laid + 1
+SET normal_eggs_laid = normal_eggs_laid + $2, gold_eggs_laid = gold_eggs_laid + $3
 WHERE id = $1
 `
 
-func (q *Queries) IncrementChickenGoldEggLayCount(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, incrementChickenGoldEggLayCount, id)
-	return err
+type IncrementChickenEggLayCountParams struct {
+	ID             uuid.UUID
+	NormalEggsLaid int64
+	GoldEggsLaid   int64
 }
 
-const incrementChickenNormalEggLayCount = `-- name: IncrementChickenNormalEggLayCount :exec
-UPDATE chickens
-SET normal_eggs_laid = normal_eggs_laid + 1
-WHERE id = $1
-`
-
-func (q *Queries) IncrementChickenNormalEggLayCount(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, incrementChickenNormalEggLayCount, id)
+func (q *Queries) IncrementChickenEggLayCount(ctx context.Context, arg IncrementChickenEggLayCountParams) error {
+	_, err := q.db.ExecContext(ctx, incrementChickenEggLayCount, arg.ID, arg.NormalEggsLaid, arg.GoldEggsLaid)
 	return err
 }
 

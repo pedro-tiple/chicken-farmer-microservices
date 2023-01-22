@@ -1,9 +1,10 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
 import * as React from "react";
-import { FarmServiceApi, V1Farm } from "chicken-farmer-service/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { FarmServiceApi, V1Farm, V1Barn } from "chicken-farmer-service/api";
 import { Configuration } from "chicken-farmer-service/configuration";
 import { Barn } from "../../components/Barn/Barn";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { SetupFarmSSE } from "./SSE";
 
 // Used to update TanStack client.
 // const queryClient = useQueryClient();
@@ -18,89 +19,75 @@ const farmServiceApi = new FarmServiceApi(
   new Configuration({ basePath: "http://localhost:8081" })
 );
 
-const getFarm = (): { result: V1Farm; error: any } => {
-  const { data, error } = useQuery(["getFarm"], async () =>
-    farmServiceApi.farmServiceGetFarm()
-  );
-  return { result: data?.data.farm as V1Farm, error };
-};
-
 export const Farm = () => {
-  const [farm, setFarm] = useState<V1Farm>({});
-  const { result, error } = getFarm();
+  const [farm, _setFarm] = useState<V1Farm>({
+    barns: new Array<V1Barn>(),
+    day: 0,
+    goldenEggs: 0,
+    name: ""
+  });
+
+  // Need a ref to access the current farm inside the listeners created for SSE.
+  const farmRef = useRef(farm);
+
+  // Override _setFarm to keep the ref always updated.
+  function setFarm(farm: V1Farm) {
+    farmRef.current = farm;
+    _setFarm(farm);
+  }
+
+  const { data, error, isLoading, isError, isFetched } = useQuery(
+    ["getFarm"],
+    async () => farmServiceApi.farmServiceFarmDetails()
+  );
 
   const buyBarn = useMutation({
     mutationFn: () => farmServiceApi.farmServiceBuyBarn({})
   });
 
   useEffect(() => {
-    setFarm(result);
-  }, [result]);
+    if (!data) {
+      return;
+    }
+
+    setFarm(data.data.farm);
+  }, [isFetched]);
 
   useEffect(() => {
-    const eventSource = new EventSource("http://localhost:8083/event-feed", {
-      withCredentials: false
-    });
-
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      farm?.barns?.every((barn) => {
-        const chicken = barn.chickens?.find((chicken) => {
-          return chicken.id == data.chickenID;
-        });
-        if (typeof chicken === "undefined") {
-          return true;
-        }
-
-        chicken.restingUntil = data.restingUntil;
-
-        switch (data.eggType) {
-          case 0:
-            chicken.normalEggsLaid++;
-            return false;
-          case 1:
-            chicken.goldEggsLaid++;
-            return false;
-          default:
-            return true;
-        }
-      });
-
-      setFarm((farm) => ({ ...farm, day: data.day ?? farm.day }));
-    };
-
+    const eventSource = SetupFarmSSE(setFarm, farmRef);
     return () => eventSource.close();
   }, []);
 
-  return farm ? (
+  return isLoading ? (
+    <div>Loading your farm</div>
+  ) : isError ? (
+    <div>Errored: {error.message}</div>
+  ) : (
     <div className="flex h-screen">
       <div className="flex flex-col items-center basis-2/12 p-4">
         <h1 className="text-center text-3xl font-extrabold mb-3">
-          {farm?.name}
+          {farm.name}
         </h1>
         <span>
-          <label>Current Day:</label> <span key={farm.day}>{farm?.day}</span>
+          <label>Current Day:</label> <span key={farm.day}>{farm.day}</span>
         </span>
 
         <span>
           <label>Golden Eggs:</label>{" "}
-          <span key={farm.goldenEggs}>{farm?.goldenEggs}</span>
+          <span key={farm.goldenEggs}>{farm.goldenEggs}</span>
         </span>
 
         <button className="btn-primary mt-4" onClick={() => buyBarn.mutate()}>
           Buy Barn
         </button>
 
-        {error && <span className="mt-4 text-red-700">{error}</span>}
+        {error && <span className="mt-4 text-red-700">{error.message}</span>}
       </div>
       <div className="barns">
-        {farm?.barns?.map((barn, index: number) => {
-          return <Barn key={index} barn={barn} day={farm.day ?? 0} />;
+        {farm.barns.map((barn, index: number) => {
+          return <Barn key={index} barn={barn} day={farm.day} />;
         })}
       </div>
     </div>
-  ) : (
-    <div>Loading your farm</div>
   );
 };

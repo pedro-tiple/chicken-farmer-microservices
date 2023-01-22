@@ -1,6 +1,6 @@
-all: sqlc buf mockgen gogen apiclient
+all: sqlc buf mockgen gogen
 backend: sqlc buf mockgen generate
-frontend: apiclient
+frontend: buf
 
 sqlc:
 	sqlc generate -f "./internal/farm/sql/sqlc.yaml"
@@ -8,14 +8,7 @@ sqlc:
 buf:
 	cd ./api/proto; buf lint
 	cd ./api/proto; buf generate
-
-gogen:
-	go generate "./..."
-
-mockgen:
-	./scripts/mockgen.sh
-
-apiclient:
+# Proto to typescript-axios client.
 	docker run --rm \
 		-v "${CURDIR}:/local" \
 		openapitools/openapi-generator-cli generate \
@@ -23,7 +16,15 @@ apiclient:
         -g typescript-axios \
         -o "$/local/web/chicken-farmer-service" \
         -p npmName=chicken-farmer-service
+# Regenerate dist on.
 	cd "./web/chicken-farmer-service"; npm run build
+# Clear node_modules import and install again.
+	cd "./web/react-ts"; rm -rf node_modules/chicken-farmer-service node_modules/.vite; npm install
 
+gogen:
+	go generate "./..."
 
-.PHONY: sqlc buf gogen mockgen apiclient
+mockgen:
+	./scripts/mockgen.sh
+
+.PHONY: sqlc buf gogen mockgen

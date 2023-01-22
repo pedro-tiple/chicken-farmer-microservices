@@ -11,20 +11,21 @@ import (
 	"chicken-farmer/backend/internal/farmer/mongo"
 	grpc2 "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
+	"github.com/ThreeDotsLabs/watermill/message"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
 
-func initializeGRPCService(ctx context.Context, address string, logger *zap.SugaredLogger, farmGRPCConn grpc.ClientConnInterface) (*farmer.GRPCService, error) {
+func initializeGRPCService(ctx context.Context, address string, logger *zap.SugaredLogger, farmGRPCConn grpc.ClientConnInterface, publisher message.Publisher) (*farmer.GRPCService, error) {
 	datasource, err := mongo.ProvideDatasource(ctx)
 	if err != nil {
 		return nil, err
 	}
 	farmServiceClient := grpc2.NewFarmServiceClient(farmGRPCConn)
 	farmGRPCClient := farmer.ProvideFarmGRPCClient(farmServiceClient)
-	controller := farmer.ProvideController(logger, datasource, farmGRPCClient)
+	controller := farmer.ProvideController(logger, datasource, farmGRPCClient, publisher)
 	grpcService := farmer.ProvideGRPCService(address, logger, controller)
 	return grpcService, nil
 }

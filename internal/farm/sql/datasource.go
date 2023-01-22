@@ -5,13 +5,8 @@ import (
 	internalDB "chicken-farmer/backend/internal/pkg/database"
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/google/uuid"
-)
-
-var (
-	ErrInvalidEggType = errors.New("invalid egg type")
 )
 
 type Datasource struct {
@@ -224,14 +219,11 @@ func (d *Datasource) DecrementBarnFeedGreaterEqualThan(
 }
 
 func (d *Datasource) IncrementChickenEggLayCount(
-	ctx context.Context, chickenID uuid.UUID, eggType int,
+	ctx context.Context, chickenID uuid.UUID, normalEggCount, goldEggCount int64,
 ) error {
-	switch eggType {
-	case farmPkg.EggTypeGolden:
-		return d.database.IncrementChickenGoldEggLayCount(ctx, chickenID)
-	case farmPkg.EggTypeNormal:
-		return d.database.IncrementChickenNormalEggLayCount(ctx, chickenID)
-	}
-
-	return ErrInvalidEggType
+	return d.database.IncrementChickenEggLayCount(ctx, IncrementChickenEggLayCountParams{
+		ID:             chickenID,
+		NormalEggsLaid: normalEggCount,
+		GoldEggsLaid:   goldEggCount,
+	})
 }

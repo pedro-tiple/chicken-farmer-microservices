@@ -1,3 +1,4 @@
+import * as React from "react";
 import "./Chicken.scss";
 import { FarmServiceApi, V1Chicken } from "chicken-farmer-service/api";
 import { Configuration } from "chicken-farmer-service/configuration";
@@ -19,18 +20,6 @@ enum Action {
 // TODO have this on a shared file instead of one per chicken?
 const actions = Object.values(Action);
 
-enum Medal {
-  BRONZE = "bronze",
-  SILVER = "silver",
-  GOLD = "gold",
-  GOLDPLUS = "gold-plus"
-}
-
-interface State {
-  action: string;
-  block: number;
-  medal: Medal;
-}
 const farmServiceApi = new FarmServiceApi(
   new Configuration({ basePath: "http://localhost:8081" })
 );
@@ -38,20 +27,21 @@ const farmServiceApi = new FarmServiceApi(
 export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
   const [action, setAction] = useState(Action.STANDING_LEFT);
 
-  const feedChicken = useMutation(["feedChicken"], async (chickenId: string) =>
-    farmServiceApi.farmServiceFeedChicken(chickenId, {})
+  const feedChicken = useMutation(
+    ["feedChicken"],
+    async (chickenId: string) => {
+      setAction(Action.FEEDING);
+      return farmServiceApi.farmServiceFeedChicken(chickenId, {});
+    }
   );
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if ((props.chicken.restingUntil ?? 0) >= props.day) {
-        setAction(Action.FEEDING);
-        return;
-      }
-      setAction(actions[Math.floor(Math.random() * (actions.length - 1))]);
-    }, Math.max(2000, Math.random() * 5000)); // random wait between [2s, 5s]);
-    return () => clearInterval(interval);
-  }, []);
+    if ((props.chicken.restingUntil ?? 0) >= props.day) {
+      setAction(Action.FEEDING);
+      return;
+    }
+    setAction(actions[Math.floor(Math.random() * (actions.length - 1))]);
+  }, [props.day]);
 
   return (
     <div className="chicken">

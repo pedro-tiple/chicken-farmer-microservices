@@ -35,18 +35,33 @@ func (m *MockIDataSource) EXPECT() *MockIDataSourceMockRecorder {
 	return m.recorder
 }
 
-// DecrementBarnFeed mocks base method.
-func (m *MockIDataSource) DecrementBarnFeed(ctx context.Context, barnID uuid.UUID, amount uint) error {
+// DecrementBarnFeedGreaterEqualThan mocks base method.
+func (m *MockIDataSource) DecrementBarnFeedGreaterEqualThan(ctx context.Context, barnID uuid.UUID, amount uint) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DecrementBarnFeed", ctx, barnID, amount)
+	ret := m.ctrl.Call(m, "DecrementBarnFeedGreaterEqualThan", ctx, barnID, amount)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// DecrementBarnFeed indicates an expected call of DecrementBarnFeed.
-func (mr *MockIDataSourceMockRecorder) DecrementBarnFeed(ctx, barnID, amount interface{}) *gomock.Call {
+// DecrementBarnFeedGreaterEqualThan indicates an expected call of DecrementBarnFeedGreaterEqualThan.
+func (mr *MockIDataSourceMockRecorder) DecrementBarnFeedGreaterEqualThan(ctx, barnID, amount interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecrementBarnFeed", reflect.TypeOf((*MockIDataSource)(nil).DecrementBarnFeed), ctx, barnID, amount)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecrementBarnFeedGreaterEqualThan", reflect.TypeOf((*MockIDataSource)(nil).DecrementBarnFeedGreaterEqualThan), ctx, barnID, amount)
+}
+
+// GetBarn mocks base method.
+func (m *MockIDataSource) GetBarn(ctx context.Context, barnID uuid.UUID) (Barn, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBarn", ctx, barnID)
+	ret0, _ := ret[0].(Barn)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBarn indicates an expected call of GetBarn.
+func (mr *MockIDataSourceMockRecorder) GetBarn(ctx, barnID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBarn", reflect.TypeOf((*MockIDataSource)(nil).GetBarn), ctx, barnID)
 }
 
 // GetBarnsOfFarm mocks base method.
@@ -95,18 +110,18 @@ func (mr *MockIDataSourceMockRecorder) GetChickensOfBarn(ctx, barnID interface{}
 }
 
 // GetFarm mocks base method.
-func (m *MockIDataSource) GetFarm(ctx context.Context, chickenID uuid.UUID) (Farm, error) {
+func (m *MockIDataSource) GetFarm(ctx context.Context, farmID uuid.UUID) (Farm, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFarm", ctx, chickenID)
+	ret := m.ctrl.Call(m, "GetFarm", ctx, farmID)
 	ret0, _ := ret[0].(Farm)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetFarm indicates an expected call of GetFarm.
-func (mr *MockIDataSourceMockRecorder) GetFarm(ctx, chickenID interface{}) *gomock.Call {
+func (mr *MockIDataSourceMockRecorder) GetFarm(ctx, farmID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFarm", reflect.TypeOf((*MockIDataSource)(nil).GetFarm), ctx, chickenID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFarm", reflect.TypeOf((*MockIDataSource)(nil).GetFarm), ctx, farmID)
 }
 
 // IncrementBarnFeed mocks base method.
@@ -232,6 +247,20 @@ func (m *MockIFarmerService) GetGoldEggs(ctx context.Context) (uint, error) {
 func (mr *MockIFarmerServiceMockRecorder) GetGoldEggs(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGoldEggs", reflect.TypeOf((*MockIFarmerService)(nil).GetGoldEggs), ctx)
+}
+
+// GrantGoldEggs mocks base method.
+func (m *MockIFarmerService) GrantGoldEggs(ctx context.Context, amount uint) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GrantGoldEggs", ctx, amount)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// GrantGoldEggs indicates an expected call of GrantGoldEggs.
+func (mr *MockIFarmerServiceMockRecorder) GrantGoldEggs(ctx, amount interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GrantGoldEggs", reflect.TypeOf((*MockIFarmerService)(nil).GrantGoldEggs), ctx, amount)
 }
 
 // SpendGoldEggs mocks base method.

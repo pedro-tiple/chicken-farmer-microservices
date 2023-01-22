@@ -19,13 +19,14 @@ const (
 	PurchaseCostFeedBag = 1
 	PurchaseCostBarn    = 10
 
-	FeedChickenCost = 1
-	FeedPerBag      = 10
+	FeedUsedPerFeeding = 1
+	FeedPerBag         = 10
 
 	MinChickenRestingDays = 5
 	MaxChickenRestingDays = 15
 
-	GoldEggsPerFeed = 1
+	NormalEggsPerFeed = 1
+	GoldEggsPerFeed   = 1
 )
 
 const (
@@ -66,7 +67,7 @@ type IDataSource interface {
 	) error
 
 	IncrementChickenEggLayCount(
-		ctx context.Context, chickenID uuid.UUID, eggType int,
+		ctx context.Context, chickenID uuid.UUID, normalEggCount, goldEggCount int64,
 	) error
 }
 
@@ -167,7 +168,7 @@ func (c *Controller) FarmDetails(
 		return FarmDetailsResult{}, err
 	}
 
-	resultBarns := make([]getFarmResultBarn, len(barns))
+	resultBarns := make([]farmDetailsResultBarn, len(barns))
 	errGrp, errGrpCtx := errgroup.WithContext(ctx)
 	errGrp.SetLimit(5)
 
@@ -182,7 +183,7 @@ func (c *Controller) FarmDetails(
 				if err != nil {
 					return err
 				}
-				resultBarns[i] = getFarmResultBarn{
+				resultBarns[i] = farmDetailsResultBarn{
 					Barn:     barn,
 					Chickens: chickens,
 				}
@@ -227,14 +228,26 @@ func (c *Controller) BuyBarn(
 		return err
 	}
 
-	_, err = c.datasource.InsertBarn(ctx, Barn{FarmID: farmID})
+	barnID, err := c.datasource.InsertBarn(ctx, Barn{FarmID: farmID})
 	if err != nil {
 		// TODO unspend gold eggs?
 		return err
 	}
 
-	// TODO send purchase event.
-
+	if err := event.PublishMessage(
+		ctx,
+		c.publisher,
+		farmerID,
+		event.FarmTopic,
+		event.MessageTypeNewBarn,
+		event.NewBarnMessage{
+			ID:            barnID.String(),
+			Feed:          0,
+			HasAutoFeeder: false,
+		},
+	); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -256,13 +269,26 @@ func (c *Controller) BuyFeedBags(
 		return err
 	}
 
+	totalFeed := amount * FeedPerBag
 	if err := c.datasource.IncrementBarnFeed(
-		ctx, barnID, amount*FeedPerBag,
+		ctx, barnID, totalFeed,
 	); err != nil {
 		return err
 	}
 
-	// TODO send purchase event.
+	if err := event.PublishMessage(
+		ctx,
+		c.publisher,
+		farmerID,
+		event.FarmTopic,
+		event.MessageTypeFeedChange,
+		event.FeedChangeMessage{
+			BarnID: barnID.String(),
+			Count:  int(totalFeed),
+		},
+	); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -286,11 +312,12 @@ func (c *Controller) BuyChicken(
 	}
 
 	// Maybe have the gold egg chance be on a normal distribution?
-	rand.Seed(time.Now().Unix())
+	rand.Seed(int64(time.Now().Nanosecond()))
 
+	chickenID := uuid.New()
 	_, err = c.datasource.InsertChicken(
 		ctx, Chicken{
-			ID:            uuid.New(),
+			ID:            chickenID,
 			BarnID:        barnID,
 			DateOfBirth:   c.currentDay,
 			GoldEggChance: uint(rand.Intn(99) + 1), // [1,100]
@@ -300,7 +327,20 @@ func (c *Controller) BuyChicken(
 		return err
 	}
 
-	// TODO send purchase event.
+	if err := event.PublishMessage(
+		ctx,
+		c.publisher,
+		farmerID,
+		event.FarmTopic,
+		event.MessageTypeNewChicken,
+		event.NewChickenMessage{
+			BarnID:      barn.ID.String(),
+			ChickenID:   chickenID.String(),
+			DateOfBirth: c.currentDay,
+		},
+	); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -322,56 +362,78 @@ func (c *Controller) FeedChicken(
 	}
 
 	if err := c.datasource.DecrementBarnFeedGreaterEqualThan(
-		ctx, chicken.BarnID, FeedChickenCost,
+		ctx, chicken.BarnID, FeedUsedPerFeeding,
 	); err != nil {
 		return err
 	}
 
 	rand.Seed(int64(time.Now().Nanosecond()))
 
-	var eggType = EggTypeNormal
+	var normalEggsLaid, goldEggsLaid int64
 	if rand.Intn(100) <= int(chicken.GoldEggChance) {
-		eggType = EggTypeGolden
+		normalEggsLaid = GoldEggsPerFeed
+	} else {
+		goldEggsLaid = NormalEggsPerFeed
+	}
 
-		if err := c.farmerService.GrantGoldEggs(
-			ctx, GoldEggsPerFeed,
-		); err != nil {
-			return err
+	g, errGrpCtx := errgroup.WithContext(ctx)
+	g.Go(func() error {
+		if goldEggsLaid == 0 {
+			return nil
 		}
-	}
 
-	if err := c.datasource.IncrementChickenEggLayCount(
-		ctx, chickenID, eggType,
-	); err != nil {
-		return err
-	}
+		return c.farmerService.GrantGoldEggs(
+			errGrpCtx, GoldEggsPerFeed,
+		)
+	})
 
-	// Must rest at least one day, can rest up to 1 + MaxChickenRestingDays.
-	chicken.RestingUntil = c.currentDay + MinChickenRestingDays +
-		uint(rand.Intn(MaxChickenRestingDays-MinChickenRestingDays))
+	g.Go(func() error {
+		return c.datasource.IncrementChickenEggLayCount(
+			errGrpCtx, chickenID, normalEggsLaid, goldEggsLaid,
+		)
+	})
 
-	if err := c.datasource.UpdateChickenRestingUntil(
-		ctx, chickenID, chicken.RestingUntil,
-	); err != nil {
-		return err
-	}
+	g.Go(func() error {
+		// Must rest at least one day, can rest up to 1 + MaxChickenRestingDays.
+		chicken.RestingUntil = c.currentDay + MinChickenRestingDays +
+			uint(rand.Intn(MaxChickenRestingDays-MinChickenRestingDays))
 
-	if err := event.PublishMessage(
-		c.publisher,
-		farmerID,
-		event.FarmTopic,
-		event.MessageTypeEggLaid,
-		event.EggLaidMessage{
-			Day:          c.currentDay,
-			ChickenID:    chickenID.String(),
-			EggType:      eggType,
-			RestingUntil: chicken.RestingUntil,
-		},
-	); err != nil {
-		return err
-	}
+		return c.datasource.UpdateChickenRestingUntil(
+			errGrpCtx, chickenID, chicken.RestingUntil,
+		)
+	})
 
-	return nil
+	g.Go(func() error {
+		return event.PublishMessage(
+			errGrpCtx,
+			c.publisher,
+			farmerID,
+			event.FarmTopic,
+			event.MessageTypeChickenFed,
+			event.ChickenFedMessage{
+				ChickenID:      chickenID.String(),
+				RestingUntil:   chicken.RestingUntil,
+				NormalEggsLaid: uint(normalEggsLaid),
+				GoldEggsLaid:   uint(goldEggsLaid),
+			},
+		)
+	})
+
+	g.Go(func() error {
+		return event.PublishMessage(
+			errGrpCtx,
+			c.publisher,
+			farmerID,
+			event.FarmTopic,
+			event.MessageTypeFeedChange,
+			event.FeedChangeMessage{
+				BarnID: chicken.BarnID.String(),
+				Count:  -FeedUsedPerFeeding,
+			},
+		)
+	})
+
+	return g.Wait()
 }
 
 func (c *Controller) FeedChickensOfBarn(
@@ -381,9 +443,7 @@ func (c *Controller) FeedChickensOfBarn(
 	return nil
 }
 
-func (c *Controller) SetDay(
-	ctx context.Context, day uint,
-) error {
+func (c *Controller) SetDay(ctx context.Context, day uint) error {
 	c.currentDay = day
 
 	return nil

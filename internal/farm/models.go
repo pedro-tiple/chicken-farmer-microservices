@@ -31,10 +31,10 @@ type FarmDetailsResult struct {
 	Farm
 	GoldEggCount uint
 	CurrentDay   uint
-	Barns        []getFarmResultBarn
+	Barns        []farmDetailsResultBarn
 }
 
-type getFarmResultBarn struct {
+type farmDetailsResultBarn struct {
 	Barn
 	Chickens []Chicken
 }

@@ -36,88 +36,88 @@ func (m *MockIController) EXPECT() *MockIControllerMockRecorder {
 }
 
 // BuyBarn mocks base method.
-func (m *MockIController) BuyBarn(ctx context.Context, farmID uuid.UUID) error {
+func (m *MockIController) BuyBarn(ctx context.Context, farmerID, farmID uuid.UUID) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "BuyBarn", ctx, farmID)
+	ret := m.ctrl.Call(m, "BuyBarn", ctx, farmerID, farmID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // BuyBarn indicates an expected call of BuyBarn.
-func (mr *MockIControllerMockRecorder) BuyBarn(ctx, farmID interface{}) *gomock.Call {
+func (mr *MockIControllerMockRecorder) BuyBarn(ctx, farmerID, farmID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyBarn", reflect.TypeOf((*MockIController)(nil).BuyBarn), ctx, farmID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyBarn", reflect.TypeOf((*MockIController)(nil).BuyBarn), ctx, farmerID, farmID)
 }
 
 // BuyChicken mocks base method.
-func (m *MockIController) BuyChicken(ctx context.Context, barnID uuid.UUID) error {
+func (m *MockIController) BuyChicken(ctx context.Context, farmerID, barnID uuid.UUID) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "BuyChicken", ctx, barnID)
+	ret := m.ctrl.Call(m, "BuyChicken", ctx, farmerID, barnID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // BuyChicken indicates an expected call of BuyChicken.
-func (mr *MockIControllerMockRecorder) BuyChicken(ctx, barnID interface{}) *gomock.Call {
+func (mr *MockIControllerMockRecorder) BuyChicken(ctx, farmerID, barnID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyChicken", reflect.TypeOf((*MockIController)(nil).BuyChicken), ctx, barnID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyChicken", reflect.TypeOf((*MockIController)(nil).BuyChicken), ctx, farmerID, barnID)
 }
 
 // BuyFeedBags mocks base method.
-func (m *MockIController) BuyFeedBags(ctx context.Context, barnID uuid.UUID, amount uint) error {
+func (m *MockIController) BuyFeedBags(ctx context.Context, farmerID, barnID uuid.UUID, amount uint) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "BuyFeedBags", ctx, barnID, amount)
+	ret := m.ctrl.Call(m, "BuyFeedBags", ctx, farmerID, barnID, amount)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // BuyFeedBags indicates an expected call of BuyFeedBags.
-func (mr *MockIControllerMockRecorder) BuyFeedBags(ctx, barnID, amount interface{}) *gomock.Call {
+func (mr *MockIControllerMockRecorder) BuyFeedBags(ctx, farmerID, barnID, amount interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyFeedBags", reflect.TypeOf((*MockIController)(nil).BuyFeedBags), ctx, barnID, amount)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyFeedBags", reflect.TypeOf((*MockIController)(nil).BuyFeedBags), ctx, farmerID, barnID, amount)
 }
 
-// FeedChicken mocks base method.
-func (m *MockIController) FeedChicken(ctx context.Context, chickenID uuid.UUID) error {
+// FarmDetails mocks base method.
+func (m *MockIController) FarmDetails(ctx context.Context, farmerID, farmID uuid.UUID) (FarmDetailsResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FeedChicken", ctx, chickenID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// FeedChicken indicates an expected call of FeedChicken.
-func (mr *MockIControllerMockRecorder) FeedChicken(ctx, chickenID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FeedChicken", reflect.TypeOf((*MockIController)(nil).FeedChicken), ctx, chickenID)
-}
-
-// FeedChickensOfBarn mocks base method.
-func (m *MockIController) FeedChickensOfBarn(ctx context.Context, barnID uuid.UUID) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FeedChickensOfBarn", ctx, barnID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// FeedChickensOfBarn indicates an expected call of FeedChickensOfBarn.
-func (mr *MockIControllerMockRecorder) FeedChickensOfBarn(ctx, barnID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FeedChickensOfBarn", reflect.TypeOf((*MockIController)(nil).FeedChickensOfBarn), ctx, barnID)
-}
-
-// GetFarm mocks base method.
-func (m *MockIController) GetFarm(ctx context.Context, farmID uuid.UUID) (FarmDetailsResult, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFarm", ctx, farmID)
+	ret := m.ctrl.Call(m, "FarmDetails", ctx, farmerID, farmID)
 	ret0, _ := ret[0].(FarmDetailsResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetFarm indicates an expected call of GetFarm.
-func (mr *MockIControllerMockRecorder) GetFarm(ctx, farmID interface{}) *gomock.Call {
+// FarmDetails indicates an expected call of FarmDetails.
+func (mr *MockIControllerMockRecorder) FarmDetails(ctx, farmerID, farmID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFarm", reflect.TypeOf((*MockIController)(nil).GetFarm), ctx, farmID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FarmDetails", reflect.TypeOf((*MockIController)(nil).FarmDetails), ctx, farmerID, farmID)
+}
+
+// FeedChicken mocks base method.
+func (m *MockIController) FeedChicken(ctx context.Context, farmerID, chickenID uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FeedChicken", ctx, farmerID, chickenID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// FeedChicken indicates an expected call of FeedChicken.
+func (mr *MockIControllerMockRecorder) FeedChicken(ctx, farmerID, chickenID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FeedChicken", reflect.TypeOf((*MockIController)(nil).FeedChicken), ctx, farmerID, chickenID)
+}
+
+// FeedChickensOfBarn mocks base method.
+func (m *MockIController) FeedChickensOfBarn(ctx context.Context, farmerID, barnID uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FeedChickensOfBarn", ctx, farmerID, barnID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// FeedChickensOfBarn indicates an expected call of FeedChickensOfBarn.
+func (mr *MockIControllerMockRecorder) FeedChickensOfBarn(ctx, farmerID, barnID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FeedChickensOfBarn", reflect.TypeOf((*MockIController)(nil).FeedChickensOfBarn), ctx, farmerID, barnID)
 }
 
 // NewFarm mocks base method.
