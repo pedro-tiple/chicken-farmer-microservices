@@ -40,6 +40,13 @@ service FarmService {
     };
   }
 
+  rpc SellChicken(SellChickenRequest) returns (SellChickenResponse) {
+    option (google.api.http) = {
+      post: "/v1/farm/chickens/{chicken_id}/sell",
+      body: "*"
+    };
+  }
+
   rpc FeedChicken(FeedChickenRequest) returns (FeedChickenResponse) {
     option (google.api.http) = {
       post: "/v1/farm/chickens/{chicken_id}/feed",
@@ -175,6 +182,20 @@ message BuyChickenRequest {
 }
 message BuyChickenResponse {
   string id = 1;
+}
+
+message SellChickenRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "chicken_id"
+      ]
+    }
+  };
+
+  string chicken_id = 1;
+}
+message SellChickenResponse {
 }
 
 message FeedChickenRequest {

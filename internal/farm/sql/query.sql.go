@@ -31,6 +31,16 @@ func (q *Queries) DecrementBarnFeedGreaterEqualThan(ctx context.Context, arg Dec
 	return result.RowsAffected()
 }
 
+const deleteChicken = `-- name: DeleteChicken :exec
+DELETE FROM chickens
+WHERE ID = $1
+`
+
+func (q *Queries) DeleteChicken(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteChicken, id)
+	return err
+}
+
 const getBarn = `-- name: GetBarn :one
 SELECT barns.id    as id,
     farm_id,

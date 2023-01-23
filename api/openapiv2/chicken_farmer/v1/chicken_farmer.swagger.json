@@ -191,6 +191,44 @@
         ]
       }
     },
+    "/v1/farm/chickens/{chickenId}/sell": {
+      "post": {
+        "operationId": "FarmService_SellChicken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SellChickenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "chickenId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "tags": [
+          "FarmService"
+        ]
+      }
+    },
     "/v1/farmer/gold-eggs": {
       "get": {
         "operationId": "FarmerService_GetGoldEggs",
@@ -471,11 +509,11 @@
         "name": {
           "type": "string"
         },
-        "goldenEggs": {
+        "day": {
           "type": "integer",
           "format": "int64"
         },
-        "day": {
+        "goldenEggs": {
           "type": "integer",
           "format": "int64"
         },
@@ -580,6 +618,9 @@
           "type": "string"
         }
       }
+    },
+    "v1SellChickenResponse": {
+      "type": "object"
     },
     "v1SpendGoldEggsRequest": {
       "type": "object",

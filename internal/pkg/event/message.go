@@ -15,6 +15,7 @@ const (
 	MessageTypeDay              = "day"
 	MessageTypeNewBarn          = "new-barn"
 	MessageTypeNewChicken       = "new-chicken"
+	MessageTypeSoldChicken      = "sold-chicken"
 	MessageTypeFeedChange       = "feed-change"
 	MessageTypeGoldenEggsChange = "golden-eggs-change"
 	MessageTypeChickenFed       = "chicken-fed"
@@ -39,6 +40,10 @@ type NewChickenMessage struct {
 	RestingUntil   uint   `json:"restingUntil"`
 	NormalEggsLaid uint   `json:"normalEggsLaid"`
 	GoldEggsLaid   uint   `json:"goldEggsLaid"`
+}
+
+type SoldChickenMessage struct {
+	ChickenID string `json:"chickenID"`
 }
 
 type FeedChangeMessage struct {

@@ -1,6 +1,16 @@
 import { MutableRefObject } from "react";
 import { V1Farm, V1Barn, V1Chicken } from "chicken-farmer-service/api";
 
+enum Events {
+  Day = "day",
+  GoldenEggsChange = "golden-eggs-change",
+  FeedChange = "feed-change",
+  NewBarn = "new-barn",
+  NewChicken = "new-chicken",
+  SoldChicken = "sold-chicken",
+  ChickenFed = "chicken-fed"
+}
+
 export const SetupFarmSSE = (
   setFarm: (farm: V1Farm) => void,
   farmRef: MutableRefObject<V1Farm>
@@ -11,11 +21,11 @@ export const SetupFarmSSE = (
     withCredentials: false
   });
 
-  eventSource.addEventListener("day", (event) => {
+  eventSource.addEventListener(Events.Day, (event) => {
     setFarm({ ...farmRef.current, day: event.data });
   });
 
-  eventSource.addEventListener("golden-eggs-change", (event) => {
+  eventSource.addEventListener(Events.GoldenEggsChange, (event) => {
     const data = JSON.parse(event.data);
     setFarm({
       ...farmRef.current,
@@ -23,7 +33,7 @@ export const SetupFarmSSE = (
     });
   });
 
-  eventSource.addEventListener("feed-change", (event) => {
+  eventSource.addEventListener(Events.FeedChange, (event) => {
     const data = JSON.parse(event.data);
     setFarm({
       ...farmRef.current,
@@ -36,7 +46,7 @@ export const SetupFarmSSE = (
     });
   });
 
-  eventSource.addEventListener("new-barn", (event) => {
+  eventSource.addEventListener(Events.NewBarn, (event) => {
     const data = JSON.parse(event.data);
     setFarm({
       ...farmRef.current,
@@ -52,7 +62,7 @@ export const SetupFarmSSE = (
     });
   });
 
-  eventSource.addEventListener("new-chicken", (event) => {
+  eventSource.addEventListener(Events.NewChicken, (event) => {
     const data = JSON.parse(event.data);
     setFarm({
       ...farmRef.current,
@@ -71,7 +81,23 @@ export const SetupFarmSSE = (
     });
   });
 
-  eventSource.addEventListener("chicken-fed", (event) => {
+  eventSource.addEventListener(Events.SoldChicken, (event) => {
+    const data = JSON.parse(event.data);
+    setFarm({
+      ...farmRef.current,
+      barns: farmRef.current.barns.map<V1Barn>((barn: V1Barn): V1Barn => {
+        const index = barn.chickens.findIndex(
+          (chicken) => chicken.id == data.chickenID
+        );
+        if (index != -1) {
+          barn.chickens.splice(index, 1);
+        }
+        return barn;
+      })
+    });
+  });
+
+  eventSource.addEventListener(Events.ChickenFed, (event) => {
     const data = JSON.parse(event.data);
     setFarm({
       ...farmRef.current,

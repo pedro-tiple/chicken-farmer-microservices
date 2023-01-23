@@ -35,6 +35,13 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
     }
   );
 
+  const sellChicken = useMutation(
+    ["sellChicken"],
+    async (chickenId: string) => {
+      return farmServiceApi.farmServiceSellChicken(chickenId, {});
+    }
+  );
+
   useEffect(() => {
     if ((props.chicken.restingUntil ?? 0) >= props.day) {
       setAction(Action.FEEDING);
@@ -76,7 +83,9 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
           disabled={(props.chicken.restingUntil ?? 0) >= props.day}>
           Feed
         </button>
-        {/*<button onClick={this.sellChicken}>Sell</button>*/}
+        <button onClick={() => sellChicken.mutate(props.chicken.id ?? "")}>
+          Sell
+        </button>
       </div>
     </div>
   );

@@ -187,13 +187,13 @@ export interface V1Farm {
      * @type {number}
      * @memberof V1Farm
      */
-    'goldenEggs': number;
+    'day': number;
     /**
      * 
      * @type {number}
      * @memberof V1Farm
      */
-    'day': number;
+    'goldenEggs': number;
     /**
      * 
      * @type {Array<V1Barn>}
@@ -508,6 +508,45 @@ export const FarmServiceApiAxiosParamCreator = function (configuration?: Configu
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {string} chickenId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        farmServiceSellChicken: async (chickenId: string, body: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'chickenId' is not null or undefined
+            assertParamExists('farmServiceSellChicken', 'chickenId', chickenId)
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('farmServiceSellChicken', 'body', body)
+            const localVarPath = `/v1/farm/chickens/{chickenId}/sell`
+                .replace(`{${"chickenId"}}`, encodeURIComponent(String(chickenId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -570,6 +609,17 @@ export const FarmServiceApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.farmServiceFeedChicken(chickenId, body, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @param {string} chickenId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async farmServiceSellChicken(chickenId: string, body: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.farmServiceSellChicken(chickenId, body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -626,6 +676,16 @@ export const FarmServiceApiFactory = function (configuration?: Configuration, ba
          */
         farmServiceFeedChicken(chickenId: string, body: object, options?: any): AxiosPromise<object> {
             return localVarFp.farmServiceFeedChicken(chickenId, body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} chickenId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        farmServiceSellChicken(chickenId: string, body: object, options?: any): AxiosPromise<object> {
+            return localVarFp.farmServiceSellChicken(chickenId, body, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -692,6 +752,18 @@ export class FarmServiceApi extends BaseAPI {
      */
     public farmServiceFeedChicken(chickenId: string, body: object, options?: AxiosRequestConfig) {
         return FarmServiceApiFp(this.configuration).farmServiceFeedChicken(chickenId, body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} chickenId 
+     * @param {object} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FarmServiceApi
+     */
+    public farmServiceSellChicken(chickenId: string, body: object, options?: AxiosRequestConfig) {
+        return FarmServiceApiFp(this.configuration).farmServiceSellChicken(chickenId, body, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

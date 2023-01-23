@@ -82,7 +82,7 @@ func (c *Controller) Register(
 		Name:         farmerName,
 		FarmID:       farmID,
 		PasswordHash: string(passwordHash),
-		GoldEggCount: 2,
+		GoldEggCount: 1,
 	}
 	_, err = c.datasource.InsertFarmer(ctx, farmer)
 	if err != nil {

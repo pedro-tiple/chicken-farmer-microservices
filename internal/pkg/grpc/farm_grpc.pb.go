@@ -30,6 +30,7 @@ type FarmServiceClient interface {
 	BuyBarn(ctx context.Context, in *BuyBarnRequest, opts ...grpc.CallOption) (*BuyBarnResponse, error)
 	BuyFeedBag(ctx context.Context, in *BuyFeedBagRequest, opts ...grpc.CallOption) (*BuyFeedBagResponse, error)
 	BuyChicken(ctx context.Context, in *BuyChickenRequest, opts ...grpc.CallOption) (*BuyChickenResponse, error)
+	SellChicken(ctx context.Context, in *SellChickenRequest, opts ...grpc.CallOption) (*SellChickenResponse, error)
 	FeedChicken(ctx context.Context, in *FeedChickenRequest, opts ...grpc.CallOption) (*FeedChickenResponse, error)
 }
 
@@ -104,6 +105,15 @@ func (c *farmServiceClient) BuyChicken(ctx context.Context, in *BuyChickenReques
 	return out, nil
 }
 
+func (c *farmServiceClient) SellChicken(ctx context.Context, in *SellChickenRequest, opts ...grpc.CallOption) (*SellChickenResponse, error) {
+	out := new(SellChickenResponse)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmService/SellChicken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *farmServiceClient) FeedChicken(ctx context.Context, in *FeedChickenRequest, opts ...grpc.CallOption) (*FeedChickenResponse, error) {
 	out := new(FeedChickenResponse)
 	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmService/FeedChicken", in, out, opts...)
@@ -125,6 +135,7 @@ type FarmServiceServer interface {
 	BuyBarn(context.Context, *BuyBarnRequest) (*BuyBarnResponse, error)
 	BuyFeedBag(context.Context, *BuyFeedBagRequest) (*BuyFeedBagResponse, error)
 	BuyChicken(context.Context, *BuyChickenRequest) (*BuyChickenResponse, error)
+	SellChicken(context.Context, *SellChickenRequest) (*SellChickenResponse, error)
 	FeedChicken(context.Context, *FeedChickenRequest) (*FeedChickenResponse, error)
 	mustEmbedUnimplementedFarmServiceServer()
 }
@@ -153,6 +164,9 @@ func (UnimplementedFarmServiceServer) BuyFeedBag(context.Context, *BuyFeedBagReq
 }
 func (UnimplementedFarmServiceServer) BuyChicken(context.Context, *BuyChickenRequest) (*BuyChickenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BuyChicken not implemented")
+}
+func (UnimplementedFarmServiceServer) SellChicken(context.Context, *SellChickenRequest) (*SellChickenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellChicken not implemented")
 }
 func (UnimplementedFarmServiceServer) FeedChicken(context.Context, *FeedChickenRequest) (*FeedChickenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FeedChicken not implemented")
@@ -296,6 +310,24 @@ func _FarmService_BuyChicken_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FarmService_SellChicken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SellChickenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FarmServiceServer).SellChicken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chicken_farmer.v1.FarmService/SellChicken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FarmServiceServer).SellChicken(ctx, req.(*SellChickenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FarmService_FeedChicken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FeedChickenRequest)
 	if err := dec(in); err != nil {
@@ -348,6 +380,10 @@ var FarmService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BuyChicken",
 			Handler:    _FarmService_BuyChicken_Handler,
+		},
+		{
+			MethodName: "SellChicken",
+			Handler:    _FarmService_SellChicken_Handler,
 		},
 		{
 			MethodName: "FeedChicken",

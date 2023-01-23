@@ -15,9 +15,10 @@ import (
 )
 
 const (
-	PurchaseCostChicken = 1
-	PurchaseCostFeedBag = 1
-	PurchaseCostBarn    = 10
+	PurchasePriceChicken = 1
+	SellPriceChicken     = 1
+	PurchasePriceFeedBag = 1
+	PurchasePriceBarn    = 10
 
 	FeedUsedPerFeeding = 1
 	FeedPerBag         = 10
@@ -57,6 +58,8 @@ type IDataSource interface {
 	UpdateChickenRestingUntil(
 		ctx context.Context, chickenID uuid.UUID, day uint,
 	) error
+
+	DeleteChicken(ctx context.Context, chickenID uuid.UUID) error
 
 	IncrementBarnFeed(ctx context.Context, barnID uuid.UUID, amount uint) error
 	// DecrementBarnFeedGreaterEqualThan should atomically check that the value
@@ -148,6 +151,27 @@ func (c *Controller) NewFarm(
 		return uuid.UUID{}, err
 	}
 
+	barnID, err := c.datasource.InsertBarn(ctx, Barn{
+		ID:            uuid.New(),
+		OwnerID:       ownerID,
+		FarmID:        farmID,
+		Feed:          10,
+		HasAutoFeeder: false,
+	})
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+
+	if _, err := c.datasource.InsertChicken(ctx, Chicken{
+		ID:            uuid.New(),
+		OwnerID:       ownerID,
+		BarnID:        barnID,
+		DateOfBirth:   c.currentDay,
+		GoldEggChance: newChickenGoldEggChance(),
+	}); err != nil {
+		return uuid.UUID{}, err
+	}
+
 	return farmID, nil
 }
 
@@ -224,7 +248,7 @@ func (c *Controller) BuyBarn(
 		return ErrBarnNotYours
 	}
 
-	if err := c.farmerService.SpendGoldEggs(ctx, PurchaseCostBarn); err != nil {
+	if err := c.farmerService.SpendGoldEggs(ctx, PurchasePriceBarn); err != nil {
 		return err
 	}
 
@@ -264,7 +288,7 @@ func (c *Controller) BuyFeedBags(
 	}
 
 	if err := c.farmerService.SpendGoldEggs(
-		ctx, PurchaseCostFeedBag*amount,
+		ctx, PurchasePriceFeedBag*amount,
 	); err != nil {
 		return err
 	}
@@ -306,13 +330,10 @@ func (c *Controller) BuyChicken(
 	}
 
 	if err := c.farmerService.SpendGoldEggs(
-		ctx, PurchaseCostChicken,
+		ctx, PurchasePriceChicken,
 	); err != nil {
 		return err
 	}
-
-	// Maybe have the gold egg chance be on a normal distribution?
-	rand.Seed(int64(time.Now().Nanosecond()))
 
 	chickenID := uuid.New()
 	_, err = c.datasource.InsertChicken(
@@ -320,7 +341,7 @@ func (c *Controller) BuyChicken(
 			ID:            chickenID,
 			BarnID:        barnID,
 			DateOfBirth:   c.currentDay,
-			GoldEggChance: uint(rand.Intn(99) + 1), // [1,100]
+			GoldEggChance: newChickenGoldEggChance(),
 		},
 	)
 	if err != nil {
@@ -338,6 +359,42 @@ func (c *Controller) BuyChicken(
 			ChickenID:   chickenID.String(),
 			DateOfBirth: c.currentDay,
 		},
+	); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Controller) SellChicken(
+	ctx context.Context, farmerID, chickenID uuid.UUID,
+) error {
+	chicken, err := c.datasource.GetChicken(ctx, chickenID)
+	if err != nil {
+		return err
+	}
+
+	if chicken.OwnerID != farmerID {
+		return ErrBarnNotYours
+	}
+
+	if err := c.datasource.DeleteChicken(ctx, chickenID); err != nil {
+		return err
+	}
+
+	if err := c.farmerService.GrantGoldEggs(
+		ctx, PurchasePriceChicken,
+	); err != nil {
+		return err
+	}
+
+	if err := event.PublishMessage(
+		ctx,
+		c.publisher,
+		farmerID,
+		event.FarmTopic,
+		event.MessageTypeSoldChicken,
+		event.SoldChickenMessage{ChickenID: chickenID.String()},
 	); err != nil {
 		return err
 	}
@@ -371,9 +428,9 @@ func (c *Controller) FeedChicken(
 
 	var normalEggsLaid, goldEggsLaid int64
 	if rand.Intn(100) <= int(chicken.GoldEggChance) {
-		normalEggsLaid = GoldEggsPerFeed
+		goldEggsLaid = GoldEggsPerFeed
 	} else {
-		goldEggsLaid = NormalEggsPerFeed
+		normalEggsLaid = NormalEggsPerFeed
 	}
 
 	g, errGrpCtx := errgroup.WithContext(ctx)
@@ -451,4 +508,10 @@ func (c *Controller) SetDay(ctx context.Context, day uint) error {
 
 func (c *Controller) GetCurrentDay(ctx context.Context) (uint, error) {
 	return c.currentDay, nil
+}
+
+func newChickenGoldEggChance() uint {
+	// Maybe have the gold egg chance be on a normal distribution?
+	rand.Seed(int64(time.Now().Nanosecond()))
+	return uint(rand.Intn(99) + 1) // [1,100]
 }

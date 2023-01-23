@@ -159,6 +159,12 @@ func (d *Datasource) InsertChicken(
 	return insertedChicken.ID, nil
 }
 
+func (d *Datasource) DeleteChicken(
+	ctx context.Context, chickenID uuid.UUID,
+) error {
+	return d.database.DeleteChicken(ctx, chickenID)
+}
+
 func (d *Datasource) InsertBarn(
 	ctx context.Context, barn farmPkg.Barn,
 ) (uuid.UUID, error) {

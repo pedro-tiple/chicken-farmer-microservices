@@ -49,6 +49,20 @@ func (mr *MockIDataSourceMockRecorder) DecrementBarnFeedGreaterEqualThan(ctx, ba
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecrementBarnFeedGreaterEqualThan", reflect.TypeOf((*MockIDataSource)(nil).DecrementBarnFeedGreaterEqualThan), ctx, barnID, amount)
 }
 
+// DeleteChicken mocks base method.
+func (m *MockIDataSource) DeleteChicken(ctx context.Context, chickenID uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteChicken", ctx, chickenID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteChicken indicates an expected call of DeleteChicken.
+func (mr *MockIDataSourceMockRecorder) DeleteChicken(ctx, chickenID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChicken", reflect.TypeOf((*MockIDataSource)(nil).DeleteChicken), ctx, chickenID)
+}
+
 // GetBarn mocks base method.
 func (m *MockIDataSource) GetBarn(ctx context.Context, barnID uuid.UUID) (Barn, error) {
 	m.ctrl.T.Helper()
@@ -139,17 +153,17 @@ func (mr *MockIDataSourceMockRecorder) IncrementBarnFeed(ctx, barnID, amount int
 }
 
 // IncrementChickenEggLayCount mocks base method.
-func (m *MockIDataSource) IncrementChickenEggLayCount(ctx context.Context, chickenID uuid.UUID, eggType int) error {
+func (m *MockIDataSource) IncrementChickenEggLayCount(ctx context.Context, chickenID uuid.UUID, normalEggCount, goldEggCount int64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IncrementChickenEggLayCount", ctx, chickenID, eggType)
+	ret := m.ctrl.Call(m, "IncrementChickenEggLayCount", ctx, chickenID, normalEggCount, goldEggCount)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // IncrementChickenEggLayCount indicates an expected call of IncrementChickenEggLayCount.
-func (mr *MockIDataSourceMockRecorder) IncrementChickenEggLayCount(ctx, chickenID, eggType interface{}) *gomock.Call {
+func (mr *MockIDataSourceMockRecorder) IncrementChickenEggLayCount(ctx, chickenID, normalEggCount, goldEggCount interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IncrementChickenEggLayCount", reflect.TypeOf((*MockIDataSource)(nil).IncrementChickenEggLayCount), ctx, chickenID, eggType)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IncrementChickenEggLayCount", reflect.TypeOf((*MockIDataSource)(nil).IncrementChickenEggLayCount), ctx, chickenID, normalEggCount, goldEggCount)
 }
 
 // InsertBarn mocks base method.

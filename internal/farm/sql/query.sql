@@ -75,6 +75,10 @@ VALUES (
 )
 RETURNING *;
 
+-- name: DeleteChicken :exec
+DELETE FROM chickens
+WHERE ID = $1;
+
 -- name: InsertBarn :one
 INSERT INTO barns (
     farm_id, feed, has_auto_feeder

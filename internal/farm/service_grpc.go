@@ -27,6 +27,7 @@ type IController interface {
 		ctx context.Context, farmerID, barnID uuid.UUID, amount uint,
 	) error
 	BuyChicken(ctx context.Context, farmerID, barnID uuid.UUID) error
+	SellChicken(ctx context.Context, farmerID, chickenID uuid.UUID) error
 
 	FeedChicken(ctx context.Context, farmerID, chickenID uuid.UUID) error
 	FeedChickensOfBarn(ctx context.Context, farmerID, barnID uuid.UUID) error
@@ -207,6 +208,23 @@ func (s *GRPCService) BuyChicken(
 	}
 
 	return &internalGrpc.BuyChickenResponse{}, nil
+}
+
+func (s *GRPCService) SellChicken(
+	ctx context.Context, request *internalGrpc.SellChickenRequest,
+) (*internalGrpc.SellChickenResponse, error) {
+	ctxData, err := ctxfarm.Extract(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if err := s.controller.SellChicken(
+		ctx, ctxData.FarmerID, pkg.UUIDFromString(request.GetChickenId()),
+	); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &internalGrpc.SellChickenResponse{}, nil
 }
 
 func (s *GRPCService) FeedChicken(

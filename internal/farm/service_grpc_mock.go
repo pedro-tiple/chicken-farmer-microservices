@@ -135,6 +135,20 @@ func (mr *MockIControllerMockRecorder) NewFarm(ctx, farmerID, name interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewFarm", reflect.TypeOf((*MockIController)(nil).NewFarm), ctx, farmerID, name)
 }
 
+// SellChicken mocks base method.
+func (m *MockIController) SellChicken(ctx context.Context, farmerID, chickenID uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SellChicken", ctx, farmerID, chickenID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SellChicken indicates an expected call of SellChicken.
+func (mr *MockIControllerMockRecorder) SellChicken(ctx, farmerID, chickenID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SellChicken", reflect.TypeOf((*MockIController)(nil).SellChicken), ctx, farmerID, chickenID)
+}
+
 // SetDay mocks base method.
 func (m *MockIController) SetDay(ctx context.Context, day uint) error {
 	m.ctrl.T.Helper()
