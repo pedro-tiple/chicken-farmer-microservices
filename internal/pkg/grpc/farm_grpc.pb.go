@@ -24,7 +24,6 @@ const _ = grpc.SupportPackageIsVersion7
 type FarmServiceClient interface {
 	NewFarm(ctx context.Context, in *NewFarmRequest, opts ...grpc.CallOption) (*NewFarmResponse, error)
 	DeleteFarm(ctx context.Context, in *DeleteFarmRequest, opts ...grpc.CallOption) (*DeleteFarmResponse, error)
-	FeedChickensOfBarn(ctx context.Context, in *FeedChickensOfBarnRequest, opts ...grpc.CallOption) (*FeedChickensOfBarnResponse, error)
 	// REST exposed functions
 	FarmDetails(ctx context.Context, in *FarmDetailsRequest, opts ...grpc.CallOption) (*FarmDetailsResponse, error)
 	BuyBarn(ctx context.Context, in *BuyBarnRequest, opts ...grpc.CallOption) (*BuyBarnResponse, error)
@@ -54,15 +53,6 @@ func (c *farmServiceClient) NewFarm(ctx context.Context, in *NewFarmRequest, opt
 func (c *farmServiceClient) DeleteFarm(ctx context.Context, in *DeleteFarmRequest, opts ...grpc.CallOption) (*DeleteFarmResponse, error) {
 	out := new(DeleteFarmResponse)
 	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmService/DeleteFarm", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *farmServiceClient) FeedChickensOfBarn(ctx context.Context, in *FeedChickensOfBarnRequest, opts ...grpc.CallOption) (*FeedChickensOfBarnResponse, error) {
-	out := new(FeedChickensOfBarnResponse)
-	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmService/FeedChickensOfBarn", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +119,6 @@ func (c *farmServiceClient) FeedChicken(ctx context.Context, in *FeedChickenRequ
 type FarmServiceServer interface {
 	NewFarm(context.Context, *NewFarmRequest) (*NewFarmResponse, error)
 	DeleteFarm(context.Context, *DeleteFarmRequest) (*DeleteFarmResponse, error)
-	FeedChickensOfBarn(context.Context, *FeedChickensOfBarnRequest) (*FeedChickensOfBarnResponse, error)
 	// REST exposed functions
 	FarmDetails(context.Context, *FarmDetailsRequest) (*FarmDetailsResponse, error)
 	BuyBarn(context.Context, *BuyBarnRequest) (*BuyBarnResponse, error)
@@ -149,9 +138,6 @@ func (UnimplementedFarmServiceServer) NewFarm(context.Context, *NewFarmRequest) 
 }
 func (UnimplementedFarmServiceServer) DeleteFarm(context.Context, *DeleteFarmRequest) (*DeleteFarmResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFarm not implemented")
-}
-func (UnimplementedFarmServiceServer) FeedChickensOfBarn(context.Context, *FeedChickensOfBarnRequest) (*FeedChickensOfBarnResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FeedChickensOfBarn not implemented")
 }
 func (UnimplementedFarmServiceServer) FarmDetails(context.Context, *FarmDetailsRequest) (*FarmDetailsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FarmDetails not implemented")
@@ -216,24 +202,6 @@ func _FarmService_DeleteFarm_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FarmServiceServer).DeleteFarm(ctx, req.(*DeleteFarmRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FarmService_FeedChickensOfBarn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FeedChickensOfBarnRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FarmServiceServer).FeedChickensOfBarn(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/chicken_farmer.v1.FarmService/FeedChickensOfBarn",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FarmServiceServer).FeedChickensOfBarn(ctx, req.(*FeedChickensOfBarnRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -360,10 +328,6 @@ var FarmService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteFarm",
 			Handler:    _FarmService_DeleteFarm_Handler,
-		},
-		{
-			MethodName: "FeedChickensOfBarn",
-			Handler:    _FarmService_FeedChickensOfBarn_Handler,
 		},
 		{
 			MethodName: "FarmDetails",

@@ -106,20 +106,6 @@ func (mr *MockIControllerMockRecorder) FeedChicken(ctx, farmerID, chickenID inte
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FeedChicken", reflect.TypeOf((*MockIController)(nil).FeedChicken), ctx, farmerID, chickenID)
 }
 
-// FeedChickensOfBarn mocks base method.
-func (m *MockIController) FeedChickensOfBarn(ctx context.Context, farmerID, barnID uuid.UUID) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FeedChickensOfBarn", ctx, farmerID, barnID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// FeedChickensOfBarn indicates an expected call of FeedChickensOfBarn.
-func (mr *MockIControllerMockRecorder) FeedChickensOfBarn(ctx, farmerID, barnID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FeedChickensOfBarn", reflect.TypeOf((*MockIController)(nil).FeedChickensOfBarn), ctx, farmerID, barnID)
-}
-
 // NewFarm mocks base method.
 func (m *MockIController) NewFarm(ctx context.Context, farmerID uuid.UUID, name string) (uuid.UUID, error) {
 	m.ctrl.T.Helper()

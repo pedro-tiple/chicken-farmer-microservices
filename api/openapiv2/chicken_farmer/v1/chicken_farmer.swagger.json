@@ -546,9 +546,6 @@
     "v1FeedChickenResponse": {
       "type": "object"
     },
-    "v1FeedChickensOfBarnResponse": {
-      "type": "object"
-    },
     "v1GetGoldEggsResponse": {
       "type": "object",
       "properties": {

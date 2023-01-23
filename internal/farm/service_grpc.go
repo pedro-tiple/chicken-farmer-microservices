@@ -30,7 +30,6 @@ type IController interface {
 	SellChicken(ctx context.Context, farmerID, chickenID uuid.UUID) error
 
 	FeedChicken(ctx context.Context, farmerID, chickenID uuid.UUID) error
-	FeedChickensOfBarn(ctx context.Context, farmerID, barnID uuid.UUID) error
 
 	SetDay(ctx context.Context, day uint) error
 }
@@ -242,21 +241,4 @@ func (s *GRPCService) FeedChicken(
 	}
 
 	return &internalGrpc.FeedChickenResponse{}, nil
-}
-
-func (s *GRPCService) FeedChickensOfBarn(
-	ctx context.Context, request *internalGrpc.FeedChickensOfBarnRequest,
-) (*internalGrpc.FeedChickensOfBarnResponse, error) {
-	ctxData, err := ctxfarm.Extract(ctx)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	if err := s.controller.FeedChickensOfBarn(
-		ctx, ctxData.FarmerID, pkg.UUIDFromString(request.GetBarnId()),
-	); err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	return &internalGrpc.FeedChickensOfBarnResponse{}, nil
 }

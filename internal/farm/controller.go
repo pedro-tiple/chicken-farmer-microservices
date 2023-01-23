@@ -493,13 +493,6 @@ func (c *Controller) FeedChicken(
 	return g.Wait()
 }
 
-func (c *Controller) FeedChickensOfBarn(
-	ctx context.Context, farmerID, barnID uuid.UUID,
-) error {
-	// TODO
-	return nil
-}
-
 func (c *Controller) SetDay(ctx context.Context, day uint) error {
 	c.currentDay = day
 

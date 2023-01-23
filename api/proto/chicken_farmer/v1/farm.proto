@@ -12,7 +12,6 @@ option go_package = "internal/pkg/grpc";
 service FarmService {
   rpc NewFarm(NewFarmRequest) returns (NewFarmResponse) {}
   rpc DeleteFarm(DeleteFarmRequest) returns (DeleteFarmResponse) {}
-  rpc FeedChickensOfBarn(FeedChickensOfBarnRequest) returns (FeedChickensOfBarnResponse) {}
 
   // REST exposed functions
   rpc FarmDetails(FarmDetailsRequest) returns (FarmDetailsResponse) {
