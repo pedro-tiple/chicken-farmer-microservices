@@ -43,22 +43,26 @@ func ListenForConnections(
 
 	// TODO use recovery only when in production
 	srv := grpc.NewServer(
-		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
-			grpc_ctxtags.StreamServerInterceptor(),
-			grpc_opentracing.StreamServerInterceptor(),
-			grpc_prometheus.StreamServerInterceptor,
-			grpc_zap.StreamServerInterceptor(logger),
-			grpc_auth.StreamServerInterceptor(authFunction),
-			// grpc_recovery.StreamServerInterceptor(),
-		)),
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-			grpc_ctxtags.UnaryServerInterceptor(),
-			grpc_opentracing.UnaryServerInterceptor(),
-			grpc_prometheus.UnaryServerInterceptor,
-			grpc_zap.UnaryServerInterceptor(logger),
-			grpc_auth.UnaryServerInterceptor(authFunction),
-			// grpc_recovery.UnaryServerInterceptor(),
-		)),
+		grpc.StreamInterceptor(
+			grpc_middleware.ChainStreamServer(
+				grpc_ctxtags.StreamServerInterceptor(),
+				grpc_opentracing.StreamServerInterceptor(),
+				grpc_prometheus.StreamServerInterceptor,
+				grpc_zap.StreamServerInterceptor(logger),
+				grpc_auth.StreamServerInterceptor(authFunction),
+				// grpc_recovery.StreamServerInterceptor(),
+			),
+		),
+		grpc.UnaryInterceptor(
+			grpc_middleware.ChainUnaryServer(
+				grpc_ctxtags.UnaryServerInterceptor(),
+				grpc_opentracing.UnaryServerInterceptor(),
+				grpc_prometheus.UnaryServerInterceptor,
+				grpc_zap.UnaryServerInterceptor(logger),
+				grpc_auth.UnaryServerInterceptor(authFunction),
+				// grpc_recovery.UnaryServerInterceptor(),
+			),
+		),
 	)
 	registrar.RegisterGrpcServer(srv)
 	// reflection.Register(srv)
@@ -75,16 +79,20 @@ func CreateClientConnection(
 	ctx context.Context, address string,
 ) (*grpc.ClientConn, error) {
 	// TODO set secure credentials
-	return grpc.DialContext(ctx, address, []grpc.DialOption{
-		//grpc.WithReturnConnectionError(),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}...)
+	return grpc.DialContext(
+		ctx, address, []grpc.DialOption{
+			// grpc.WithReturnConnectionError(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		}...,
+	)
 }
 
 func RunRESTGateway(
 	ctx context.Context,
 	logger *zap.SugaredLogger,
-	handler func(context.Context, *runtime.ServeMux, string, []grpc.DialOption) error,
+	handler func(
+		context.Context, *runtime.ServeMux, string, []grpc.DialOption,
+	) error,
 	restAddr, grpcAddr string,
 ) {
 	mux := runtime.NewServeMux()
@@ -98,8 +106,15 @@ func RunRESTGateway(
 	}
 
 	server := &http.Server{
-		Addr:              restAddr,
-		Handler:           cors.Default().Handler(mux),
+		Addr: restAddr,
+		Handler: cors.New(
+			cors.Options{
+				AllowedOrigins:   []string{"*"},
+				AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodOptions, http.MethodPut},
+				AllowedHeaders:   nil,
+				AllowCredentials: false,
+			},
+		).Handler(mux),
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
 	if err := server.ListenAndServe(); err != nil {

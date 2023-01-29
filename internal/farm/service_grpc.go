@@ -99,6 +99,8 @@ func (s *GRPCService) GracefulStop() {
 func (s *GRPCService) NewFarm(
 	ctx context.Context, request *internalGrpc.NewFarmRequest,
 ) (*internalGrpc.NewFarmResponse, error) {
+	// TODO validate that this is coming from a valid source.
+
 	farmID, err := s.controller.NewFarm(
 		ctx, pkg.UUIDFromString(request.GetOwnerId()), request.GetName(),
 	)

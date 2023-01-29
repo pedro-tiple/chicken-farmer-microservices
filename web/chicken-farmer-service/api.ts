@@ -230,19 +230,6 @@ export interface V1GetGoldEggsResponse {
 /**
  * 
  * @export
- * @interface V1GrantGoldEggsRequest
- */
-export interface V1GrantGoldEggsRequest {
-    /**
-     * 
-     * @type {number}
-     * @memberof V1GrantGoldEggsRequest
-     */
-    'amount': number;
-}
-/**
- * 
- * @export
  * @interface V1LoginResponse
  */
 export interface V1LoginResponse {
@@ -309,19 +296,6 @@ export interface V1RegisterResponse {
      * @memberof V1RegisterResponse
      */
     'farmId'?: string;
-}
-/**
- * 
- * @export
- * @interface V1SpendGoldEggsRequest
- */
-export interface V1SpendGoldEggsRequest {
-    /**
-     * 
-     * @type {number}
-     * @memberof V1SpendGoldEggsRequest
-     */
-    'amount': number;
 }
 
 /**
@@ -776,70 +750,6 @@ export const FarmerServiceApiAxiosParamCreator = function (configuration?: Confi
     return {
         /**
          * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        farmerServiceGetGoldEggs: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/v1/farmer/gold-eggs`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {V1GrantGoldEggsRequest} body 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        farmerServiceGrantGoldEggs: async (body: V1GrantGoldEggsRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'body' is not null or undefined
-            assertParamExists('farmerServiceGrantGoldEggs', 'body', body)
-            const localVarPath = `/v1/farmer/grant-gold-eggs`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {string} farmerName 
          * @param {string} password 
          * @param {*} [options] Override http request option.
@@ -916,41 +826,6 @@ export const FarmerServiceApiAxiosParamCreator = function (configuration?: Confi
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @param {V1SpendGoldEggsRequest} body 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        farmerServiceSpendGoldEggs: async (body: V1SpendGoldEggsRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'body' is not null or undefined
-            assertParamExists('farmerServiceSpendGoldEggs', 'body', body)
-            const localVarPath = `/v1/farmer/spend-gold-eggs`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -961,25 +836,6 @@ export const FarmerServiceApiAxiosParamCreator = function (configuration?: Confi
 export const FarmerServiceApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = FarmerServiceApiAxiosParamCreator(configuration)
     return {
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async farmerServiceGetGoldEggs(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<V1GetGoldEggsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.farmerServiceGetGoldEggs(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @param {V1GrantGoldEggsRequest} body 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async farmerServiceGrantGoldEggs(body: V1GrantGoldEggsRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.farmerServiceGrantGoldEggs(body, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
         /**
          * 
          * @param {string} farmerName 
@@ -1001,16 +857,6 @@ export const FarmerServiceApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.farmerServiceRegister(body, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-        /**
-         * 
-         * @param {V1SpendGoldEggsRequest} body 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async farmerServiceSpendGoldEggs(body: V1SpendGoldEggsRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.farmerServiceSpendGoldEggs(body, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
     }
 };
 
@@ -1021,23 +867,6 @@ export const FarmerServiceApiFp = function(configuration?: Configuration) {
 export const FarmerServiceApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = FarmerServiceApiFp(configuration)
     return {
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        farmerServiceGetGoldEggs(options?: any): AxiosPromise<V1GetGoldEggsResponse> {
-            return localVarFp.farmerServiceGetGoldEggs(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {V1GrantGoldEggsRequest} body 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        farmerServiceGrantGoldEggs(body: V1GrantGoldEggsRequest, options?: any): AxiosPromise<object> {
-            return localVarFp.farmerServiceGrantGoldEggs(body, options).then((request) => request(axios, basePath));
-        },
         /**
          * 
          * @param {string} farmerName 
@@ -1057,15 +886,6 @@ export const FarmerServiceApiFactory = function (configuration?: Configuration, 
         farmerServiceRegister(body: V1RegisterRequest, options?: any): AxiosPromise<V1RegisterResponse> {
             return localVarFp.farmerServiceRegister(body, options).then((request) => request(axios, basePath));
         },
-        /**
-         * 
-         * @param {V1SpendGoldEggsRequest} body 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        farmerServiceSpendGoldEggs(body: V1SpendGoldEggsRequest, options?: any): AxiosPromise<object> {
-            return localVarFp.farmerServiceSpendGoldEggs(body, options).then((request) => request(axios, basePath));
-        },
     };
 };
 
@@ -1076,27 +896,6 @@ export const FarmerServiceApiFactory = function (configuration?: Configuration, 
  * @extends {BaseAPI}
  */
 export class FarmerServiceApi extends BaseAPI {
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FarmerServiceApi
-     */
-    public farmerServiceGetGoldEggs(options?: AxiosRequestConfig) {
-        return FarmerServiceApiFp(this.configuration).farmerServiceGetGoldEggs(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {V1GrantGoldEggsRequest} body 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FarmerServiceApi
-     */
-    public farmerServiceGrantGoldEggs(body: V1GrantGoldEggsRequest, options?: AxiosRequestConfig) {
-        return FarmerServiceApiFp(this.configuration).farmerServiceGrantGoldEggs(body, options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      * 
      * @param {string} farmerName 
@@ -1118,17 +917,6 @@ export class FarmerServiceApi extends BaseAPI {
      */
     public farmerServiceRegister(body: V1RegisterRequest, options?: AxiosRequestConfig) {
         return FarmerServiceApiFp(this.configuration).farmerServiceRegister(body, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {V1SpendGoldEggsRequest} body 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FarmerServiceApi
-     */
-    public farmerServiceSpendGoldEggs(body: V1SpendGoldEggsRequest, options?: AxiosRequestConfig) {
-        return FarmerServiceApiFp(this.configuration).farmerServiceSpendGoldEggs(body, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

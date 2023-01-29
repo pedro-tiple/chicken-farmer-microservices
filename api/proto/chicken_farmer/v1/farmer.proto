@@ -3,7 +3,7 @@ syntax = "proto3";
 package chicken_farmer.v1;
 
 import "google/api/annotations.proto";
-import "google/api/field_behavior.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "internal/pkg/grpc";
 
@@ -21,23 +21,9 @@ service FarmerService {
     };
   }
 
-  rpc GrantGoldEggs(GrantGoldEggsRequest) returns (GrantGoldEggsResponse) {
-    option (google.api.http) = {
-      post: "/v1/farmer/grant-gold-eggs",
-      body: "*"
-    };
-  }
-
-  rpc SpendGoldEggs(SpendGoldEggsRequest) returns (SpendGoldEggsResponse) {
-    option (google.api.http) = {
-      post: "/v1/farmer/spend-gold-eggs",
-      body: "*"
-    };
-  }
-
-  rpc GetGoldEggs(GetGoldEggsRequest) returns (GetGoldEggsResponse) {
-    option (google.api.http) = {get: "/v1/farmer/gold-eggs"};
-  }
+  rpc GrantGoldEggs(GrantGoldEggsRequest) returns (GrantGoldEggsResponse) {}
+  rpc SpendGoldEggs(SpendGoldEggsRequest) returns (SpendGoldEggsResponse) {}
+  rpc GetGoldEggs(GetGoldEggsRequest) returns (GetGoldEggsResponse) {}
 }
 
 message Farmer {
@@ -47,9 +33,19 @@ message Farmer {
 }
 
 message RegisterRequest {
-  string farmer_name = 1 [(google.api.field_behavior) = REQUIRED];
-  string farm_name = 2 [(google.api.field_behavior) = REQUIRED];
-  string password = 3 [(google.api.field_behavior) = REQUIRED];
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "farmer_name",
+        "farm_name",
+        "password"
+      ]
+    }
+  };
+
+  string farmer_name = 1 ;
+  string farm_name = 2 ;
+  string password = 3 ;
 }
 message RegisterResponse {
   string farmer_id = 1;
@@ -57,20 +53,28 @@ message RegisterResponse {
 }
 
 message LoginRequest {
-  string farmer_name = 1 [(google.api.field_behavior) = REQUIRED];
-  string password = 2 [(google.api.field_behavior) = REQUIRED];
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      required: [
+        "farmer_name",
+        "password"
+      ]
+    }
+  };
+  string farmer_name = 1 ;
+  string password = 2 ;
 }
 message LoginResponse {
   string jwt = 1;
 }
 
 message GrantGoldEggsRequest {
-  uint32 amount = 1 [(google.api.field_behavior) = REQUIRED];
+  uint32 amount = 1;
 }
 message GrantGoldEggsResponse {}
 
 message SpendGoldEggsRequest {
-  uint32 amount = 1 [(google.api.field_behavior) = REQUIRED];
+  uint32 amount = 1;
 }
 message SpendGoldEggsResponse {}
 

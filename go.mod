@@ -5,10 +5,11 @@ go 1.19
 require (
 	github.com/ThreeDotsLabs/watermill v1.2.0-rc.7
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.6
-	github.com/ThreeDotsLabs/watermill-http/v2 v2.0.1
+	github.com/gin-contrib/cors v1.4.0
+	github.com/gin-contrib/sse v0.1.0
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-chi/chi v4.0.2+incompatible
-	github.com/go-chi/cors v1.2.1
+	github.com/go-playground/validator/v10 v10.11.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
@@ -41,12 +42,8 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/gin-contrib/cors v1.4.0 // indirect
-	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/go-chi/render v1.0.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang/glog v1.0.0 // indirect

@@ -2,12 +2,9 @@ import * as React from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FarmServiceApi, V1Farm, V1Barn } from "chicken-farmer-service/api";
 import { Configuration } from "chicken-farmer-service/configuration";
-import { Barn } from "../../components/Barn/Barn";
+import { Barn } from "./Barn/Barn";
 import { useEffect, useRef, useState } from "react";
 import { SetupFarmSSE } from "./SSE";
-
-// Used to update TanStack client.
-// const queryClient = useQueryClient();
 
 // const farmValidator = z.object({
 //   name: z.string(),

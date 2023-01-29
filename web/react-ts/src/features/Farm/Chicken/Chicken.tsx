@@ -17,7 +17,6 @@ enum Action {
   FEEDING = "feeding"
 }
 
-// TODO have this on a shared file instead of one per chicken?
 const actions = Object.values(Action);
 
 const farmServiceApi = new FarmServiceApi(
@@ -35,11 +34,8 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
     }
   );
 
-  const sellChicken = useMutation(
-    ["sellChicken"],
-    async (chickenId: string) => {
-      return farmServiceApi.farmServiceSellChicken(chickenId, {});
-    }
+  const sellChicken = useMutation(["sellChicken"], async (chickenId: string) =>
+    farmServiceApi.farmServiceSellChicken(chickenId, {})
   );
 
   useEffect(() => {
@@ -51,23 +47,22 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
   }, [props.day]);
 
   return (
-    <div className="chicken">
-      {/*<div className={`medal-img ${this.state.medal}`} />*/}
-      <div className={`chicken-img ${action}`} />
-      <div className="chicken-stats">
-        <span>
+    <div className="chicken relative w-full">
+      <div className={`chicken-img ${action} mx-auto my-0 h-[50px] w-[50px]`} />
+      <div className="flex justify-between items-baseline w-full">
+        <span className="flex flex-col">
           <img src={cakeImg} alt="birthday" width="30" />{" "}
           {props.chicken.dateOfBirth}
         </span>
-        <span>
+        <span className="flex flex-col">
           <img src={eggImg} alt="eggs laid" width="20" />{" "}
           {props.chicken.normalEggsLaid}
         </span>
-        <span>
+        <span className="flex flex-col">
           <img src={goldEggImg} alt="goldeggs laid" width="20" />{" "}
           {props.chicken.goldEggsLaid}
         </span>
-        <span>
+        <span className="flex flex-col">
           <img src={clockImg} alt="resting until" width="20" />{" "}
           {Math.max(
             props.chicken.restingUntil
@@ -79,11 +74,14 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
       </div>
       <div className="actions">
         <button
+          className="btn-primary-small"
           onClick={() => feedChicken.mutate(props.chicken.id ?? "")}
           disabled={(props.chicken.restingUntil ?? 0) >= props.day}>
           Feed
         </button>
-        <button onClick={() => sellChicken.mutate(props.chicken.id ?? "")}>
+        <button
+          className="btn-primary-small"
+          onClick={() => sellChicken.mutate(props.chicken.id ?? "")}>
           Sell
         </button>
       </div>

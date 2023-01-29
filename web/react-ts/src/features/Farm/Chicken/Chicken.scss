@@ -1,12 +1,6 @@
 .chicken {
-  position: relative;
-  width: 100%;
-
   .chicken-img {
     background-image: url("./assets/chicken.gif");
-    margin: 0 auto;
-    height: 50px;
-    width: 50px;
 
     &.standing-left {
       background-position: -32px -148px;
@@ -30,11 +24,6 @@
   }
 
   .chicken-stats {
-    justify-content: space-between;
-    align-items: baseline;
-    display: flex;
-    width: 100%;
-
     span {
       vertical-align: center;
       height: 20px;

@@ -229,60 +229,6 @@
         ]
       }
     },
-    "/v1/farmer/gold-eggs": {
-      "get": {
-        "operationId": "FarmerService_GetGoldEggs",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetGoldEggsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "FarmerService"
-        ]
-      }
-    },
-    "/v1/farmer/grant-gold-eggs": {
-      "post": {
-        "operationId": "FarmerService_GrantGoldEggs",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GrantGoldEggsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1GrantGoldEggsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "FarmerService"
-        ]
-      }
-    },
     "/v1/farmer/login": {
       "get": {
         "operationId": "FarmerService_Login",
@@ -343,38 +289,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/v1RegisterRequest"
-            }
-          }
-        ],
-        "tags": [
-          "FarmerService"
-        ]
-      }
-    },
-    "/v1/farmer/spend-gold-eggs": {
-      "post": {
-        "operationId": "FarmerService_SpendGoldEggs",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1SpendGoldEggsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1SpendGoldEggsRequest"
             }
           }
         ],
@@ -555,18 +469,6 @@
         }
       }
     },
-    "v1GrantGoldEggsRequest": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "required": [
-        "amount"
-      ]
-    },
     "v1GrantGoldEggsResponse": {
       "type": "object"
     },
@@ -618,18 +520,6 @@
     },
     "v1SellChickenResponse": {
       "type": "object"
-    },
-    "v1SpendGoldEggsRequest": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "required": [
-        "amount"
-      ]
     },
     "v1SpendGoldEggsResponse": {
       "type": "object"
