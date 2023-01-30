@@ -11,7 +11,7 @@ export const UserAuthContext = createContext<UserAuth>({
   name: "",
   farmName: "",
   jwt: "",
-  setJWT: (jwt: string) => {
+  setJWT: () => {
     return null;
   }
 });

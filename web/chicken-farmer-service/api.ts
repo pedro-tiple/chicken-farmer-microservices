@@ -230,6 +230,25 @@ export interface V1GetGoldEggsResponse {
 /**
  * 
  * @export
+ * @interface V1LoginRequest
+ */
+export interface V1LoginRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof V1LoginRequest
+     */
+    'farmerName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof V1LoginRequest
+     */
+    'password': string;
+}
+/**
+ * 
+ * @export
  * @interface V1LoginResponse
  */
 export interface V1LoginResponse {
@@ -750,16 +769,13 @@ export const FarmerServiceApiAxiosParamCreator = function (configuration?: Confi
     return {
         /**
          * 
-         * @param {string} farmerName 
-         * @param {string} password 
+         * @param {V1LoginRequest} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        farmerServiceLogin: async (farmerName: string, password: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'farmerName' is not null or undefined
-            assertParamExists('farmerServiceLogin', 'farmerName', farmerName)
-            // verify required parameter 'password' is not null or undefined
-            assertParamExists('farmerServiceLogin', 'password', password)
+        farmerServiceLogin: async (body: V1LoginRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('farmerServiceLogin', 'body', body)
             const localVarPath = `/v1/farmer/login`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -768,23 +784,18 @@ export const FarmerServiceApiAxiosParamCreator = function (configuration?: Confi
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (farmerName !== undefined) {
-                localVarQueryParameter['farmerName'] = farmerName;
-            }
-
-            if (password !== undefined) {
-                localVarQueryParameter['password'] = password;
-            }
-
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -838,13 +849,12 @@ export const FarmerServiceApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} farmerName 
-         * @param {string} password 
+         * @param {V1LoginRequest} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async farmerServiceLogin(farmerName: string, password: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<V1LoginResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.farmerServiceLogin(farmerName, password, options);
+        async farmerServiceLogin(body: V1LoginRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<V1LoginResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.farmerServiceLogin(body, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -869,13 +879,12 @@ export const FarmerServiceApiFactory = function (configuration?: Configuration, 
     return {
         /**
          * 
-         * @param {string} farmerName 
-         * @param {string} password 
+         * @param {V1LoginRequest} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        farmerServiceLogin(farmerName: string, password: string, options?: any): AxiosPromise<V1LoginResponse> {
-            return localVarFp.farmerServiceLogin(farmerName, password, options).then((request) => request(axios, basePath));
+        farmerServiceLogin(body: V1LoginRequest, options?: any): AxiosPromise<V1LoginResponse> {
+            return localVarFp.farmerServiceLogin(body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -898,14 +907,13 @@ export const FarmerServiceApiFactory = function (configuration?: Configuration, 
 export class FarmerServiceApi extends BaseAPI {
     /**
      * 
-     * @param {string} farmerName 
-     * @param {string} password 
+     * @param {V1LoginRequest} body 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FarmerServiceApi
      */
-    public farmerServiceLogin(farmerName: string, password: string, options?: AxiosRequestConfig) {
-        return FarmerServiceApiFp(this.configuration).farmerServiceLogin(farmerName, password, options).then((request) => request(this.axios, this.basePath));
+    public farmerServiceLogin(body: V1LoginRequest, options?: AxiosRequestConfig) {
+        return FarmerServiceApiFp(this.configuration).farmerServiceLogin(body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

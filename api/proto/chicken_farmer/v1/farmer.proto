@@ -17,7 +17,8 @@ service FarmerService {
 
   rpc Login(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
-      get: "/v1/farmer/login",
+      post: "/v1/farmer/login",
+      body: "*"
     };
   }
 

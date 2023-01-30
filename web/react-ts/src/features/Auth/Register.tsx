@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Configuration } from "chicken-farmer-service/configuration";
-import { FarmerServiceApi } from "chicken-farmer-service";
+import { FarmerServiceApi, V1RegisterRequest } from "chicken-farmer-service";
 import { UserAuthContext } from "../../context/UserContext";
 
 const farmerServiceApi = new FarmerServiceApi(
@@ -15,15 +15,7 @@ export const Register = () => {
 
   const register = useMutation({
     mutationKey: ["register", farmerName],
-    mutationFn: ({
-      farmerName,
-      farmName,
-      password
-    }: {
-      farmerName: string;
-      farmName: string;
-      password: string;
-    }) => {
+    mutationFn: ({ farmerName, farmName, password }: V1RegisterRequest) => {
       return farmerServiceApi.farmerServiceRegister({
         farmName,
         farmerName,

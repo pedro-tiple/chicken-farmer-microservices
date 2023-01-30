@@ -230,7 +230,7 @@
       }
     },
     "/v1/farmer/login": {
-      "get": {
+      "post": {
         "operationId": "FarmerService_Login",
         "responses": {
           "200": {
@@ -248,16 +248,12 @@
         },
         "parameters": [
           {
-            "name": "farmerName",
-            "in": "query",
+            "name": "body",
+            "in": "body",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "required": true,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/v1LoginRequest"
+            }
           }
         ],
         "tags": [
@@ -471,6 +467,21 @@
     },
     "v1GrantGoldEggsResponse": {
       "type": "object"
+    },
+    "v1LoginRequest": {
+      "type": "object",
+      "properties": {
+        "farmerName": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "farmerName",
+        "password"
+      ]
     },
     "v1LoginResponse": {
       "type": "object",
