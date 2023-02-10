@@ -4,15 +4,23 @@ import (
 	"chicken-farmer/backend/internal/farm/ctxfarm"
 	"chicken-farmer/backend/internal/pkg"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
+	"chicken-farmer/backend/internal/pkg/jwt"
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	grpcAuth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+)
+
+var (
+	authIgnoredMethods = []string{
+		"/chicken_farmer.v1.FarmerPublicService/Login",
+		"/chicken_farmer.v1.FarmerPublicService/Register",
+	}
 )
 
 type IController interface {
@@ -28,50 +36,40 @@ type IController interface {
 }
 
 type GRPCService struct {
-	internalGrpc.UnimplementedFarmerServiceServer
+	internalGrpc.UnimplementedFarmerPrivateServiceServer
+	internalGrpc.UnimplementedFarmerPublicServiceServer
 
 	address string
 	server  *grpc.Server
 	logger  *zap.SugaredLogger
 
+	jwtAuthKey []byte
+
 	controller IController
 }
 
-var _ internalGrpc.FarmerServiceServer = &GRPCService{}
+var (
+	_ internalGrpc.FarmerPrivateServiceServer = &GRPCService{}
+	_ internalGrpc.FarmerPublicServiceServer  = &GRPCService{}
+)
 
 func ProvideGRPCService(
 	address string,
 	logger *zap.SugaredLogger,
 	controller IController,
+	jwtAuthKey []byte,
 ) *GRPCService {
 	return &GRPCService{
 		address:    address,
 		logger:     logger,
 		controller: controller,
+		jwtAuthKey: jwtAuthKey,
 	}
 }
 
-// Authenticate is an implementation of grpcAuth.AuthFunc specific for this
-// service. We'll need one per service because of the different context values
-// needed, maybe.
-func Authenticate(ctx context.Context) (context.Context, error) {
-	// token, err := grpcAuth.AuthFromMD(ctx, "bearer")
-	// if err != nil {
-	//	return nil, err
-	// }
-	// TODO validate JWT and build context from claims.
-	return ctxfarm.SetInContext(
-		ctx,
-		pkg.UUIDFromString("65e4d8ff-8766-48a7-bfcd-7160d149a319"),
-		pkg.UUIDFromString("93020a42-c32a-4b2c-a4b9-779f82841b11"),
-	), nil
-}
-
-func (s *GRPCService) ListenForConnections(
-	ctx context.Context, authFunction grpcAuth.AuthFunc,
-) {
+func (s *GRPCService) ListenForConnections(ctx context.Context) {
 	internalGrpc.ListenForConnections(
-		ctx, s, s.address, s.logger.Desugar(), authFunction,
+		ctx, s, s.address, s.logger.Desugar(), s.Authenticate,
 	)
 }
 
@@ -79,7 +77,8 @@ func (s *GRPCService) RegisterGrpcServer(server *grpc.Server) {
 	// Keep track of server for the graceful stop.
 	s.server = server
 
-	internalGrpc.RegisterFarmerServiceServer(server, s)
+	internalGrpc.RegisterFarmerPrivateServiceServer(server, s)
+	internalGrpc.RegisterFarmerPublicServiceServer(server, s)
 }
 
 func (s *GRPCService) GracefulStop() {
@@ -88,10 +87,34 @@ func (s *GRPCService) GracefulStop() {
 	s.logger.Info("Stopped")
 }
 
+// Authenticate is an implementation of grpcAuth.AuthFunc specific for this
+// service.
+func (s *GRPCService) Authenticate(ctx context.Context) (context.Context, error) {
+	// Skip authentication for specified methods.
+	method, _ := grpc.Method(ctx)
+	if slices.Index(authIgnoredMethods, method) != -1 {
+		return ctx, nil
+	}
+
+	bearerToken, err := grpcAuth.AuthFromMD(ctx, "Bearer")
+	if err != nil {
+		s.logger.Debug(err)
+		return nil, internalGrpc.ErrMissingMetadata
+	}
+
+	claims, err := jwt.ValidateUserClaims(s.jwtAuthKey, bearerToken)
+	if err != nil {
+		s.logger.Debug(err)
+		return nil, internalGrpc.ErrInvalidToken
+	}
+
+	// TODO ctxfarmer ?
+	return ctxfarm.SetInContext(ctx, claims.FarmerID, claims.FarmID), nil
+}
+
 func (s *GRPCService) Register(
 	ctx context.Context, request *internalGrpc.RegisterRequest,
 ) (*internalGrpc.RegisterResponse, error) {
-	fmt.Println("service register")
 	farmer, err := s.controller.Register(
 		ctx,
 		request.GetFarmerName(),
@@ -111,7 +134,7 @@ func (s *GRPCService) Register(
 func (s *GRPCService) Login(
 	ctx context.Context, request *internalGrpc.LoginRequest,
 ) (*internalGrpc.LoginResponse, error) {
-	jwt, err := s.controller.Login(
+	authToken, err := s.controller.Login(
 		ctx, request.GetFarmerName(), request.GetPassword(),
 	)
 	if err != nil {
@@ -119,20 +142,17 @@ func (s *GRPCService) Login(
 	}
 
 	return &internalGrpc.LoginResponse{
-		Jwt: jwt,
+		AuthToken: authToken,
 	}, nil
 }
 
 func (s *GRPCService) GrantGoldEggs(
 	ctx context.Context, request *internalGrpc.GrantGoldEggsRequest,
 ) (*internalGrpc.GrantGoldEggsResponse, error) {
-	ctxData, err := ctxfarm.Extract(ctx)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
 	if err := s.controller.GrantGoldEggs(
-		ctx, ctxData.FarmerID, uint(request.GetAmount()),
+		ctx,
+		pkg.UUIDFromString(request.GetFarmerId()),
+		uint(request.GetAmount()),
 	); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -143,13 +163,10 @@ func (s *GRPCService) GrantGoldEggs(
 func (s *GRPCService) SpendGoldEggs(
 	ctx context.Context, request *internalGrpc.SpendGoldEggsRequest,
 ) (*internalGrpc.SpendGoldEggsResponse, error) {
-	ctxData, err := ctxfarm.Extract(ctx)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
 	if err := s.controller.SpendGoldEggs(
-		ctx, ctxData.FarmerID, uint(request.GetAmount()),
+		ctx,
+		pkg.UUIDFromString(request.GetFarmerId()),
+		uint(request.GetAmount()),
 	); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -158,14 +175,11 @@ func (s *GRPCService) SpendGoldEggs(
 }
 
 func (s *GRPCService) GetGoldEggs(
-	ctx context.Context, _ *internalGrpc.GetGoldEggsRequest,
+	ctx context.Context, request *internalGrpc.GetGoldEggsRequest,
 ) (*internalGrpc.GetGoldEggsResponse, error) {
-	ctxData, err := ctxfarm.Extract(ctx)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	goldEggCount, err := s.controller.GetGoldEggs(ctx, ctxData.FarmerID)
+	goldEggCount, err := s.controller.GetGoldEggs(
+		ctx, pkg.UUIDFromString(request.GetFarmerId()),
+	)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

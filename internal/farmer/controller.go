@@ -3,12 +3,14 @@ package farmer
 import (
 	"chicken-farmer/backend/internal/pkg/database"
 	"chicken-farmer/backend/internal/pkg/event"
-	"chicken-farmer/backend/internal/pkg/jwt"
+	internalJWT "chicken-farmer/backend/internal/pkg/jwt"
 	"context"
 	"errors"
+	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
@@ -52,6 +54,7 @@ type Controller struct {
 	farmService IFarmService
 	publisher   message.Publisher
 	validator   *validator.Validate
+	jwtAuthKey  []byte
 }
 
 var _ IController = &Controller{}
@@ -61,6 +64,8 @@ func ProvideController(
 	datasource IDataSource,
 	farmService IFarmService,
 	publisher message.Publisher,
+	jwtAuthKey []byte,
+
 ) *Controller {
 	return &Controller{
 		logger:      logger,
@@ -68,6 +73,7 @@ func ProvideController(
 		farmService: farmService,
 		publisher:   publisher,
 		validator:   validator.New(),
+		jwtAuthKey:  jwtAuthKey,
 	}
 }
 
@@ -164,7 +170,17 @@ func (c *Controller) Login(
 		return "", err
 	}
 
-	token, err := jwt.GenerateUserToken(farmer.ID)
+	token, err := jwt.NewWithClaims(
+		jwt.GetSigningMethod(internalJWT.SigningMethod),
+		&internalJWT.UserClaims{
+			StandardClaims: jwt.StandardClaims{
+				IssuedAt:  time.Now().UnixMilli(),
+				ExpiresAt: time.Now().Add(time.Hour).UnixMilli(),
+			},
+			FarmerID: farmer.ID,
+			FarmID:   farmer.FarmID,
+		},
+	).SignedString(c.jwtAuthKey)
 	if err != nil {
 		return "", err
 	}
@@ -186,8 +202,6 @@ func (c *Controller) GetGoldEggs(
 func (c *Controller) GrantGoldEggs(
 	ctx context.Context, farmerID uuid.UUID, amount uint,
 ) error {
-	// TODO validate that this is coming from a valid source.
-
 	if err := c.datasource.IncrementGoldEggCount(
 		ctx, farmerID, amount,
 	); err != nil {
@@ -213,8 +227,6 @@ func (c *Controller) GrantGoldEggs(
 func (c *Controller) SpendGoldEggs(
 	ctx context.Context, farmerID uuid.UUID, amount uint,
 ) error {
-	// TODO validate that this is coming from a valid source.
-
 	if err := c.datasource.DecrementGoldEggCountGreaterEqualThan(
 		ctx, farmerID, amount,
 	); err != nil {

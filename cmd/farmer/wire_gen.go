@@ -18,14 +18,14 @@ import (
 
 // Injectors from wire.go:
 
-func initializeGRPCService(ctx context.Context, address string, logger *zap.SugaredLogger, farmGRPCConn grpc.ClientConnInterface, publisher message.Publisher) (*farmer.GRPCService, error) {
+func initializeGRPCService(ctx context.Context, address string, logger *zap.SugaredLogger, farmGRPCConn grpc.ClientConnInterface, publisher message.Publisher, jwtAuthKey []byte) (*farmer.GRPCService, error) {
 	datasource, err := mongo.ProvideDatasource(ctx)
 	if err != nil {
 		return nil, err
 	}
 	farmServiceClient := grpc2.NewFarmServiceClient(farmGRPCConn)
 	farmGRPCClient := farmer.ProvideFarmGRPCClient(farmServiceClient)
-	controller := farmer.ProvideController(logger, datasource, farmGRPCClient, publisher)
-	grpcService := farmer.ProvideGRPCService(address, logger, controller)
+	controller := farmer.ProvideController(logger, datasource, farmGRPCClient, publisher, jwtAuthKey)
+	grpcService := farmer.ProvideGRPCService(address, logger, controller, jwtAuthKey)
 	return grpcService, nil
 }

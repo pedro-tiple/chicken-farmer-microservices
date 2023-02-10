@@ -3,8 +3,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { FarmServiceApi, V1Farm, V1Barn } from "chicken-farmer-service/api";
 import { Configuration } from "chicken-farmer-service/configuration";
 import { Barn } from "./Barn/Barn";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SetupFarmSSE } from "./SSE";
+import { ServicesContext } from "../../context/ServicesContext";
 
 // const farmValidator = z.object({
 //   name: z.string(),
@@ -12,11 +13,9 @@ import { SetupFarmSSE } from "./SSE";
 //   golden_eggs: z.number(),
 // });
 
-const farmServiceApi = new FarmServiceApi(
-  new Configuration({ basePath: "http://localhost:8081" })
-);
-
 export const Farm = () => {
+  const { farmServiceApi } = useContext(ServicesContext);
+
   const [farm, _setFarm] = useState<V1Farm>({
     barns: new Array<V1Barn>(),
     day: 0,
@@ -33,10 +32,13 @@ export const Farm = () => {
     _setFarm(farm);
   }
 
-  const { data, error, isLoading, isError, isFetched } = useQuery(
-    ["getFarm"],
-    async () => farmServiceApi.farmServiceFarmDetails()
-  );
+  const { data, error, isLoading, isError, isFetched } = useQuery({
+    queryKey: ["getFarm", farmServiceApi],
+    queryFn: async () => {
+      console.log(farmServiceApi);
+      return farmServiceApi.farmServiceFarmDetails({});
+    }
+  });
 
   const buyBarn = useMutation({
     mutationFn: () => farmServiceApi.farmServiceBuyBarn({})
@@ -61,8 +63,8 @@ export const Farm = () => {
     <div>Errored: {error.message}</div>
   ) : (
     <div className="flex h-screen">
-      <div className="flex flex-col items-center basis-2/12 p-4">
-        <h1 className="text-center text-3xl font-extrabold mb-3">
+      <div className="flex basis-2/12 flex-col items-center p-4">
+        <h1 className="mb-3 text-center text-3xl font-extrabold">
           {farm.name}
         </h1>
         <span>
@@ -74,7 +76,9 @@ export const Farm = () => {
           <span key={farm.goldenEggs}>{farm.goldenEggs}</span>
         </span>
 
-        <button className="btn-primary mt-4" onClick={() => buyBarn.mutate()}>
+        <button
+          className="btn-primary mt-4 mt-4"
+          onClick={() => buyBarn.mutate()}>
           Buy Barn
         </button>
 

@@ -1,20 +1,20 @@
 package jwt
 
 import (
-	"context"
-	"net/http"
-	"strings"
+	"errors"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 )
 
 const (
-	// TODO load this password from a .env instead of hardcoded const
-	password = "JGJI7ZAc47gEharPnJsQldo2I8Jo4zmfaR8N9enzhgw"
+	SigningMethod = "HS256"
 
-	authorizationHeader = "Authorization"
-	signingMethod       = "HS256"
+	ContextKey = "jwt"
+)
+
+var (
+	ErrInvalidJWT = errors.New("invalid JWT")
 )
 
 // UserClaims holds the claims used for the project's authentication JWT.
@@ -24,6 +24,7 @@ type UserClaims struct {
 	jwt.StandardClaims
 
 	FarmerID uuid.UUID
+	FarmID   uuid.UUID
 }
 
 // ServiceClaims holds the claims used for service authentication.
@@ -34,61 +35,20 @@ type ServiceClaims struct {
 	Service  string
 }
 
-// Validate returns an http handler functions that validates a JWT token passed
-// on the Authorization header.
-func Validate(next http.Handler) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			// Ignore login and ws and OPTIONS requests
-			// if (len(r.URL.Path) >= 6 && r.URL.Path[0:6] == "/login") ||
-			// 	r.URL.Path == "/ws" ||
-			// 	r.Method == http.MethodOptions {
-			// 	next.ServeHTTP(w, r)
-			// 	return
-			// }
-
-			authorization := r.Header.Get(authorizationHeader)
-			if authorization == "" {
-				w.WriteHeader(http.StatusForbidden)
-				return
-			}
-
-			authorizationTokens := strings.Split(authorization, " ")
-			if len(authorizationTokens) != 2 {
-				w.WriteHeader(http.StatusForbidden)
-				return
-			}
-
-			tokenStr := authorizationTokens[1]
-			tk := &UserClaims{}
-
-			token, err := jwt.ParseWithClaims(
-				tokenStr, tk, func(token *jwt.Token) (interface{}, error) {
-					return []byte(password), nil
-				},
-			)
-			if err != nil {
-				w.WriteHeader(http.StatusForbidden)
-				return
-			}
-
-			if !token.Valid {
-				w.WriteHeader(http.StatusForbidden)
-				return
-			}
-
-			// TODO const
-			ctx := context.WithValue(r.Context(), "jwtToken", tk)
-			r = r.WithContext(ctx)
-			next.ServeHTTP(w, r)
+func ValidateUserClaims(key []byte, tokenStr string) (*UserClaims, error) {
+	tk := &UserClaims{}
+	token, err := jwt.ParseWithClaims(
+		tokenStr, tk, func(token *jwt.Token) (interface{}, error) {
+			return key, nil
 		},
 	)
-}
+	if err != nil {
+		return nil, err
+	}
 
-func GenerateUserToken(farmerID uuid.UUID) (string, error) {
-	return jwt.NewWithClaims(
-		jwt.GetSigningMethod(signingMethod), &UserClaims{
-			FarmerID: farmerID,
-		},
-	).SignedString([]byte(password))
+	if !token.Valid {
+		return nil, ErrInvalidJWT
+	}
+
+	return tk, nil
 }

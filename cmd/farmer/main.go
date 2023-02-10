@@ -1,7 +1,6 @@
 package main
 
 import (
-	"chicken-farmer/backend/internal/farmer"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
 	"flag"
@@ -56,6 +55,7 @@ func main() {
 
 	farmerService, err := initializeGRPCService(
 		ctx, *grpcAddr, logger.Sugar(), farmGRPCConn, publisher,
+		[]byte(os.Getenv("JWT_AUTH_KEY")),
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
@@ -63,10 +63,10 @@ func main() {
 
 	log.Println("Service listening")
 
-	go farmerService.ListenForConnections(ctx, farmer.Authenticate)
+	go farmerService.ListenForConnections(ctx)
 	go internalGrpc.RunRESTGateway(
 		ctx, logger.Sugar(),
-		internalGrpc.RegisterFarmerServiceHandlerFromEndpoint,
+		internalGrpc.RegisterFarmerPublicServiceHandlerFromEndpoint,
 		*restAddr, *grpcAddr,
 	)
 

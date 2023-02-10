@@ -4,7 +4,7 @@ import { Register } from "./Register";
 
 export const Auth = () => {
   return (
-    <div className={"h-screen flex flex-row justify-center items-center"}>
+    <div className={"flex h-screen flex-row items-center justify-center"}>
       <Login />
       <div className={"mx-8"} />
       <Register />

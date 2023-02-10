@@ -6,13 +6,13 @@ import (
 )
 
 type FarmerGRPCClient struct {
-	grpcClient internalGrpc.FarmerServiceClient
+	grpcClient internalGrpc.FarmerPrivateServiceClient
 }
 
 var _ IFarmerService = &FarmerGRPCClient{}
 
-func ProvideFarmerGRPCClient(
-	grpcClient internalGrpc.FarmerServiceClient,
+func ProvideFarmerPrivateGRPCClient(
+	grpcClient internalGrpc.FarmerPrivateServiceClient,
 ) *FarmerGRPCClient {
 	return &FarmerGRPCClient{
 		grpcClient: grpcClient,

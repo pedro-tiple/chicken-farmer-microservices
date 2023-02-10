@@ -21,6 +21,7 @@ func initializeGRPCService(
 	logger *zap.SugaredLogger,
 	farmGRPCConn grpc.ClientConnInterface,
 	publisher message.Publisher,
+	jwtAuthKey []byte,
 ) (*farmer.GRPCService, error) {
 	panic(
 		wire.Build(

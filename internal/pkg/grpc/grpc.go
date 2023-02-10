@@ -17,10 +17,19 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 const readHeaderTimeout = 3 * time.Second
+
+var (
+	ErrMissingMetadata = status.Errorf(
+		codes.Unauthenticated, "missing metadata",
+	)
+	ErrInvalidToken = status.Errorf(codes.PermissionDenied, "invalid token")
+)
 
 type ServiceRegistrar interface {
 	RegisterGrpcServer(server *grpc.Server)
@@ -111,8 +120,9 @@ func RunRESTGateway(
 			cors.Options{
 				AllowedOrigins:   []string{"*"},
 				AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodOptions, http.MethodPut},
-				AllowedHeaders:   nil,
+				AllowedHeaders:   []string{"Origin", "Authorization", "Content-Type"},
 				AllowCredentials: false,
+				Debug:            true,
 			},
 		).Handler(mux),
 		ReadHeaderTimeout: readHeaderTimeout,

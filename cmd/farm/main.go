@@ -1,7 +1,6 @@
 package main
 
 import (
-	"chicken-farmer/backend/internal/farm"
 	internalDB "chicken-farmer/backend/internal/pkg/database"
 	internalGrpc "chicken-farmer/backend/internal/pkg/grpc"
 	"context"
@@ -119,6 +118,7 @@ func main() {
 		farmerGRPCConn,
 		subscriber,
 		publisher,
+		[]byte(os.Getenv("JWT_AUTH_KEY")),
 	)
 	if err != nil {
 		logger.Fatal(err.Error())
@@ -126,7 +126,7 @@ func main() {
 
 	log.Println("Service listening")
 
-	go farmService.ListenForConnections(ctx, farm.Authenticate)
+	go farmService.ListenForConnections(ctx)
 	go internalGrpc.RunRESTGateway(
 		ctx, logger.Sugar(),
 		internalGrpc.RegisterFarmServiceHandlerFromEndpoint,

@@ -18,230 +18,280 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// FarmerServiceClient is the client API for FarmerService service.
+// FarmerPublicServiceClient is the client API for FarmerPublicService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FarmerServiceClient interface {
+type FarmerPublicServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	GrantGoldEggs(ctx context.Context, in *GrantGoldEggsRequest, opts ...grpc.CallOption) (*GrantGoldEggsResponse, error)
-	SpendGoldEggs(ctx context.Context, in *SpendGoldEggsRequest, opts ...grpc.CallOption) (*SpendGoldEggsResponse, error)
-	GetGoldEggs(ctx context.Context, in *GetGoldEggsRequest, opts ...grpc.CallOption) (*GetGoldEggsResponse, error)
 }
 
-type farmerServiceClient struct {
+type farmerPublicServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewFarmerServiceClient(cc grpc.ClientConnInterface) FarmerServiceClient {
-	return &farmerServiceClient{cc}
+func NewFarmerPublicServiceClient(cc grpc.ClientConnInterface) FarmerPublicServiceClient {
+	return &farmerPublicServiceClient{cc}
 }
 
-func (c *farmerServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+func (c *farmerPublicServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
 	out := new(RegisterResponse)
-	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerService/Register", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerPublicService/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *farmerServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+func (c *farmerPublicServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerService/Login", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerPublicService/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *farmerServiceClient) GrantGoldEggs(ctx context.Context, in *GrantGoldEggsRequest, opts ...grpc.CallOption) (*GrantGoldEggsResponse, error) {
-	out := new(GrantGoldEggsResponse)
-	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerService/GrantGoldEggs", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *farmerServiceClient) SpendGoldEggs(ctx context.Context, in *SpendGoldEggsRequest, opts ...grpc.CallOption) (*SpendGoldEggsResponse, error) {
-	out := new(SpendGoldEggsResponse)
-	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerService/SpendGoldEggs", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *farmerServiceClient) GetGoldEggs(ctx context.Context, in *GetGoldEggsRequest, opts ...grpc.CallOption) (*GetGoldEggsResponse, error) {
-	out := new(GetGoldEggsResponse)
-	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerService/GetGoldEggs", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// FarmerServiceServer is the server API for FarmerService service.
-// All implementations must embed UnimplementedFarmerServiceServer
+// FarmerPublicServiceServer is the server API for FarmerPublicService service.
+// All implementations must embed UnimplementedFarmerPublicServiceServer
 // for forward compatibility
-type FarmerServiceServer interface {
+type FarmerPublicServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	GrantGoldEggs(context.Context, *GrantGoldEggsRequest) (*GrantGoldEggsResponse, error)
-	SpendGoldEggs(context.Context, *SpendGoldEggsRequest) (*SpendGoldEggsResponse, error)
-	GetGoldEggs(context.Context, *GetGoldEggsRequest) (*GetGoldEggsResponse, error)
-	mustEmbedUnimplementedFarmerServiceServer()
+	mustEmbedUnimplementedFarmerPublicServiceServer()
 }
 
-// UnimplementedFarmerServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedFarmerServiceServer struct {
+// UnimplementedFarmerPublicServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedFarmerPublicServiceServer struct {
 }
 
-func (UnimplementedFarmerServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+func (UnimplementedFarmerPublicServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedFarmerServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+func (UnimplementedFarmerPublicServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedFarmerServiceServer) GrantGoldEggs(context.Context, *GrantGoldEggsRequest) (*GrantGoldEggsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GrantGoldEggs not implemented")
-}
-func (UnimplementedFarmerServiceServer) SpendGoldEggs(context.Context, *SpendGoldEggsRequest) (*SpendGoldEggsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SpendGoldEggs not implemented")
-}
-func (UnimplementedFarmerServiceServer) GetGoldEggs(context.Context, *GetGoldEggsRequest) (*GetGoldEggsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldEggs not implemented")
-}
-func (UnimplementedFarmerServiceServer) mustEmbedUnimplementedFarmerServiceServer() {}
+func (UnimplementedFarmerPublicServiceServer) mustEmbedUnimplementedFarmerPublicServiceServer() {}
 
-// UnsafeFarmerServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FarmerServiceServer will
+// UnsafeFarmerPublicServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FarmerPublicServiceServer will
 // result in compilation errors.
-type UnsafeFarmerServiceServer interface {
-	mustEmbedUnimplementedFarmerServiceServer()
+type UnsafeFarmerPublicServiceServer interface {
+	mustEmbedUnimplementedFarmerPublicServiceServer()
 }
 
-func RegisterFarmerServiceServer(s grpc.ServiceRegistrar, srv FarmerServiceServer) {
-	s.RegisterService(&FarmerService_ServiceDesc, srv)
+func RegisterFarmerPublicServiceServer(s grpc.ServiceRegistrar, srv FarmerPublicServiceServer) {
+	s.RegisterService(&FarmerPublicService_ServiceDesc, srv)
 }
 
-func _FarmerService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FarmerPublicService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FarmerServiceServer).Register(ctx, in)
+		return srv.(FarmerPublicServiceServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chicken_farmer.v1.FarmerService/Register",
+		FullMethod: "/chicken_farmer.v1.FarmerPublicService/Register",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FarmerServiceServer).Register(ctx, req.(*RegisterRequest))
+		return srv.(FarmerPublicServiceServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FarmerService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FarmerPublicService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FarmerServiceServer).Login(ctx, in)
+		return srv.(FarmerPublicServiceServer).Login(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chicken_farmer.v1.FarmerService/Login",
+		FullMethod: "/chicken_farmer.v1.FarmerPublicService/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FarmerServiceServer).Login(ctx, req.(*LoginRequest))
+		return srv.(FarmerPublicServiceServer).Login(ctx, req.(*LoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FarmerService_GrantGoldEggs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+// FarmerPublicService_ServiceDesc is the grpc.ServiceDesc for FarmerPublicService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var FarmerPublicService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "chicken_farmer.v1.FarmerPublicService",
+	HandlerType: (*FarmerPublicServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Register",
+			Handler:    _FarmerPublicService_Register_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _FarmerPublicService_Login_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "chicken_farmer/v1/farmer.proto",
+}
+
+// FarmerPrivateServiceClient is the client API for FarmerPrivateService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type FarmerPrivateServiceClient interface {
+	GrantGoldEggs(ctx context.Context, in *GrantGoldEggsRequest, opts ...grpc.CallOption) (*GrantGoldEggsResponse, error)
+	SpendGoldEggs(ctx context.Context, in *SpendGoldEggsRequest, opts ...grpc.CallOption) (*SpendGoldEggsResponse, error)
+	GetGoldEggs(ctx context.Context, in *GetGoldEggsRequest, opts ...grpc.CallOption) (*GetGoldEggsResponse, error)
+}
+
+type farmerPrivateServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewFarmerPrivateServiceClient(cc grpc.ClientConnInterface) FarmerPrivateServiceClient {
+	return &farmerPrivateServiceClient{cc}
+}
+
+func (c *farmerPrivateServiceClient) GrantGoldEggs(ctx context.Context, in *GrantGoldEggsRequest, opts ...grpc.CallOption) (*GrantGoldEggsResponse, error) {
+	out := new(GrantGoldEggsResponse)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerPrivateService/GrantGoldEggs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *farmerPrivateServiceClient) SpendGoldEggs(ctx context.Context, in *SpendGoldEggsRequest, opts ...grpc.CallOption) (*SpendGoldEggsResponse, error) {
+	out := new(SpendGoldEggsResponse)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerPrivateService/SpendGoldEggs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *farmerPrivateServiceClient) GetGoldEggs(ctx context.Context, in *GetGoldEggsRequest, opts ...grpc.CallOption) (*GetGoldEggsResponse, error) {
+	out := new(GetGoldEggsResponse)
+	err := c.cc.Invoke(ctx, "/chicken_farmer.v1.FarmerPrivateService/GetGoldEggs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FarmerPrivateServiceServer is the server API for FarmerPrivateService service.
+// All implementations must embed UnimplementedFarmerPrivateServiceServer
+// for forward compatibility
+type FarmerPrivateServiceServer interface {
+	GrantGoldEggs(context.Context, *GrantGoldEggsRequest) (*GrantGoldEggsResponse, error)
+	SpendGoldEggs(context.Context, *SpendGoldEggsRequest) (*SpendGoldEggsResponse, error)
+	GetGoldEggs(context.Context, *GetGoldEggsRequest) (*GetGoldEggsResponse, error)
+	mustEmbedUnimplementedFarmerPrivateServiceServer()
+}
+
+// UnimplementedFarmerPrivateServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedFarmerPrivateServiceServer struct {
+}
+
+func (UnimplementedFarmerPrivateServiceServer) GrantGoldEggs(context.Context, *GrantGoldEggsRequest) (*GrantGoldEggsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GrantGoldEggs not implemented")
+}
+func (UnimplementedFarmerPrivateServiceServer) SpendGoldEggs(context.Context, *SpendGoldEggsRequest) (*SpendGoldEggsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SpendGoldEggs not implemented")
+}
+func (UnimplementedFarmerPrivateServiceServer) GetGoldEggs(context.Context, *GetGoldEggsRequest) (*GetGoldEggsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoldEggs not implemented")
+}
+func (UnimplementedFarmerPrivateServiceServer) mustEmbedUnimplementedFarmerPrivateServiceServer() {}
+
+// UnsafeFarmerPrivateServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FarmerPrivateServiceServer will
+// result in compilation errors.
+type UnsafeFarmerPrivateServiceServer interface {
+	mustEmbedUnimplementedFarmerPrivateServiceServer()
+}
+
+func RegisterFarmerPrivateServiceServer(s grpc.ServiceRegistrar, srv FarmerPrivateServiceServer) {
+	s.RegisterService(&FarmerPrivateService_ServiceDesc, srv)
+}
+
+func _FarmerPrivateService_GrantGoldEggs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GrantGoldEggsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FarmerServiceServer).GrantGoldEggs(ctx, in)
+		return srv.(FarmerPrivateServiceServer).GrantGoldEggs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chicken_farmer.v1.FarmerService/GrantGoldEggs",
+		FullMethod: "/chicken_farmer.v1.FarmerPrivateService/GrantGoldEggs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FarmerServiceServer).GrantGoldEggs(ctx, req.(*GrantGoldEggsRequest))
+		return srv.(FarmerPrivateServiceServer).GrantGoldEggs(ctx, req.(*GrantGoldEggsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FarmerService_SpendGoldEggs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FarmerPrivateService_SpendGoldEggs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SpendGoldEggsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FarmerServiceServer).SpendGoldEggs(ctx, in)
+		return srv.(FarmerPrivateServiceServer).SpendGoldEggs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chicken_farmer.v1.FarmerService/SpendGoldEggs",
+		FullMethod: "/chicken_farmer.v1.FarmerPrivateService/SpendGoldEggs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FarmerServiceServer).SpendGoldEggs(ctx, req.(*SpendGoldEggsRequest))
+		return srv.(FarmerPrivateServiceServer).SpendGoldEggs(ctx, req.(*SpendGoldEggsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FarmerService_GetGoldEggs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FarmerPrivateService_GetGoldEggs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetGoldEggsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FarmerServiceServer).GetGoldEggs(ctx, in)
+		return srv.(FarmerPrivateServiceServer).GetGoldEggs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chicken_farmer.v1.FarmerService/GetGoldEggs",
+		FullMethod: "/chicken_farmer.v1.FarmerPrivateService/GetGoldEggs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FarmerServiceServer).GetGoldEggs(ctx, req.(*GetGoldEggsRequest))
+		return srv.(FarmerPrivateServiceServer).GetGoldEggs(ctx, req.(*GetGoldEggsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// FarmerService_ServiceDesc is the grpc.ServiceDesc for FarmerService service.
+// FarmerPrivateService_ServiceDesc is the grpc.ServiceDesc for FarmerPrivateService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var FarmerService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "chicken_farmer.v1.FarmerService",
-	HandlerType: (*FarmerServiceServer)(nil),
+var FarmerPrivateService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "chicken_farmer.v1.FarmerPrivateService",
+	HandlerType: (*FarmerPrivateServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Register",
-			Handler:    _FarmerService_Register_Handler,
-		},
-		{
-			MethodName: "Login",
-			Handler:    _FarmerService_Login_Handler,
-		},
-		{
 			MethodName: "GrantGoldEggs",
-			Handler:    _FarmerService_GrantGoldEggs_Handler,
+			Handler:    _FarmerPrivateService_GrantGoldEggs_Handler,
 		},
 		{
 			MethodName: "SpendGoldEggs",
-			Handler:    _FarmerService_SpendGoldEggs_Handler,
+			Handler:    _FarmerPrivateService_SpendGoldEggs_Handler,
 		},
 		{
 			MethodName: "GetGoldEggs",
-			Handler:    _FarmerService_GetGoldEggs_Handler,
+			Handler:    _FarmerPrivateService_GetGoldEggs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

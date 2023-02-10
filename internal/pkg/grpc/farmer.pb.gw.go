@@ -31,7 +31,7 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_FarmerService_Register_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_FarmerPublicService_Register_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerPublicServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq RegisterRequest
 	var metadata runtime.ServerMetadata
 
@@ -48,7 +48,7 @@ func request_FarmerService_Register_0(ctx context.Context, marshaler runtime.Mar
 
 }
 
-func local_request_FarmerService_Register_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_FarmerPublicService_Register_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerPublicServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq RegisterRequest
 	var metadata runtime.ServerMetadata
 
@@ -65,7 +65,7 @@ func local_request_FarmerService_Register_0(ctx context.Context, marshaler runti
 
 }
 
-func request_FarmerService_Login_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_FarmerPublicService_Login_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerPublicServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq LoginRequest
 	var metadata runtime.ServerMetadata
 
@@ -82,7 +82,7 @@ func request_FarmerService_Login_0(ctx context.Context, marshaler runtime.Marsha
 
 }
 
-func local_request_FarmerService_Login_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_FarmerPublicService_Login_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerPublicServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq LoginRequest
 	var metadata runtime.ServerMetadata
 
@@ -99,7 +99,7 @@ func local_request_FarmerService_Login_0(ctx context.Context, marshaler runtime.
 
 }
 
-func request_FarmerService_GrantGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_FarmerPrivateService_GrantGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerPrivateServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GrantGoldEggsRequest
 	var metadata runtime.ServerMetadata
 
@@ -116,7 +116,7 @@ func request_FarmerService_GrantGoldEggs_0(ctx context.Context, marshaler runtim
 
 }
 
-func local_request_FarmerService_GrantGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_FarmerPrivateService_GrantGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerPrivateServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GrantGoldEggsRequest
 	var metadata runtime.ServerMetadata
 
@@ -133,7 +133,7 @@ func local_request_FarmerService_GrantGoldEggs_0(ctx context.Context, marshaler 
 
 }
 
-func request_FarmerService_SpendGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_FarmerPrivateService_SpendGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerPrivateServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq SpendGoldEggsRequest
 	var metadata runtime.ServerMetadata
 
@@ -150,7 +150,7 @@ func request_FarmerService_SpendGoldEggs_0(ctx context.Context, marshaler runtim
 
 }
 
-func local_request_FarmerService_SpendGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_FarmerPrivateService_SpendGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerPrivateServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq SpendGoldEggsRequest
 	var metadata runtime.ServerMetadata
 
@@ -167,7 +167,7 @@ func local_request_FarmerService_SpendGoldEggs_0(ctx context.Context, marshaler 
 
 }
 
-func request_FarmerService_GetGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_FarmerPrivateService_GetGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, client FarmerPrivateServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetGoldEggsRequest
 	var metadata runtime.ServerMetadata
 
@@ -184,7 +184,7 @@ func request_FarmerService_GetGoldEggs_0(ctx context.Context, marshaler runtime.
 
 }
 
-func local_request_FarmerService_GetGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_FarmerPrivateService_GetGoldEggs_0(ctx context.Context, marshaler runtime.Marshaler, server FarmerPrivateServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetGoldEggsRequest
 	var metadata runtime.ServerMetadata
 
@@ -201,13 +201,13 @@ func local_request_FarmerService_GetGoldEggs_0(ctx context.Context, marshaler ru
 
 }
 
-// RegisterFarmerServiceHandlerServer registers the http handlers for service FarmerService to "mux".
-// UnaryRPC     :call FarmerServiceServer directly.
+// RegisterFarmerPublicServiceHandlerServer registers the http handlers for service FarmerPublicService to "mux".
+// UnaryRPC     :call FarmerPublicServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterFarmerServiceHandlerFromEndpoint instead.
-func RegisterFarmerServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server FarmerServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterFarmerPublicServiceHandlerFromEndpoint instead.
+func RegisterFarmerPublicServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server FarmerPublicServiceServer) error {
 
-	mux.Handle("PUT", pattern_FarmerService_Register_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_FarmerPublicService_Register_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -215,12 +215,12 @@ func RegisterFarmerServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/Register", runtime.WithHTTPPathPattern("/v1/farmer/register"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPublicService/Register", runtime.WithHTTPPathPattern("/v1/farmer/register"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_FarmerService_Register_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_FarmerPublicService_Register_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -228,11 +228,11 @@ func RegisterFarmerServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_FarmerService_Register_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_FarmerPublicService_Register_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_FarmerService_Login_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_FarmerPublicService_Login_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -240,12 +240,12 @@ func RegisterFarmerServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/Login", runtime.WithHTTPPathPattern("/v1/farmer/login"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPublicService/Login", runtime.WithHTTPPathPattern("/v1/farmer/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_FarmerService_Login_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_FarmerPublicService_Login_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -253,91 +253,100 @@ func RegisterFarmerServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_FarmerService_Login_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_FarmerService_GrantGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/GrantGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerService/GrantGoldEggs"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_FarmerService_GrantGoldEggs_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_FarmerService_GrantGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_FarmerService_SpendGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/SpendGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerService/SpendGoldEggs"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_FarmerService_SpendGoldEggs_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_FarmerService_SpendGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_FarmerService_GetGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/GetGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerService/GetGoldEggs"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_FarmerService_GetGoldEggs_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_FarmerService_GetGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_FarmerPublicService_Login_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterFarmerServiceHandlerFromEndpoint is same as RegisterFarmerServiceHandler but
+// RegisterFarmerPrivateServiceHandlerServer registers the http handlers for service FarmerPrivateService to "mux".
+// UnaryRPC     :call FarmerPrivateServiceServer directly.
+// StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterFarmerPrivateServiceHandlerFromEndpoint instead.
+func RegisterFarmerPrivateServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server FarmerPrivateServiceServer) error {
+
+	mux.Handle("POST", pattern_FarmerPrivateService_GrantGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPrivateService/GrantGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerPrivateService/GrantGoldEggs"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_FarmerPrivateService_GrantGoldEggs_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_FarmerPrivateService_GrantGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_FarmerPrivateService_SpendGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPrivateService/SpendGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerPrivateService/SpendGoldEggs"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_FarmerPrivateService_SpendGoldEggs_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_FarmerPrivateService_SpendGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_FarmerPrivateService_GetGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPrivateService/GetGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerPrivateService/GetGoldEggs"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_FarmerPrivateService_GetGoldEggs_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_FarmerPrivateService_GetGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	return nil
+}
+
+// RegisterFarmerPublicServiceHandlerFromEndpoint is same as RegisterFarmerPublicServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterFarmerServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterFarmerPublicServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -357,129 +366,63 @@ func RegisterFarmerServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.
 		}()
 	}()
 
-	return RegisterFarmerServiceHandler(ctx, mux, conn)
+	return RegisterFarmerPublicServiceHandler(ctx, mux, conn)
 }
 
-// RegisterFarmerServiceHandler registers the http handlers for service FarmerService to "mux".
+// RegisterFarmerPublicServiceHandler registers the http handlers for service FarmerPublicService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterFarmerServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterFarmerServiceHandlerClient(ctx, mux, NewFarmerServiceClient(conn))
+func RegisterFarmerPublicServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterFarmerPublicServiceHandlerClient(ctx, mux, NewFarmerPublicServiceClient(conn))
 }
 
-// RegisterFarmerServiceHandlerClient registers the http handlers for service FarmerService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "FarmerServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "FarmerServiceClient"
+// RegisterFarmerPublicServiceHandlerClient registers the http handlers for service FarmerPublicService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "FarmerPublicServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "FarmerPublicServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "FarmerServiceClient" to call the correct interceptors.
-func RegisterFarmerServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client FarmerServiceClient) error {
+// "FarmerPublicServiceClient" to call the correct interceptors.
+func RegisterFarmerPublicServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client FarmerPublicServiceClient) error {
 
-	mux.Handle("PUT", pattern_FarmerService_Register_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_FarmerPublicService_Register_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/Register", runtime.WithHTTPPathPattern("/v1/farmer/register"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPublicService/Register", runtime.WithHTTPPathPattern("/v1/farmer/register"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_FarmerService_Register_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_FarmerPublicService_Register_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_FarmerService_Register_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_FarmerPublicService_Register_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_FarmerService_Login_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_FarmerPublicService_Login_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/Login", runtime.WithHTTPPathPattern("/v1/farmer/login"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPublicService/Login", runtime.WithHTTPPathPattern("/v1/farmer/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_FarmerService_Login_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_FarmerPublicService_Login_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_FarmerService_Login_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_FarmerService_GrantGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/GrantGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerService/GrantGoldEggs"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_FarmerService_GrantGoldEggs_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_FarmerService_GrantGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_FarmerService_SpendGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/SpendGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerService/SpendGoldEggs"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_FarmerService_SpendGoldEggs_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_FarmerService_SpendGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_FarmerService_GetGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerService/GetGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerService/GetGoldEggs"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_FarmerService_GetGoldEggs_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_FarmerService_GetGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_FarmerPublicService_Login_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -487,25 +430,136 @@ func RegisterFarmerServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 }
 
 var (
-	pattern_FarmerService_Register_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "farmer", "register"}, ""))
+	pattern_FarmerPublicService_Register_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "farmer", "register"}, ""))
 
-	pattern_FarmerService_Login_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "farmer", "login"}, ""))
-
-	pattern_FarmerService_GrantGoldEggs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"chicken_farmer.v1.FarmerService", "GrantGoldEggs"}, ""))
-
-	pattern_FarmerService_SpendGoldEggs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"chicken_farmer.v1.FarmerService", "SpendGoldEggs"}, ""))
-
-	pattern_FarmerService_GetGoldEggs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"chicken_farmer.v1.FarmerService", "GetGoldEggs"}, ""))
+	pattern_FarmerPublicService_Login_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "farmer", "login"}, ""))
 )
 
 var (
-	forward_FarmerService_Register_0 = runtime.ForwardResponseMessage
+	forward_FarmerPublicService_Register_0 = runtime.ForwardResponseMessage
 
-	forward_FarmerService_Login_0 = runtime.ForwardResponseMessage
+	forward_FarmerPublicService_Login_0 = runtime.ForwardResponseMessage
+)
 
-	forward_FarmerService_GrantGoldEggs_0 = runtime.ForwardResponseMessage
+// RegisterFarmerPrivateServiceHandlerFromEndpoint is same as RegisterFarmerPrivateServiceHandler but
+// automatically dials to "endpoint" and closes the connection when "ctx" gets done.
+func RegisterFarmerPrivateServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+	conn, err := grpc.Dial(endpoint, opts...)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			if cerr := conn.Close(); cerr != nil {
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
+			}
+			return
+		}
+		go func() {
+			<-ctx.Done()
+			if cerr := conn.Close(); cerr != nil {
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
+			}
+		}()
+	}()
 
-	forward_FarmerService_SpendGoldEggs_0 = runtime.ForwardResponseMessage
+	return RegisterFarmerPrivateServiceHandler(ctx, mux, conn)
+}
 
-	forward_FarmerService_GetGoldEggs_0 = runtime.ForwardResponseMessage
+// RegisterFarmerPrivateServiceHandler registers the http handlers for service FarmerPrivateService to "mux".
+// The handlers forward requests to the grpc endpoint over "conn".
+func RegisterFarmerPrivateServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterFarmerPrivateServiceHandlerClient(ctx, mux, NewFarmerPrivateServiceClient(conn))
+}
+
+// RegisterFarmerPrivateServiceHandlerClient registers the http handlers for service FarmerPrivateService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "FarmerPrivateServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "FarmerPrivateServiceClient"
+// doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
+// "FarmerPrivateServiceClient" to call the correct interceptors.
+func RegisterFarmerPrivateServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client FarmerPrivateServiceClient) error {
+
+	mux.Handle("POST", pattern_FarmerPrivateService_GrantGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPrivateService/GrantGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerPrivateService/GrantGoldEggs"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_FarmerPrivateService_GrantGoldEggs_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_FarmerPrivateService_GrantGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_FarmerPrivateService_SpendGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPrivateService/SpendGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerPrivateService/SpendGoldEggs"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_FarmerPrivateService_SpendGoldEggs_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_FarmerPrivateService_SpendGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_FarmerPrivateService_GetGoldEggs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/chicken_farmer.v1.FarmerPrivateService/GetGoldEggs", runtime.WithHTTPPathPattern("/chicken_farmer.v1.FarmerPrivateService/GetGoldEggs"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_FarmerPrivateService_GetGoldEggs_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_FarmerPrivateService_GetGoldEggs_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	return nil
+}
+
+var (
+	pattern_FarmerPrivateService_GrantGoldEggs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"chicken_farmer.v1.FarmerPrivateService", "GrantGoldEggs"}, ""))
+
+	pattern_FarmerPrivateService_SpendGoldEggs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"chicken_farmer.v1.FarmerPrivateService", "SpendGoldEggs"}, ""))
+
+	pattern_FarmerPrivateService_GetGoldEggs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"chicken_farmer.v1.FarmerPrivateService", "GetGoldEggs"}, ""))
+)
+
+var (
+	forward_FarmerPrivateService_GrantGoldEggs_0 = runtime.ForwardResponseMessage
+
+	forward_FarmerPrivateService_SpendGoldEggs_0 = runtime.ForwardResponseMessage
+
+	forward_FarmerPrivateService_GetGoldEggs_0 = runtime.ForwardResponseMessage
 )

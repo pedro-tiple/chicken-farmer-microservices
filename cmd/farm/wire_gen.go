@@ -24,17 +24,17 @@ import (
 
 // Injectors from wire.go:
 
-func initializeGRPCService(ctx context.Context, address string, logger *zap.SugaredLogger, dbConnection *sql.DB, farmerGRPCConn grpc.ClientConnInterface, subscriber message.Subscriber, publisher message.Publisher) (*farm.GRPCService, error) {
+func initializeGRPCService(ctx context.Context, address string, logger *zap.SugaredLogger, dbConnection *sql.DB, farmerGRPCConn grpc.ClientConnInterface, subscriber message.Subscriber, publisher message.Publisher, jwtAuthKey []byte) (*farm.GRPCService, error) {
 	datasource, err := sql2.ProvideDatasource(dbConnection)
 	if err != nil {
 		return nil, err
 	}
-	farmerServiceClient := grpc2.NewFarmerServiceClient(farmerGRPCConn)
-	farmerGRPCClient := farm.ProvideFarmerGRPCClient(farmerServiceClient)
+	farmerPrivateServiceClient := grpc2.NewFarmerPrivateServiceClient(farmerGRPCConn)
+	farmerGRPCClient := farm.ProvideFarmerPrivateGRPCClient(farmerPrivateServiceClient)
 	controller, err := farm.ProvideController(ctx, logger, datasource, farmerGRPCClient, subscriber, publisher)
 	if err != nil {
 		return nil, err
 	}
-	grpcService := farm.ProvideGRPCService(address, logger, controller)
+	grpcService := farm.ProvideGRPCService(address, logger, controller, jwtAuthKey)
 	return grpcService, nil
 }

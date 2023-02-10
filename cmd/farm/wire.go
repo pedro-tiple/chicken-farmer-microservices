@@ -24,6 +24,7 @@ func initializeGRPCService(
 	farmerGRPCConn grpc.ClientConnInterface,
 	subscriber message.Subscriber,
 	publisher message.Publisher,
+	jwtAuthKey []byte,
 ) (*farm.GRPCService, error) {
 	panic(
 		wire.Build(
@@ -35,8 +36,8 @@ func initializeGRPCService(
 			farmSql.ProvideDatasource,
 			wire.Bind(new(farm.IDataSource), new(*farmSql.Datasource)),
 
-			internalGrpc.NewFarmerServiceClient,
-			farm.ProvideFarmerGRPCClient,
+			internalGrpc.NewFarmerPrivateServiceClient,
+			farm.ProvideFarmerPrivateGRPCClient,
 			wire.Bind(new(farm.IFarmerService), new(*farm.FarmerGRPCClient)),
 		),
 	)

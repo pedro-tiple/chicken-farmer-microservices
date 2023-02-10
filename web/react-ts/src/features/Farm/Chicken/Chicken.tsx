@@ -49,7 +49,7 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
   return (
     <div className="chicken relative w-full">
       <div className={`chicken-img ${action} mx-auto my-0 h-[50px] w-[50px]`} />
-      <div className="flex justify-between items-baseline w-full">
+      <div className="flex w-full items-baseline justify-between">
         <span className="flex flex-col">
           <img src={cakeImg} alt="birthday" width="30" />{" "}
           {props.chicken.dateOfBirth}
@@ -76,12 +76,14 @@ export const Chicken = (props: { chicken: V1Chicken; day: number }) => {
         <button
           className="btn-primary-small"
           onClick={() => feedChicken.mutate(props.chicken.id ?? "")}
-          disabled={(props.chicken.restingUntil ?? 0) >= props.day}>
+          disabled={(props.chicken.restingUntil ?? 0) >= props.day}
+        >
           Feed
         </button>
         <button
           className="btn-primary-small"
-          onClick={() => sellChicken.mutate(props.chicken.id ?? "")}>
+          onClick={() => sellChicken.mutate(props.chicken.id ?? "")}
+        >
           Sell
         </button>
       </div>

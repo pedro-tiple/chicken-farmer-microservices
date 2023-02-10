@@ -70,7 +70,8 @@ type IDataSource interface {
 	) error
 
 	IncrementChickenEggLayCount(
-		ctx context.Context, chickenID uuid.UUID, normalEggCount, goldEggCount int64,
+		ctx context.Context, chickenID uuid.UUID,
+		normalEggCount, goldEggCount int64,
 	) error
 }
 
@@ -151,24 +152,28 @@ func (c *Controller) NewFarm(
 		return uuid.UUID{}, err
 	}
 
-	barnID, err := c.datasource.InsertBarn(ctx, Barn{
-		ID:            uuid.New(),
-		OwnerID:       ownerID,
-		FarmID:        farmID,
-		Feed:          10,
-		HasAutoFeeder: false,
-	})
+	barnID, err := c.datasource.InsertBarn(
+		ctx, Barn{
+			ID:            uuid.New(),
+			OwnerID:       ownerID,
+			FarmID:        farmID,
+			Feed:          10,
+			HasAutoFeeder: false,
+		},
+	)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
 
-	if _, err := c.datasource.InsertChicken(ctx, Chicken{
-		ID:            uuid.New(),
-		OwnerID:       ownerID,
-		BarnID:        barnID,
-		DateOfBirth:   c.currentDay,
-		GoldEggChance: newChickenGoldEggChance(),
-	}); err != nil {
+	if _, err := c.datasource.InsertChicken(
+		ctx, Chicken{
+			ID:            uuid.New(),
+			OwnerID:       ownerID,
+			BarnID:        barnID,
+			DateOfBirth:   c.currentDay,
+			GoldEggChance: newChickenGoldEggChance(),
+		},
+	); err != nil {
 		return uuid.UUID{}, err
 	}
 
@@ -192,9 +197,21 @@ func (c *Controller) FarmDetails(
 		return FarmDetailsResult{}, err
 	}
 
-	resultBarns := make([]farmDetailsResultBarn, len(barns))
+	var (
+		resultBarns  = make([]farmDetailsResultBarn, len(barns))
+		goldEggCount uint
+	)
 	errGrp, errGrpCtx := errgroup.WithContext(ctx)
 	errGrp.SetLimit(5)
+
+	errGrp.Go(
+		func() error {
+			// Gold egg count lives in another service for this implementation,
+			// go fetch it there.
+			goldEggCount, err = c.farmerService.GetGoldEggs(errGrpCtx)
+			return err
+		},
+	)
 
 	for i, barn := range barns {
 		i, barn := i, barn //nolint:varnamelen
@@ -207,6 +224,7 @@ func (c *Controller) FarmDetails(
 				if err != nil {
 					return err
 				}
+
 				resultBarns[i] = farmDetailsResultBarn{
 					Barn:     barn,
 					Chickens: chickens,
@@ -218,13 +236,6 @@ func (c *Controller) FarmDetails(
 	}
 
 	if err := errGrp.Wait(); err != nil {
-		return FarmDetailsResult{}, err
-	}
-
-	// Gold egg count lives in another service for this implementation so must
-	// go fetch it there.
-	goldEggCount, err := c.farmerService.GetGoldEggs(ctx)
-	if err != nil {
 		return FarmDetailsResult{}, err
 	}
 
@@ -248,7 +259,9 @@ func (c *Controller) BuyBarn(
 		return ErrBarnNotYours
 	}
 
-	if err := c.farmerService.SpendGoldEggs(ctx, PurchasePriceBarn); err != nil {
+	if err := c.farmerService.SpendGoldEggs(
+		ctx, PurchasePriceBarn,
+	); err != nil {
 		return err
 	}
 
@@ -434,61 +447,71 @@ func (c *Controller) FeedChicken(
 	}
 
 	g, errGrpCtx := errgroup.WithContext(ctx)
-	g.Go(func() error {
-		if goldEggsLaid == 0 {
-			return nil
-		}
+	g.Go(
+		func() error {
+			if goldEggsLaid == 0 {
+				return nil
+			}
 
-		return c.farmerService.GrantGoldEggs(
-			errGrpCtx, GoldEggsPerFeed,
-		)
-	})
+			return c.farmerService.GrantGoldEggs(
+				errGrpCtx, GoldEggsPerFeed,
+			)
+		},
+	)
 
-	g.Go(func() error {
-		return c.datasource.IncrementChickenEggLayCount(
-			errGrpCtx, chickenID, normalEggsLaid, goldEggsLaid,
-		)
-	})
+	g.Go(
+		func() error {
+			return c.datasource.IncrementChickenEggLayCount(
+				errGrpCtx, chickenID, normalEggsLaid, goldEggsLaid,
+			)
+		},
+	)
 
-	g.Go(func() error {
-		// Must rest at least one day, can rest up to 1 + MaxChickenRestingDays.
-		chicken.RestingUntil = c.currentDay + MinChickenRestingDays +
-			uint(rand.Intn(MaxChickenRestingDays-MinChickenRestingDays))
+	g.Go(
+		func() error {
+			// Must rest at least one day, can rest up to 1 + MaxChickenRestingDays.
+			chicken.RestingUntil = c.currentDay + MinChickenRestingDays +
+				uint(rand.Intn(MaxChickenRestingDays-MinChickenRestingDays))
 
-		return c.datasource.UpdateChickenRestingUntil(
-			errGrpCtx, chickenID, chicken.RestingUntil,
-		)
-	})
+			return c.datasource.UpdateChickenRestingUntil(
+				errGrpCtx, chickenID, chicken.RestingUntil,
+			)
+		},
+	)
 
-	g.Go(func() error {
-		return event.PublishMessage(
-			errGrpCtx,
-			c.publisher,
-			farmerID,
-			event.FarmTopic,
-			event.MessageTypeChickenFed,
-			event.ChickenFedMessage{
-				ChickenID:      chickenID.String(),
-				RestingUntil:   chicken.RestingUntil,
-				NormalEggsLaid: uint(normalEggsLaid),
-				GoldEggsLaid:   uint(goldEggsLaid),
-			},
-		)
-	})
+	g.Go(
+		func() error {
+			return event.PublishMessage(
+				errGrpCtx,
+				c.publisher,
+				farmerID,
+				event.FarmTopic,
+				event.MessageTypeChickenFed,
+				event.ChickenFedMessage{
+					ChickenID:      chickenID.String(),
+					RestingUntil:   chicken.RestingUntil,
+					NormalEggsLaid: uint(normalEggsLaid),
+					GoldEggsLaid:   uint(goldEggsLaid),
+				},
+			)
+		},
+	)
 
-	g.Go(func() error {
-		return event.PublishMessage(
-			errGrpCtx,
-			c.publisher,
-			farmerID,
-			event.FarmTopic,
-			event.MessageTypeFeedChange,
-			event.FeedChangeMessage{
-				BarnID: chicken.BarnID.String(),
-				Count:  -FeedUsedPerFeeding,
-			},
-		)
-	})
+	g.Go(
+		func() error {
+			return event.PublishMessage(
+				errGrpCtx,
+				c.publisher,
+				farmerID,
+				event.FarmTopic,
+				event.MessageTypeFeedChange,
+				event.FeedChangeMessage{
+					BarnID: chicken.BarnID.String(),
+					Count:  -FeedUsedPerFeeding,
+				},
+			)
+		},
+	)
 
 	return g.Wait()
 }

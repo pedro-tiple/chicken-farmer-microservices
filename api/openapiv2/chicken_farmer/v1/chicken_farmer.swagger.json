@@ -9,7 +9,10 @@
       "name": "FarmService"
     },
     {
-      "name": "FarmerService"
+      "name": "FarmerPublicService"
+    },
+    {
+      "name": "FarmerPrivateService"
     }
   ],
   "consumes": [
@@ -231,7 +234,7 @@
     },
     "/v1/farmer/login": {
       "post": {
-        "operationId": "FarmerService_Login",
+        "operationId": "FarmerPublicService_Login",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -257,13 +260,14 @@
           }
         ],
         "tags": [
-          "FarmerService"
-        ]
+          "FarmerPublicService"
+        ],
+        "security": []
       }
     },
     "/v1/farmer/register": {
       "put": {
-        "operationId": "FarmerService_Register",
+        "operationId": "FarmerPublicService_Register",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -289,8 +293,9 @@
           }
         ],
         "tags": [
-          "FarmerService"
-        ]
+          "FarmerPublicService"
+        ],
+        "security": []
       }
     }
   },
@@ -486,7 +491,7 @@
     "v1LoginResponse": {
       "type": "object",
       "properties": {
-        "jwt": {
+        "authToken": {
           "type": "string"
         }
       }
@@ -535,5 +540,18 @@
     "v1SpendGoldEggsResponse": {
       "type": "object"
     }
-  }
+  },
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "description": "Authentication token, prefixed by Bearer: Bearer \u003ctoken\u003e",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
 }

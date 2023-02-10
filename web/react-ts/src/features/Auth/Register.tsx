@@ -1,22 +1,18 @@
 import React, { useContext, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Configuration } from "chicken-farmer-service/configuration";
-import { FarmerServiceApi, V1RegisterRequest } from "chicken-farmer-service";
-import { UserAuthContext } from "../../context/UserContext";
-
-const farmerServiceApi = new FarmerServiceApi(
-  new Configuration({ basePath: "http://localhost:8082" })
-);
+import { V1RegisterRequest } from "chicken-farmer-service";
+import { ServicesContext } from "../../context/ServicesContext";
 
 export const Register = () => {
   const [farmerName, setFarmerName] = useState<string>("");
   const [farmName, setFarmName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const { farmerServiceApi } = useContext(ServicesContext);
 
   const register = useMutation({
     mutationKey: ["register", farmerName],
     mutationFn: ({ farmerName, farmName, password }: V1RegisterRequest) => {
-      return farmerServiceApi.farmerServiceRegister({
+      return farmerServiceApi.farmerPublicServiceRegister({
         farmName,
         farmerName,
         password
@@ -28,15 +24,15 @@ export const Register = () => {
     <>
       {!register.isSuccess && (
         <div className="w-full max-w-xs">
-          <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+          <form className="mb-4 rounded bg-white px-8 pt-6 pb-8 shadow-md">
             <div className="mb-4">
               <label
-                className="block text-gray-700 text-sm font-bold mb-2"
+                className="mb-2 block text-sm font-bold text-gray-700"
                 htmlFor="farmerName">
                 Farmer
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
                 id="farmerName"
                 type="text"
                 placeholder="Farmer's Name"
@@ -45,12 +41,12 @@ export const Register = () => {
             </div>
             <div className="mb-4">
               <label
-                className="block text-gray-700 text-sm font-bold mb-2"
+                className="mb-2 block text-sm font-bold text-gray-700"
                 htmlFor="farmName">
                 Farmer
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
                 id="farmName"
                 type="text"
                 placeholder="Farm's Name"
@@ -60,27 +56,27 @@ export const Register = () => {
             <div className="mb-6">
               <>
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="mb-2 block text-sm font-bold text-gray-700"
                   htmlFor="password">
                   Password
                 </label>
                 <input
                   className={`${
                     register.error && "border-red-500"
-                  } shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline`}
+                  } focus:shadow-outline mb-3 w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none`}
                   id="password"
                   type="password"
                   placeholder="******************"
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 {register.error && (
-                  <p className="text-red-500 text-xs italic">Invalid login.</p>
+                  <p className="text-xs italic text-red-500">Invalid login.</p>
                 )}
               </>
             </div>
             <div className="flex items-center justify-between">
               <button
-                className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-100 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="focus:shadow-outline rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 focus:outline-none disabled:bg-blue-100"
                 type="button"
                 disabled={!farmerName || !farmName || !password}
                 onClick={() =>
